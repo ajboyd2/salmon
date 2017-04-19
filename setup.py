@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="symbolic-modeling",
+    name="symbolic_modeling",
     version="0.2.0",
 
     description="A symbolic statistical modeling tool.",
