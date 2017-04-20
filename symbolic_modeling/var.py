@@ -46,6 +46,12 @@ class Expression:
         # Every inherited class of term must have a way
         # representing itself as a string
         raise NotImplementedError()
+    
+    def flatten(self):
+        # For taking the paired terms (Interaction and Combination)
+        # and returning a list of the variables being multiplied or
+        # added separately
+        raise NotImplementedError()
         
 class Mono(Expression):
 
@@ -95,31 +101,34 @@ class Mono(Expression):
         shift_flag = False
         
         if self.shift > 0:
-            base = "(" + base + "+%d)"
+            base = "(" + base + "+%s)"
             params.append(self.shift)
             shift_flag = True
         elif self.shift < 0:
-            base = "(" + base + "-%d)"
-            params.append(self.shift * -1)
+            base = "(" + base + "-%s)"
+            params.append(str(self.shift * -1))
             shift_flag = True
             
         if self.transformation != 1:
             if shift_flag:
-                base = base + "^%d"
+                base = base + "^%s"
             else:
-                base = "(" + base + ")^%d"
-            params.append(self.transformation)
+                base = "(" + base + ")^%s"
+            params.append(str(self.transformation))
             
         if self.coefficient != 1:
-            base = "%d*" + base
-            params.insert(0, self.coefficient)
+            base = "%s*" + base
+            params.insert(0, str(self.coefficient))
 
         return base % tuple(params)
+
+    def flatten(self):
+        return [self]
         
 class Interaction(Mono):
 
     def __init__(self, e1, e2, transformation = 1, coefficient = 1, shift = 0):
-        if type(e1) is not Expression or type(e2) is not Expression:
+        if not (isinstance(e1, Expression) and isinstance(e2, Expression)):
             raise Exception("Interaction takes two Expressions for initialization.")
 
         self.e1 = e1
@@ -127,28 +136,49 @@ class Interaction(Mono):
         self.transformation = transformation
         self.coefficient = coefficient
         self.shift = shift
+        
+    def __str__(self):
+        vars = self.flatten()
+        output = "{"
+        for var in vars:
+            output += str(var) + "}{"
+        return output[:-1]
+        
+    def flatten(self):
+        return self.e1.flatten() + self.e2.flatten()
+        
        
 class Combination(Expression):
 
     def __init__(self, e1, e2):
-        if type(e1) is not Expression or type(e2) is not Expression:
+        if not (isinstance(e1, Expression) and isinstance(e2, Expression)):
             raise Exception("Combination takes two Expressions for initialization.")
 
         self.e1 = e1
-        self.e2 = e2       
+        self.e2 = e2   
+
+    def __str__(self):
+        vars = self.flatten()
+        output = ""
+        for var in vars:
+            output += str(var) + " + "
+        return output[:-3]
+        
+    def flatten(self):
+        return self.e1.flatten() + self.e2.flatten()        
 
 class Poly(Combination):
     
     def __init__(self, var, power):
-        if type(var) is str:
+        if isinstance(var, str):
             base = Mono(var)
-        elif type(var) is Mono:
+        elif isinstance(var, Mono):
             base = var
         else:
-            raise Exception("Poly takes a (str or Mono) and an int.")
+            raise Exception("Poly takes a (str or Mono) and a non-negative int.")
             
-        if type(power) is not int:
-            raise Exception("Poly takes a (str or Mono) and an int.")
+        if not (isinstance(power, int) and power >= 0):
+            raise Exception("Poly takes a (str or Mono) and a non-negative int.")
         
         
         
