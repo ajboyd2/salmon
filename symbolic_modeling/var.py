@@ -1,31 +1,61 @@
 import pandas as pd
 import numpy as np
 
-class Var:
+class Expression:
+    def __init__(self):
+        raise Exception("Cannot instantiate a Expression.")
 
-    def __init__(self, name):
+    def __add__(self, other):
+        return Combination(self, other)
+
+    def __mult__(self, other):
+        # This is to prevent having an interaction of 
+        # Expressions other than single variables (Mono)
+        raise NotImplementedError() 
+    
+    def __pow__(self, other):
+        # This is to prevent having a transformation of 
+        # Expressions other than single variables (Mono)
+        raise NotImplementedError() 
+    
+
+class Mono(Expression):
+
+    def __init__(self, name, transformation = None, coefficient = 1, shift = 0):
         self.name = name
+        self.transformation = transformation
+        self.coefficient = coefficient
+        self.shift = shift
         
-class Combination(Var):
+class Interaction(Expression):
 
-    def __init__(self, vars, weights = None):
-        # By default produces a linear combination of the variables | names
-        
-        if type(vars) is not list or type(vars) is not Var:
-            raise Exception("Combination takes a list of Var objects or strings when initializing.")
-        
-        if type(vars) is list and type(vars) is not str:
-            for var in vars:
-                if type(var) is not Var or type(var) is not str:
-                    raise Exception("Combination takes a list of Var objects or strings when initializing.")
-        
-        self.vars = [var if type(var) is Var else Var(var) for var in vars] # Convert all strings in list to vars
-        
-        if weights is None:
-            self.weights = [1 for _ in vars]
-        else:
-            self.weights = weights
-           
+    def __init__(self, e1, e2):
+        if type(e1) is not Expression or type(e2) is not Expression:
+            raise Exception("Interaction takes two Expressions for initialization.")
+
+        self.e1 = e1
+        self.e2 = e2
+       
+class Combination(Expression):
+
+    def __init__(self, e1, e2):
+        if type(e1) is not Expression or type(e2) is not Expression:
+            raise Exception("Combination takes two Expressions for initialization.")
+
+        self.e1 = e1
+        self.e2 = e2       
 
 class Poly(Combination):
-
+    
+    def __init__(self, var, power):
+        if type(var) is str:
+            base = Mono(var)
+        elif type(var) is Mono:
+            base = var
+        else:
+            raise Exception("Poly takes a (str or Mono) and an int.")
+            
+        if type(power) is not int or type(power) is not long:
+            raise Exception("Poly takes a (str or Mono) and an int.")
+        
+        
