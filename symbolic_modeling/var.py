@@ -42,6 +42,11 @@ class Expression:
         # Expressions other than single variables (Mono)
         raise NotImplementedError() 
         
+    def __str__(self):
+        # Every inherited class of term must have a way
+        # representing itself as a string
+        raise NotImplementedError()
+        
 class Mono(Expression):
 
     def __init__(self, name, transformation = 1, coefficient = 1, shift = 0):
@@ -52,37 +57,65 @@ class Mono(Expression):
     
     def __mul__(self, other):
         if isinstance(other, Mono):
-            return(Interaction(self, other))
-        elif isinstance(other, (int, long, float)):
-            return(Mono(self.name, self.transformation, self.coefficient * other, self.shift))
+            return Interaction(self, other) 
+        elif isinstance(other, (int, float)):
+            return Mono(self.name, self.transformation, self.coefficient * other, self.shift)
         else:
             raise Exception("Multiplication of expressions must involve a (term * number) or a (term * term).")
     
     def __imul__(self, other):
         if isinstance(other, Mono):
-            return(Interaction(self, other))
-        elif isinstance(other, (int, long, float)):
+            return Interaction(self, other) 
+        elif isinstance(other, (int, float)):
             self.coefficient *= other
-            return(self)
+            return self 
         else:
             raise Exception("Inplace multiplication of expressions must involve a (term *= number) or a (term *= term).")
         
     def __pow__(self, other):
-        if isinstance(other, (int, long, float)):
+        if isinstance(other, (int, float)):
             if isinstance(self, Mono):
-                return(Mono(self.name, self.transformation + other, self.coefficient, self.shift))
+                return Mono(self.name, self.transformation * other, self.coefficient, self.shift)
             elif isinstance(self, Interaction):
-                return(Interaction(self.e1, self.e2, self.transformation + other, self.coefficient, self.shift)
+                return Interaction(self.e1, self.e2, self.transformation * other, self.coefficient, self.shift)
         else:
             raise Exception("Transforming a term must involve a number like so: (term ** number).")
 
     def __ipow__(self, other):
-        if isinstance(other, (int, long, float)):
+        if isinstance(other, (int, float)):
             self.transformation += other
             return self
         else:
             raise Exception("Transforming a term must involve a number like so: (term ** number).")
+    
+    def __str__(self):
+        base = "%s"
+        params = [self.name]
+        
+        shift_flag = False
+        
+        if self.shift > 0:
+            base = "(" + base + "+%d)"
+            params.append(self.shift)
+            shift_flag = True
+        elif self.shift < 0:
+            base = "(" + base + "-%d)"
+            params.append(self.shift * -1)
+            shift_flag = True
             
+        if self.transformation != 1:
+            if shift_flag:
+                base = base + "^%d"
+            else:
+                base = "(" + base + ")^%d"
+            params.append(self.transformation)
+            
+        if self.coefficient != 1:
+            base = "%d*" + base
+            params.insert(0, self.coefficient)
+
+        return base % tuple(params)
+        
 class Interaction(Mono):
 
     def __init__(self, e1, e2, transformation = 1, coefficient = 1, shift = 0):
@@ -114,7 +147,9 @@ class Poly(Combination):
         else:
             raise Exception("Poly takes a (str or Mono) and an int.")
             
-        if type(power) is not int or type(power) is not long:
+        if type(power) is not int:
             raise Exception("Poly takes a (str or Mono) and an int.")
+        
+        
         
         
