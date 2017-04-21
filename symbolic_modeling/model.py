@@ -60,8 +60,7 @@ class LinearModel(Model):
             
         elif isinstance(expr, Interaction):
             columns = [LinearModel.extract_columns(e, data) for e in expr.flatten(True)]
-            product = pd.concat(columns, axis = 1).prod(axis = 0)
-            product.columns = [str(expr)]
+            product = pd.DataFrame({str(expr) : pd.concat(columns, axis = 1).prod(axis = 1)})
             return LinearModel.transform(expr, product)
         
         elif isinstance(expr, Mono):
