@@ -150,12 +150,23 @@ class Interaction(Mono):
        
 class Combination(Expression):
 
-    def __init__(self, e1, e2):
-        if not (isinstance(e1, Expression) and isinstance(e2, Expression)):
-            raise Exception("Combination takes two Expressions for initialization.")
+    def __init__(self, e1, e2 = None):
+        if e2 is None:
+            es = e1
+            if not isinstance(es, list) or len(es) < 2:
+                raise Exception("Combination takes either two Expressions, or a list of Expressions / Strings for initialization.")
 
-        self.e1 = e1
-        self.e2 = e2   
+            self.e1 = es[0] if isinstance(es[0], Expression) else Mono(es[0])
+            if len(es) == 2:
+                self.e2 = es[1] if isinstance(es[1], Expression) else Mono(es[1])
+            else:
+                self.e2 = Combination(es[1:])
+        else:
+            if not (isinstance(e1, Expression) and isinstance(e2, Expression)):
+                raise Exception("Combination takes either two Expressions, or a list of Expressions / Strings for initialization.")
+
+            self.e1 = e1
+            self.e2 = e2   
 
     def __mul__(self, other):
         if isinstance(other, (int, float, Mono)):
