@@ -158,28 +158,24 @@ class Combination(Expression):
         self.e2 = e2   
 
     def __str__(self):
-        vars = self.flatten()
-        output = ""
-        for var in vars:
-            output += str(var) + " + "
-        return output[:-3]
+        return str(self.e1) + " + " + str(self.e2)
         
     def flatten(self):
         return self.e1.flatten() + self.e2.flatten()        
 
-class Poly(Combination):
+def Poly(var, power):
+    if isinstance(var, str):
+        base = Mono(var)
+    elif isinstance(var, Mono):
+        base = var
+    else:
+        raise Exception("Poly takes a (str or Mono) and a positive int.")
+        
+    if not (isinstance(power, int) and power > 0):
+        raise Exception("Poly takes a (str or Mono) and a positive int.")
     
-    def __init__(self, var, power):
-        if isinstance(var, str):
-            base = Mono(var)
-        elif isinstance(var, Mono):
-            base = var
-        else:
-            raise Exception("Poly takes a (str or Mono) and a non-negative int.")
-            
-        if not (isinstance(power, int) and power >= 0):
-            raise Exception("Poly takes a (str or Mono) and a non-negative int.")
-        
-        
-        
+    if power == 1:
+        return base
+    else:
+        return base ** power + Poly(base, power - 1)
         
