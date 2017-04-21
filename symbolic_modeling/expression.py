@@ -47,7 +47,7 @@ class Expression:
         # representing itself as a string
         raise NotImplementedError()
     
-    def flatten(self):
+    def flatten(self, separate_interactions = False):
         # For taking the paired terms (Interaction and Combination)
         # and returning a list of the variables being multiplied or
         # added separately
@@ -122,7 +122,7 @@ class Mono(Expression):
 
         return base % tuple(params)
 
-    def flatten(self):
+    def flatten(self, separate_interactions = False):
         return [self]
         
 class Interaction(Mono):
@@ -138,14 +138,17 @@ class Interaction(Mono):
         self.shift = shift
         
     def __str__(self):
-        vars = self.flatten()
+        vars = self.flatten(True)
         output = "{"
         for var in vars:
             output += str(var) + "}{"
         return output[:-1]
         
-    def flatten(self):
-        return self.e1.flatten() + self.e2.flatten()
+    def flatten(self, separate_interactions = False):
+        if separate_interactions:
+            return [self]
+        else:
+            return self.e1.flatten() + self.e2.flatten()
         
        
 class Combination(Expression):
