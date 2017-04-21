@@ -61,6 +61,19 @@ class Mono(Expression):
         self.coefficient = coefficient
         self.shift = shift
     
+    def __add__(self, other):
+        if isinstance(other, (int, float)):
+            return Mono(self.name, self.transformation, self.coefficient, self.shift + other)
+        else:
+            return super().__add__(other)
+            
+    def __iadd__(self, other):
+        if isinstance(other, (int, float)):
+            self.shift += other
+            return self
+        else:
+            return super().__add__(other)
+    
     def __mul__(self, other):
         if isinstance(other, Mono):
             return Interaction(self, other) 
@@ -146,10 +159,9 @@ class Interaction(Mono):
         
     def flatten(self, separate_interactions = False):
         if separate_interactions:
-            return [self]
-        else:
             return self.e1.flatten() + self.e2.flatten()
-        
+        else:
+            return [self]
        
 class Combination(Expression):
 
