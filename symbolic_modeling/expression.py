@@ -207,5 +207,5 @@ def Poly(var, power):
     if power == 1:
         return base
     else:
-        return base ** power + Poly(base, power - 1)
+        return Poly(base, power - 1) + base ** power
         
