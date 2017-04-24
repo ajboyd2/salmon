@@ -1,0 +1,8 @@
+build/lib/symbolic_modeling/__init__.py
+build/lib/symbolic_modeling/expression.py
+build/lib/symbolic_modeling/model.py
+dist/symbolic_modeling-0.2.0-py3.5.egg
+symbolic_modeling.egg-info/dependency_links.txt
+symbolic_modeling.egg-info/PKG-INFO
+symbolic_modeling.egg-info/SOURCES.txt
+symbolic_modeling.egg-info/top_level.txt
