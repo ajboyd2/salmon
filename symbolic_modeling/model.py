@@ -43,11 +43,11 @@ class LinearModel(Model):
         X = LinearModel.extract_columns(self.ex, data)
         X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
         # Multiply the weights to each column and sum across rows
-        return pd.DataFrame({"Results" : np.dot(X, self.bhat).sum(axis = 1)})
+        return pd.DataFrame({"Predicted " + str(self.re) : np.dot(X, self.bhat).sum(axis = 1)})
         
     # static method
     def ones_column(data):
-        return pd.DataFrame({"Bias" : np.repeat(1, data.shape[0])})
+        return pd.DataFrame({"Intercept" : np.repeat(1, data.shape[0])})
         
     # static method
     def extract_columns(expr, data):
