@@ -55,6 +55,29 @@ class Expression:
         
 class Var(Expression):
 
+    def __init__(self, name):
+        self.name = name
+  
+    def __mul__(self, other):
+        if isinstance(other, Var):
+            return Interaction(self, other) 
+        else:
+            raise Exception("Multiplication of expressions must involve a (Quantitative * number) or a (Expression * Expression).")
+    
+    def __imul__(self, other):
+        if isinstance(other, Var):
+            return Interaction(self, other) 
+        else:
+            raise Exception("Inplace multiplication of expressions must involve a (term *= number) or a (term *= term).")
+ 
+    def __str__(self):
+        return self.name
+
+    def flatten(self, separate_interactions = False):
+        return [self]
+
+class Quantitative(Var):
+    
     def __init__(self, name, transformation = 1, coefficient = 1, shift = 0):
         self.name = name
         self.transformation = transformation
@@ -63,7 +86,7 @@ class Var(Expression):
     
     def __add__(self, other):
         if isinstance(other, (int, float)):
-            return Var(self.name, self.transformation, self.coefficient, self.shift + other)
+            return Quantitative(self.name, self.transformation, self.coefficient, self.shift + other)
         else:
             return super().__add__(other)
             
@@ -78,7 +101,7 @@ class Var(Expression):
         if isinstance(other, Var):
             return Interaction(self, other) 
         elif isinstance(other, (int, float)):
-            return Var(self.name, self.transformation, self.coefficient * other, self.shift)
+            return Quantitative(self.name, self.transformation, self.coefficient * other, self.shift)
         else:
             raise Exception("Multiplication of expressions must involve a (term * number) or a (term * term).")
     
@@ -93,10 +116,10 @@ class Var(Expression):
         
     def __pow__(self, other):
         if isinstance(other, (int, float)):
-            if isinstance(self, Var):
-                return Var(self.name, self.transformation * other, self.coefficient, self.shift)
-            elif isinstance(self, Interaction):
+            if isinstance(self, Interaction):
                 return Interaction(self.e1, self.e2, self.transformation * other, self.coefficient, self.shift)
+            elif isinstance(self, Var):
+                return Quantitative(self.name, self.transformation * other, self.coefficient, self.shift)
         else:
             raise Exception("Transforming a term must involve a number like so: (term ** number).")
 
@@ -135,10 +158,20 @@ class Var(Expression):
 
         return base % tuple(params)
 
-    def flatten(self, separate_interactions = False):
-        return [self]
+class Categorical(Var):
+    
+    def __init__(self, name, method = 'one-hot', levels = None):
+        self.name = name
+        supported_methods = ['one-hot']
+        if method not in supported_methods:
+            raise Exception("Method " + str(method) + " not supported for Categorical variables.")
+        self.method = method
+        self.levels = levels
+    
+    def __str__(self):
+        return self.name
         
-class Interaction(Var):
+class Interaction(Quantitative):
 
     def __init__(self, e1, e2, transformation = 1, coefficient = 1, shift = 0):
         if not (isinstance(e1, Expression) and isinstance(e2, Expression)):
@@ -207,19 +240,26 @@ class Combination(Expression):
 
 def Poly(var, power):
     if isinstance(var, str):
-        base = Var(var)
-    elif isinstance(var, Var):
+        base = Quantitative(var)
+    elif isinstance(var, Quantitative):
         base = var
     else:
-        raise Exception("Poly takes a (str or Var) and a positive int.")
+        raise Exception("Poly takes a (str or Quantitative) and a positive int.")
         
     if not (isinstance(power, int) and power > 0):
-        raise Exception("Poly takes a (str or Var) and a positive int.")
+        raise Exception("Poly takes a (str or Quantitative) and a positive int.")
     
     if power == 1:
         return base
     else:
         return Poly(base, power - 1) + base ** power
         
+# Aliases
 V = Var
-        
+Q = Quantitative
+Quant = Quantitative
+C = Categorical
+Cat = Categorical
+Nominal = Categorical
+Nom = Categorical
+N = Categorical

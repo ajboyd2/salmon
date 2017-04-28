@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from .expression import Expression, Var, Interaction, Combination
+from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination
 
 class Model:
     def __init__(self):
@@ -63,13 +63,16 @@ class LinearModel(Model):
             product = pd.DataFrame({str(expr) : pd.concat(columns, axis = 1).prod(axis = 1)})
             return LinearModel.transform(expr, product)
         
-        elif isinstance(expr, Var):
+        elif isinstance(expr, Quantitative):
             if expr.name not in list(data):
                 raise Exception("Variable { " + expr.name + " } not found within data.")
             return LinearModel.transform(expr, pd.DataFrame({str(expr) : data[expr.name]}))
             
+        elif isinstance(expr, Categorical):
+            raise Exception("Categorical variables are not supported yet.")
+            
         else:
-            raise Exception("LinearModel only suppoprts expressions consisting of Var, Interaction, and Combination.")
+            raise Exception("LinearModel only suppoprts expressions consisting of Quantitative, Categorical, Interaction, and Combination.")
             
     # static method
     def transform(expr, data):
