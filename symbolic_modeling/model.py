@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from .expression import Expression, Mono, Interaction, Combination
+from .expression import Expression, Var, Interaction, Combination
 
 class Model:
     def __init__(self):
@@ -63,17 +63,17 @@ class LinearModel(Model):
             product = pd.DataFrame({str(expr) : pd.concat(columns, axis = 1).prod(axis = 1)})
             return LinearModel.transform(expr, product)
         
-        elif isinstance(expr, Mono):
+        elif isinstance(expr, Var):
             if expr.name not in list(data):
                 raise Exception("Variable { " + expr.name + " } not found within data.")
             return LinearModel.transform(expr, pd.DataFrame({str(expr) : data[expr.name]}))
             
         else:
-            raise Exception("LinearModel only suppoprts expressions consisting of Mono, Interaction, and Combination.")
+            raise Exception("LinearModel only suppoprts expressions consisting of Var, Interaction, and Combination.")
             
     # static method
     def transform(expr, data):
-        if not isinstance(expr, Mono):
+        if not isinstance(expr, Var):
             raise Exception("Transformation of data is only supported on singular terms of expressions.")
         
         return ((data + expr.shift) * expr.coefficient) ** expr.transformation
