@@ -221,3 +221,5 @@ def Poly(var, power):
     else:
         return Poly(base, power - 1) + base ** power
         
+V = Var
+        
