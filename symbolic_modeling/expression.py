@@ -223,15 +223,15 @@ class Combination(Expression):
             self.e2 = e2   
 
     def __mul__(self, other):
-        if isinstance(other, (int, float, Var)):
+        if isinstance(other, (int, float, Var, Combination)):
             e1 = self.e1 * other
             e2 = self.e2 * other
             return Combination(e1, e2)
         else:
-            raise Exception("Multiplication of Combination is only supported for numbers and single term expressions (Var, Interaction).")
+            raise Exception("Multiplication of Combination is only supported for numbers, single term expressions, and other Combinations.")
             
     def __imul__(self, other):
-        if isinstance(other, (int, float, Var)):
+        if isinstance(other, (int, float, Var, Combination)):
             self.e1 *= other
             self.e2 *= other
             return self
