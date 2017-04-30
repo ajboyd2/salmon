@@ -19,6 +19,10 @@ class LinearModel(Model):
         self.ex = explanatory
         self.re = response
         self.bhat = None
+        self.residuals = None
+        self.std_err_est = None
+        self.std_err_vars = None
+        self.var = None
         self.training_x = None
         self.trainign_y = None
 
@@ -36,7 +40,17 @@ class LinearModel(Model):
         # Solve equation
         self.bhat = pd.DataFrame(np.linalg.solve(np.dot(X.T, X), np.dot(X.T, y)), 
                                  index=X.columns, columns = ["Coefficients"])
-        return self.bhat
+        
+        n = X.shape[0]
+        p = X.shape[1]
+                                 
+        self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - np.dot(X, self.bhat).sum(axis = 1)})
+        self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p - 1)) ** 0.5
+        self.var = np.linalg.solve(np.dot(X.T, X), (self.std_err_est ** 2) * np.identity(p))
+        self.std_err_vars = pd.DataFrame({"Standard Errors" : np.diagonal(self.var)})
+        ret_val = pd.concat([self.bhat.reset_index(), self.std_err_vars], axis = 1).set_index("index")
+        ret_val.index.name = None # Remove oddity of set_index
+        return ret_val 
         
     def predict(self, data):
         # Construct the X matrix
