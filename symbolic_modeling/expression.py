@@ -102,6 +102,8 @@ class Quantitative(Var):
             return Quantitative(self.name, self.transformation + other.transformation, self.coefficient * other.coefficient, self.shift)
         elif isinstance(other, Var):
             return Interaction(self, other) 
+        elif isinstance(other, Combination):
+            return other.__mul__(self)
         elif isinstance(other, (int, float)):
             return Quantitative(self.name, self.transformation, self.coefficient * other, self.shift)
         else:
@@ -114,6 +116,8 @@ class Quantitative(Var):
             return self
         elif isinstance(other, Var):
             return Interaction(self, other) 
+        elif isinstance(other, Combination):
+            return other.__mul__(self)
         elif isinstance(other, (int, float)):
             self.coefficient *= other
             return self 
