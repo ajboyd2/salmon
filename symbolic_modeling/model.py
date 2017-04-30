@@ -35,7 +35,7 @@ class LinearModel(Model):
             raise Exception("Response variable of linear model can only be a single term expression.")
         # Solve equation
         self.bhat = pd.DataFrame(np.linalg.solve(np.dot(X.T, X), np.dot(X.T, y)), 
-                                 index=X.columns, columns = ["Weights"])
+                                 index=X.columns, columns = ["Coefficients"])
         return self.bhat
         
     def predict(self, data):
@@ -50,7 +50,7 @@ class LinearModel(Model):
         return pd.DataFrame({"Intercept" : np.repeat(1, data.shape[0])})
         
     # static method
-    def extract_columns(expr, data):
+    def extract_columns(expr, data, drop_dummy = True):
         if not isinstance(data, (pd.DataFrame, pd.Series)):
             raise Exception("Only DataFrames and Series are supported for LinearModel.")
     
@@ -59,9 +59,25 @@ class LinearModel(Model):
             return pd.concat(columns, axis = 1)
             
         elif isinstance(expr, Interaction):
-            columns = [LinearModel.extract_columns(e, data) for e in expr.flatten(True)]
-            product = pd.DataFrame({str(expr) : pd.concat(columns, axis = 1).prod(axis = 1)})
-            return LinearModel.transform(expr, product)
+            columns = [LinearModel.extract_columns(e, data, False) for e in expr.flatten(True)]
+            
+            product = columns[0]
+            for col in columns[1:]:
+                # This is to account for the case where there are interactions between categorical variables
+                to_combine = []
+                for prior_column in product:
+                    for former_column in col:
+                        prior_name = prior_column if prior_column[0] == "{" else "{" + prior_column + "}"
+                        former_name = former_column if former_column[0] == "{" else "{" + former_column + "}"
+                        to_combine.append(pd.DataFrame({prior_name + former_name : product[prior_column] * col[former_column]}))
+                product = pd.concat(to_combine, axis = 1)
+            
+            product = product.loc[:, (product != 0).any(axis = 0)] # Ensure no multicolinearity
+            if product.shape[1] > 1:
+                # Must drop the dummy variable at this point
+                return product.iloc[:,1:]
+            else:
+                return LinearModel.transform(expr, product)
         
         elif isinstance(expr, Quantitative):
             if expr.name not in list(data):
@@ -69,7 +85,37 @@ class LinearModel(Model):
             return LinearModel.transform(expr, pd.DataFrame({str(expr) : data[expr.name]}))
             
         elif isinstance(expr, Categorical):
-            raise Exception("Categorical variables are not supported yet.")
+            if expr.name not in list(data):
+                raise Exception("Variable { " + expr.name + " } not found within data.")
+            
+            other_flag = False
+            if expr.levels is None:
+                levels = data[expr.name].unique()
+                levels.sort() # Give the levels an order
+            else:
+                levels = expr.levels
+                data_levels = data[expr.name].unique()
+                for level in levels[:]:
+                    if level not in data_levels:
+                        levels.remove(level) # Remove levels that are not present in the dataset to avoid multicolinearity
+                for level in data_levels:
+                    if level not in levels:
+                        levels.append("~other~") # If there are other levels than those specified create a catchall category for them
+                        other_flag = True
+                        break
+                            
+            last_index = len(levels) - 1 if other_flag else len(levels)
+            if expr.method == "one-hot":
+                columns = pd.DataFrame({expr.name + "::" + str(level) : (data[expr.name] == level) * 1.0 for level in levels[:last_index]})
+                if other_flag:
+                    columns[expr.name + "::~other~"] = (columns.sum(axis = 1) == 0.0) * 1.0 # Whatever rows have not had a 1 yet get a 1 in the ~~other~~ column
+                columns = columns[[expr.name + "::" + str(level) for level in levels]] # Make sure columns have correct order
+
+                if drop_dummy:
+                    print(columns)
+                    return columns.drop(expr.name + "::" + str(levels[0]), axis = 1)
+                else:
+                    return columns
             
         else:
             raise Exception("LinearModel only suppoprts expressions consisting of Quantitative, Categorical, Interaction, and Combination.")
