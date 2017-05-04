@@ -210,7 +210,7 @@ class Interaction(Quantitative):
         
     def flatten(self, separate_interactions = False):
         if separate_interactions:
-            return self.e1.flatten() + self.e2.flatten()
+            return self.e1.flatten(separate_interactions) + self.e2.flatten(separate_interactions)
         else:
             return [self]
        
@@ -253,8 +253,8 @@ class Combination(Expression):
     def __str__(self):
         return str(self.e1) + " + " + str(self.e2)
         
-    def flatten(self):
-        return self.e1.flatten() + self.e2.flatten()        
+    def flatten(self, separate_interactions = False):
+        return self.e1.flatten(separate_interactions) + self.e2.flatten(separate_interactions)        
 
 def Poly(var, power):
     if isinstance(var, str):
