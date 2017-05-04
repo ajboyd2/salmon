@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import scipy.stats as stats
+import matplotlib.pyplot as plt
 
 from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination
 
@@ -27,7 +28,7 @@ class LinearModel(Model):
         self.t_vals = None
         self.p_vals = None
         self.training_x = None
-        self.trainign_y = None
+        self.training_y = None
 
     def fit(self, data):
         # Construct X matrix
@@ -64,7 +65,30 @@ class LinearModel(Model):
         X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
         # Multiply the weights to each column and sum across rows
         return pd.DataFrame({"Predicted " + str(self.re) : np.dot(X, self.bhat).sum(axis = 1)})
-        
+    
+    def plot(self):
+        terms = self.ex.flatten(True)
+        unique_vars = {term.name for term in terms}
+        if len(unique_vars) == 1:
+            unique_var = unique_vars.pop()
+            x = self.training_x[unique_var]
+            min_x = min(x)
+            min_x = min(min_x * 1.05, min_x * 0.95) # Add a small buffer
+            max_x = max(x)
+            max_x = max(max_x * 1.05, max_x * 1.05)
+            line_x = pd.DataFrame({unique_var : np.linspace(min_x, max_x, 100)})
+            line_y = self.predict(line_x)
+            
+            line_fit = plt.plot(line_x[unique_var], line_y["Predicted " + str(self.re)], c = "red")
+            resids = plt.scatter(x, self.training_y[str(self.re)], c = "black")
+            plt.legend((line_fit, resids), ("Line of Best Fit", "Residuals"), loc = "best")
+            plt.xlabel(unique_var)
+            plt.ylabel(str(self.re))
+            plt.grid()
+            plt.show()
+        else:
+            raise Exception("Plotting line of best fit only expressions that reference a single variable.")
+    
     # static method
     def ones_column(data):
         return pd.DataFrame({"Intercept" : np.repeat(1, data.shape[0])})
