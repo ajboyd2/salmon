@@ -144,6 +144,11 @@ class LinearModel(Model):
         if not isinstance(expr, Var):
             raise Exception("Transformation of data is only supported on singular terms of expressions.")
         
-        return ((data + expr.shift) * expr.coefficient) ** expr.transformation
+        if isinstance(expr.transformation, (int, float)):
+            return ((data + expr.shift) * expr.coefficient) ** expr.transformation
+        elif isinstance(expr.transformation, str):
+            return getattr(np, expr.transformation)((data + expr.shift) * expr.coefficient)
+        else:
+            raise Exception("Transformation of data only supported for powers and numpy functions.")
 
         

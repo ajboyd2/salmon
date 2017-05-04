@@ -102,7 +102,7 @@ class Quantitative(Var):
             return super().__add__(other)
     
     def __mul__(self, other):
-        if isinstance(other, Quantitative) and self.name == other.name and self.shift == other.shift: # Combine variables of same base
+        if isinstance(other, Quantitative) and self.name == other.name and self.shift == other.shift and isinstance(self.transformation, (int, float)) and isinstance(other.transformation, (int, float)): # Combine variables of same base
             return Quantitative(self.name, self.transformation + other.transformation, self.coefficient * other.coefficient, self.shift)
         elif isinstance(other, (int, float)):
             return Quantitative(self.name, self.transformation, self.coefficient * other, self.shift)
@@ -110,7 +110,7 @@ class Quantitative(Var):
             return super().__mul__(other)
             
     def __imul__(self, other):
-        if isinstance(other, Quantitative) and self.name == other.name and self.shift == other.shift: # Combine variables of same base
+        if isinstance(other, Quantitative) and self.name == other.name and self.shift == other.shift and isinstance(self.transformation, (int, float)) and isinstance(other.transformation, (int, float)): # Combine variables of same base
             self.transformation += other.transformation
             self.coefficient *= other.coefficient
             return self
@@ -121,20 +121,20 @@ class Quantitative(Var):
             return super().__imul__(other)
             
     def __pow__(self, other):
-        if isinstance(other, (int, float)):
+        if isinstance(other, (int, float)) and isinstance(self.transformation, (int, float)):
             if isinstance(self, Interaction):
                 return Interaction(self.e1, self.e2, self.transformation * other, self.coefficient, self.shift)
             elif isinstance(self, Var):
                 return Quantitative(self.name, self.transformation * other, self.coefficient, self.shift)
         else:
-            raise Exception("Transforming a term must involve a number like so: (term ** number).")
-
+            raise Exception("Transforming a term must involve a number like (term ** number) and not be already non-linearly transformed.")
+            
     def __ipow__(self, other):
-        if isinstance(other, (int, float)):
+        if isinstance(other, (int, float)) and isinstance(self.transformation, (int, float)):
             self.transformation += other
             return self
         else:
-            raise Exception("Transforming a term must involve a number like so: (term ** number).")
+            raise Exception("Transforming a term must involve a number like (term ** number) and not be already non-linearly transformed.")
     
     def __str__(self):
         base = "%s"
@@ -150,19 +150,31 @@ class Quantitative(Var):
             base = "(" + base + "-%s)"
             params.append(str(self.shift * -1))
             shift_flag = True
-            
-        if self.transformation != 1:
-            if shift_flag:
-                base = base + "^%s"
-            else:
-                base = "(" + base + ")^%s"
-            params.append(str(self.transformation))
+        
+        if isinstance(self.transformation, (int, float)):
+            if self.transformation != 1:
+                if shift_flag:
+                    base = base + "^%s"
+                else:
+                    base = "(" + base + ")^%s"
+                params.append(str(self.transformation))
+        else:
+            base = "%s(" + base + ")"
+            params.insert(0, self.transformation)
             
         if self.coefficient != 1:
             base = "%s*" + base
             params.insert(0, str(self.coefficient))
 
         return base % tuple(params)
+    
+    def transform(self, func_name):
+        if self.transformation != 1:
+            raise Exception("Function transformations only valid on untransformed variables.")
+        if isinstance(func_name, str):
+            self.transformation = func_name
+        else:
+            raise Exception("Only function names (strings) are accepted for transformations.")
 
 class Categorical(Var):
     
@@ -259,6 +271,28 @@ def Poly(var, power):
         return base
     else:
         return Poly(base, power - 1) + base ** power
+        
+# Transformations 
+def Log(var):
+    if isinstance(var, Quantitative):
+        var.transform("log")
+        return var
+    else:
+        raise Exception("Can only take the log of quantitative variables.")
+        
+def Log10(var):
+    if isinstance(var, Quantitative):
+        var.transform("log10")
+        return var
+    else:
+        raise Exception("Can only take the log of quantitative variables.")
+        
+def Sin(var):
+    if isinstance(var, Quantitative):
+        var.transform("sin")
+        return var
+    else:
+        raise Exception("Can only take the sin of quantitative variables.")        
         
 # Aliases
 V = Var
