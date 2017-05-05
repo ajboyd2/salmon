@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import scipy.stats as stats
 import matplotlib.pyplot as plt
+from itertools import product
 
 from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination
 
@@ -27,16 +28,21 @@ class LinearModel(Model):
         self.var = None
         self.t_vals = None
         self.p_vals = None
+        self.training_data = None
         self.training_x = None
         self.training_y = None
+        self.categorical_levels = dict()
 
     def fit(self, data):
+        # Initialize the categorical levels
+        self.categorical_levels = dict()
+        self.training_data = data
         # Construct X matrix
-        X = LinearModel.extract_columns(self.ex, data)
+        X = self.extract_columns(self.ex, data)
         X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
         self.training_x = X
         # Construct Y vector
-        y = LinearModel.extract_columns(self.re, data)
+        y = self.extract_columns(self.re, data)
         self.training_y = y
         # Ensure correct dimensionality of y
         if len(y.shape) > 1 and y.shape[1] > 1:
@@ -59,51 +65,85 @@ class LinearModel(Model):
         
         return ret_val 
         
-    def predict(self, data):
+    def predict(self, data, for_plot = False):
         # Construct the X matrix
-        X = LinearModel.extract_columns(self.ex, data)
+        X = self.extract_columns(self.ex, data, multicolinearity_drop = not for_plot)
         X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
         # Multiply the weights to each column and sum across rows
+
+        # For plotting with categorical lines
+        if for_plot:
+            columns_present = set(list(X)) # Need to check if can do just set(X)
+            columns_needed = set(self.bhat.index.format())
+            columns_to_add = columns_needed - columns_present
+            for column in columns_to_add:
+                X[column] = 0
+        
         return pd.DataFrame({"Predicted " + str(self.re) : np.dot(X, self.bhat).sum(axis = 1)})
     
     def plot(self):
         terms = self.ex.flatten(True)
-        unique_vars = {term.name for term in terms}
-        if len(unique_vars) == 1:
-            unique_var = unique_vars.pop()
-            x = self.training_x[unique_var]
+        unique_quants = list({term.name for term in terms if isinstance(term, Quantitative)})
+        unique_cats = list({term.name for term in terms if isinstance(term, Categorical)})
+        if len(unique_quants) == 1:
+            unique_quant = unique_quants.pop()
+            
+            x = self.training_data[unique_quant]
             min_x = min(x)
             min_x = min(min_x * 1.05, min_x * 0.95) # Add a small buffer
             max_x = max(x)
-            max_x = max(max_x * 1.05, max_x * 1.05)
-            line_x = pd.DataFrame({unique_var : np.linspace(min_x, max_x, 100)})
-            line_y = self.predict(line_x)
+            max_x = max(max_x * 1.05, max_x * 0.95)
+           
+            line_x = pd.DataFrame({unique_quant : np.linspace(min_x, max_x, 100)})
             
-            line_fit = plt.plot(line_x[unique_var], line_y["Predicted " + str(self.re)], c = "red")
+            if len(unique_cats) == 0:
+                line_y = self.predict(line_x)
+                line_fit, = plt.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)])
+                plots = [line_fit]
+                labels = ["Line of Best Fit"]
+            else:
+                level_groups = [self.categorical_levels[str(var)] for var in unique_cats]
+                combinations = product(*level_groups) # cartesian product
+                
+                plots = []
+                labels = []
+                for combination in combinations:
+                    label = []
+                    for element, var in zip(combination, unique_cats):
+                        name = str(var)
+                        line_x[name] = element
+                        label.append(name + " = " + str(element))
+                    line_y = self.predict(line_x, for_plot = True)
+                    plot, = plt.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)])
+                    plots.append(plot)
+                    labels.append("Line of Fit | " + ", ".join(label))
+
             resids = plt.scatter(x, self.training_y[str(self.re)], c = "black")
-            plt.legend((line_fit, resids), ("Line of Best Fit", "Residuals"), loc = "best")
-            plt.xlabel(unique_var)
+            plots.append(resids)
+            labels.append("Residuals")
+            plt.legend(plots, labels, loc = "best")
+            plt.xlabel(unique_quant)
             plt.ylabel(str(self.re))
             plt.grid()
             plt.show()
         else:
             raise Exception("Plotting line of best fit only expressions that reference a single variable.")
+            
     
     # static method
     def ones_column(data):
         return pd.DataFrame({"Intercept" : np.repeat(1, data.shape[0])})
         
-    # static method
-    def extract_columns(expr, data, drop_dummy = True):
+    def extract_columns(self, expr, data, drop_dummy = True, update_levels = True, multicolinearity_drop = True):
         if not isinstance(data, (pd.DataFrame, pd.Series)):
             raise Exception("Only DataFrames and Series are supported for LinearModel.")
     
         if isinstance(expr, Combination):
-            columns = [LinearModel.extract_columns(e, data) for e in expr.flatten()]
+            columns = [self.extract_columns(e, data, drop_dummy = drop_dummy, update_levels = update_levels, multicolinearity_drop = multicolinearity_drop) for e in expr.flatten()]
             return pd.concat(columns, axis = 1)
             
         elif isinstance(expr, Interaction):
-            columns = [LinearModel.extract_columns(e, data, False) for e in expr.flatten(True)]
+            columns = [self.extract_columns(e, data, drop_dummy = False, update_levels = update_levels, multicolinearity_drop = multicolinearity_drop) for e in expr.flatten(True)]
             
             product = columns[0]
             for col in columns[1:]:
@@ -116,7 +156,8 @@ class LinearModel(Model):
                         to_combine.append(pd.DataFrame({prior_name + former_name : product[prior_column] * col[former_column]}))
                 product = pd.concat(to_combine, axis = 1)
             
-            product = product.loc[:, (product != 0).any(axis = 0)] # Ensure no multicolinearity
+            if multicolinearity_drop:
+                product = product.loc[:, (product != 0).any(axis = 0)] # Ensure no multicolinearity
             if product.shape[1] > 1:
                 # Must drop the dummy variable at this point
                 return product.iloc[:,1:]
@@ -134,8 +175,11 @@ class LinearModel(Model):
             
             other_flag = False
             if expr.levels is None:
-                levels = data[expr.name].unique()
-                levels.sort() # Give the levels an order
+                if expr.name in self.categorical_levels:
+                    levels = self.categorical_levels[expr.name]
+                else:
+                    levels = data[expr.name].unique()
+                    levels.sort() # Give the levels an order
             else:
                 levels = expr.levels
                 data_levels = data[expr.name].unique()
@@ -148,6 +192,9 @@ class LinearModel(Model):
                         other_flag = True
                         break
                             
+            if update_levels:
+                self.categorical_levels[str(expr)] = levels
+            
             last_index = len(levels) - 1 if other_flag else len(levels)
             if expr.method == "one-hot":
                 columns = pd.DataFrame({expr.name + "::" + str(level) : (data[expr.name] == level) * 1.0 for level in levels[:last_index]})
