@@ -129,7 +129,29 @@ class LinearModel(Model):
         else:
             raise Exception("Plotting line of best fit only expressions that reference a single variable.")
             
-    
+    def partial_plots(self):
+        terms = self.ex.flatten(separate_interactions = False)
+
+        x_plots = min(4, len(terms))
+        y_plots = ((len(terms) - 1) // 4) + 1
+
+        for i in range(0, len(terms)):
+            plt.subplot(x_plots, y_plots, i + 1)
+            ypos = i // 4
+        
+            xi = terms[i]
+            sans_xi = sum(terms[:i] + terms[i+1:])
+            yaxis = LinearModel(sans_xi, self.re)
+            xaxis = LinearModel(sans_xi, xi)
+            
+            yaxis.fit(self.training_data)
+            xaxis.fit(self.training_data)
+            
+            plt.scatter(xaxis.residuals, yaxis.residuals)
+            plt.title("Leverage Plot for " + str(xi))
+        
+        plt.show()
+            
     # static method
     def ones_column(data):
         return pd.DataFrame({"Intercept" : np.repeat(1, data.shape[0])})
