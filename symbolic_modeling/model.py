@@ -57,7 +57,7 @@ class LinearModel(Model):
         self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - np.dot(X, self.bhat).sum(axis = 1)})
         self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p - 1)) ** 0.5
         self.var = np.linalg.solve(np.dot(X.T, X), (self.std_err_est ** 2) * np.identity(p))
-        self.std_err_vars = pd.DataFrame({"Standard Errors" : np.diagonal(self.var)})
+        self.std_err_vars = pd.DataFrame({"Standard Errors" : (np.diagonal(self.var)) ** 0.5})
         self.t_vals = pd.DataFrame({"t-statistics" : self.bhat["Coefficients"].reset_index(drop = True) / self.std_err_vars["Standard Errors"]})
         self.p_vals = pd.DataFrame({"p-values" : pd.Series(stats.t.cdf(self.t_vals["t-statistics"], n - p - 1)).apply(lambda x: 2 * x if x < 0.5 else 2 * (1 - x))})
         ret_val = pd.concat([self.bhat.reset_index(), self.std_err_vars, self.t_vals, self.p_vals], axis = 1).set_index("index")
