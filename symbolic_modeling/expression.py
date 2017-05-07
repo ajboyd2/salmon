@@ -249,7 +249,20 @@ class Combination(Expression):
             return self
         else:
             raise Exception("Multiplication of Combination is only supported for numbers and single term expressions (Var, Interaction).")
+    
+    def __pow__(self, other):
+        if isinstance(other, int):
+            n = other
+            if n > 1:
+                if n % 2 == 0:
+                    return (self * self) ** (n // 2)
+                else:
+                    return ((self * self) ** ((n - 1) // 2)) * self
+            elif n == 1:
+                return self
         
+        raise Exception("Eponentiation of Combinations only supported with powers of positive integers.")
+    
     def __str__(self):
         return str(self.e1) + " + " + str(self.e2)
         
