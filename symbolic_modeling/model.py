@@ -18,9 +18,10 @@ class Model:
     
     
 class LinearModel(Model):
-    def __init__(self, explanatory, response):
+    def __init__(self, explanatory, response, intercept = True):
         self.ex = explanatory
         self.re = response
+        self.intercept = intercept
         self.bhat = None
         self.residuals = None
         self.std_err_est = None
@@ -39,7 +40,8 @@ class LinearModel(Model):
         self.training_data = data
         # Construct X matrix
         X = self.extract_columns(self.ex, data)
-        X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
+        if self.intercept:
+            X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
         self.training_x = X
         # Construct Y vector
         y = self.extract_columns(self.re, data)
@@ -68,7 +70,8 @@ class LinearModel(Model):
     def predict(self, data, for_plot = False):
         # Construct the X matrix
         X = self.extract_columns(self.ex, data, multicolinearity_drop = not for_plot)
-        X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
+        if self.intercept:
+            X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
         # Multiply the weights to each column and sum across rows
 
         # For plotting with categorical lines
@@ -132,12 +135,7 @@ class LinearModel(Model):
     def partial_plots(self):
         terms = self.ex.flatten(separate_interactions = False)
 
-        x_plots = min(4, len(terms))
-        y_plots = ((len(terms) - 1) // 4) + 1
-
         for i in range(0, len(terms)):
-            plt.subplot(x_plots, y_plots, i + 1)
-            ypos = i // 4
         
             xi = terms[i]
             sans_xi = sum(terms[:i] + terms[i+1:])
@@ -149,8 +147,7 @@ class LinearModel(Model):
             
             plt.scatter(xaxis.residuals, yaxis.residuals)
             plt.title("Leverage Plot for " + str(xi))
-        
-        plt.show()
+            plt.show()
             
     # static method
     def ones_column(data):
