@@ -72,19 +72,20 @@ class LinearModel(Model):
         X = self.extract_columns(self.ex, data, multicolinearity_drop = not for_plot)
         if self.intercept:
             X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
-        # Multiply the weights to each column and sum across rows
 
         # For plotting with categorical lines
         if for_plot:
             columns_present = set(list(X)) # Need to check if can do just set(X)
-            columns_needed = set(self.bhat.index.format())
-            columns_to_add = columns_needed - columns_present
+            columns_needed = self.bhat.index.format()
+            columns_to_add = set(columns_needed) - columns_present
             for column in columns_to_add:
-                X[column] = 0
+                X[column] = 0 # Add all non-present columns
+            X = X[columns_needed] # Remove unneccessary columns
         
+        # Multiply the weights to each column and sum across rows
         return pd.DataFrame({"Predicted " + str(self.re) : np.dot(X, self.bhat).sum(axis = 1)})
     
-    def plot(self):
+    def plot(self, categorize_residuals = False):
         terms = self.ex.flatten(True)
         unique_quants = list({term.name for term in terms if isinstance(term, Quantitative)})
         unique_cats = list({term.name for term in terms if isinstance(term, Categorical)})
@@ -98,7 +99,6 @@ class LinearModel(Model):
             max_x = max(max_x * 1.05, max_x * 0.95)
            
             line_x = pd.DataFrame({unique_quant : np.linspace(min_x, max_x, 100)})
-            
             if len(unique_cats) == 0:
                 line_y = self.predict(line_x)
                 line_fit, = plt.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)])
@@ -116,14 +116,20 @@ class LinearModel(Model):
                         name = str(var)
                         line_x[name] = element
                         label.append(name + " = " + str(element))
+
                     line_y = self.predict(line_x, for_plot = True)
                     plot, = plt.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)])
                     plots.append(plot)
                     labels.append("Line of Fit | " + ", ".join(label))
-
-            resids = plt.scatter(x, self.training_y[str(self.re)], c = "black")
-            plots.append(resids)
-            labels.append("Residuals")
+                    if categorize_residuals:
+                        indices_to_use = pd.Series([True] * len(x))
+                        for element, var in zip(combination, unique_cats):
+                            indices_to_use = indices_to_use & (self.training_data[var] == element)
+                        plt.scatter(x[indices_to_use], self.training_y[str(self.re)][indices_to_use], c = plot.get_color())
+            if not categorize_residuals:
+                resids = plt.scatter(x, self.training_y[str(self.re)], c = "black")
+                #plots.append(resids)
+                #labels.append("Residuals")
             plt.legend(plots, labels, loc = "best")
             plt.xlabel(unique_quant)
             plt.ylabel(str(self.re))
@@ -131,7 +137,7 @@ class LinearModel(Model):
             plt.show()
         else:
             raise Exception("Plotting line of best fit only expressions that reference a single variable.")
-            
+
     def partial_plots(self):
         terms = self.ex.flatten(separate_interactions = False)
 
