@@ -1,10 +1,13 @@
 import pandas as pd
+from pandas.tools.plotting import scatter_matrix
 import numpy as np
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 from itertools import product
 
 from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination
+
+plt.style.use('ggplot')
 
 class Model:
     def __init__(self):
@@ -15,6 +18,10 @@ class Model:
         
     def predict(self, data):
         raise NotImplementedError()
+        
+    def plot_matrix(self, **kwargs):
+        df = pd.concat([self.training_x, self.training_y], axis = 1)
+        scatter_matrix(df, **kwargs)
     
     
 class LinearModel(Model):
