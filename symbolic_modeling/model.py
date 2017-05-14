@@ -105,9 +105,9 @@ class LinearModel(Model):
                 plots = [line_fit]
                 labels = ["Line of Best Fit"]
             else:
-                level_groups = [self.categorical_levels[str(var)] for var in unique_cats]
-                combinations = product(*level_groups) # cartesian product
-                
+                #level_groups = [self.categorical_levels[str(var)] for var in unique_cats]
+                #combinations = product(*level_groups) # cartesian product
+                combinations = set(self.training_data[unique_cats].apply(lambda x: tuple(x), 1))
                 plots = []
                 labels = []
                 for combination in combinations:
