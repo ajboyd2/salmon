@@ -102,11 +102,7 @@ class LinearModel(Model):
             if len(unique_cats) == 0:
                 line_y = self.predict(line_x)
                 line_fit, = plt.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)])
-                plots = [line_fit]
-                labels = ["Line of Best Fit"]
             else:
-                #level_groups = [self.categorical_levels[str(var)] for var in unique_cats]
-                #combinations = product(*level_groups) # cartesian product
                 combinations = set(self.training_data[unique_cats].apply(lambda x: tuple(x), 1))
                 plots = []
                 labels = []
@@ -115,22 +111,22 @@ class LinearModel(Model):
                     for element, var in zip(combination, unique_cats):
                         name = str(var)
                         line_x[name] = element
-                        label.append(name + " = " + str(element))
+                        label.append(str(element))
 
                     line_y = self.predict(line_x, for_plot = True)
                     plot, = plt.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)])
                     plots.append(plot)
-                    labels.append("Line of Fit | " + ", ".join(label))
+                    labels.append(", ".join(label))
                     if categorize_residuals:
                         indices_to_use = pd.Series([True] * len(x))
                         for element, var in zip(combination, unique_cats):
                             indices_to_use = indices_to_use & (self.training_data[var] == element)
                         plt.scatter(x[indices_to_use], self.training_y[str(self.re)][indices_to_use], c = plot.get_color())
+                plt.legend(plots, labels, title = ", ".join(unique_cats), loc = "best")
             if not categorize_residuals:
                 resids = plt.scatter(x, self.training_y[str(self.re)], c = "black")
                 #plots.append(resids)
                 #labels.append("Residuals")
-            plt.legend(plots, labels, loc = "best")
             plt.xlabel(unique_quant)
             plt.ylabel(str(self.re))
             plt.grid()
