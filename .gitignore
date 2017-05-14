@@ -6,3 +6,6 @@ symbolic_modeling.egg-info/dependency_links.txt
 symbolic_modeling.egg-info/PKG-INFO
 symbolic_modeling.egg-info/SOURCES.txt
 symbolic_modeling.egg-info/top_level.txt
+symbolic_modeling/__pycache__/__init__.cpython-35.pyc
+symbolic_modeling/__pycache__/expression.cpython-35.pyc
+symbolic_modeling/__pycache__/model.cpython-35.pyc
