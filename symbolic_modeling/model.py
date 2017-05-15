@@ -115,15 +115,17 @@ class LinearModel(Model):
                 combinations = set(self.training_data[unique_cats].apply(lambda x: tuple(x), 1))
                 plots = []
                 labels = []
+                linestyles = [':', '-.', '--', '-']
                 for combination in combinations:
                     label = []
                     for element, var in zip(combination, unique_cats):
                         name = str(var)
                         line_x[name] = element
                         label.append(str(element))
-
+                    line_type = linestyles.pop()
+                    linestyles.insert(0, line_type)
                     line_y = self.predict(line_x, for_plot = True)
-                    plot, = plt.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)])
+                    plot, = plt.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)], linestyle = line_type)
                     plots.append(plot)
                     labels.append(", ".join(label))
                     if categorize_residuals:
