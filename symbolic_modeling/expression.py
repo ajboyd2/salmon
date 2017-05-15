@@ -52,9 +52,15 @@ class Expression:
         # and returning a list of the variables being multiplied or
         # added separately
         raise NotImplementedError()
+        
     def copy(self):
         # Creates a deep copy of an expression
         raise NotImplementedError()    
+        
+    def interpret(self, data):
+        # Cast a Var to either a Quantitative or Categorical
+        raise NotImplementedError()
+        
 class Var(Expression):
 
     def __init__(self, name):
@@ -84,6 +90,12 @@ class Var(Expression):
 
     def copy(self):
         return Var(self.name)
+        
+    def interpret(self, data):
+        if 'float' in data[self.name].dtype.name or 'int' in data[self.name].dtype.name:
+            return Quantitative(self.name)
+        else:
+            return Categorical(self.name)
         
 class Quantitative(Var):
     
@@ -183,6 +195,9 @@ class Quantitative(Var):
 
     def copy(self):
         return Quantitative(self.name, self.transformation, self.coefficient, self.shift)
+        
+    def interpret(self, data):
+        return self
             
 class Categorical(Var):
     
@@ -199,6 +214,10 @@ class Categorical(Var):
         
     def copy(self):
         return Categorical(self.name, self.method, self.levels)
+                
+    def interpret(self, data):
+        return self
+
         
 class Interaction(Quantitative):
 
@@ -227,6 +246,11 @@ class Interaction(Quantitative):
 
     def copy(self):
         return Interaction(self.e1.copy(), self.e2.copy(), self.transformation, self.coefficient, self.shift)
+        
+    def interpret(self, data):
+        self.e1 = self.e1.interpret(data)
+        self.e2 = self.e2.interpret(data)
+        return self
     
 class Combination(Expression):
 
@@ -285,6 +309,11 @@ class Combination(Expression):
 
     def copy(self):
         return Combination(self.e1.copy(), self.e2.copy())
+        
+    def interpret(self, data):
+        self.e1 = self.e1.interpret(data)
+        self.e2 = self.e2.interpret(data)
+        return self
         
 def Poly(var, power):
     if isinstance(var, str):
