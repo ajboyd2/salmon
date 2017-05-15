@@ -142,6 +142,43 @@ class LinearModel(Model):
             plt.ylabel(str(self.re))
             plt.grid()
             plt.show()
+        elif len(unique_quants) == 0 and len(unique_cats) > 0:
+            cats_levels = self.training_data[unique_cats].apply(lambda x: len(set(x)), 0)
+            ml_cat = cats_levels.idxmax() # Category with the most levels
+            ml_index = unique_cats.index(ml_cat) # Index corresponding to ml_cat
+            cats_wo_most = unique_cats[:]
+            cats_wo_most.remove(ml_cat) # List of categorical variables without the ml_cat
+            single_cat = len(cats_wo_most) == 0
+            if single_cat:
+                combinations = {None}
+            else:
+                combinations = set(self.training_data[cats_wo_most].apply(lambda x: tuple(x), 1))
+            
+            line_x = pd.DataFrame({ml_cat : self.categorical_levels[ml_cat]})
+            
+            plots = []
+            labels = []
+            linestyles = [':', '-.', '--', '-']
+            for combination in combinations:
+                if not single_cat:
+                    label = []
+                    for element, var in zip(combination, cats_wo_most):
+                        name = str(var)
+                        line_x[name] = element
+                        label.append(str(element))
+                    labels.append(", ".join(label))
+                line_type = linestyles.pop()
+                linestyles.insert(0, line_type)
+                line_y = self.predict(line_x, for_plot = True)
+                plot, = plt.plot(line_x.index, line_y["Predicted " + str(self.re)], linestyle = line_type)
+                plots.append(plot)
+            if not single_cat:
+                plt.legend(plots, labels, title = ", ".join(unique_cats), loc = "best")
+            plt.xlabel(ml_cat)
+            plt.xticks(line_x.index, line_x[ml_cat])
+            plt.ylabel(str(self.re))
+            plt.grid()
+            plt.show()
         else:
             raise Exception("Plotting line of best fit only expressions that reference a single variable.")
 
