@@ -30,6 +30,7 @@ class LinearModel(Model):
         self.re = response
         self.intercept = intercept
         self.bhat = None
+        self.fitted = None
         self.residuals = None
         self.std_err_est = None
         self.std_err_vars = None
@@ -62,8 +63,9 @@ class LinearModel(Model):
         
         n = X.shape[0]
         p = X.shape[1]
-                                 
-        self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - np.dot(X, self.bhat).sum(axis = 1)})
+
+        self.fitted = np.dot(X, self.bhat).sum(axis = 1)
+        self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - self.fitted})
         self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p - 1)) ** 0.5
         self.var = np.linalg.solve(np.dot(X.T, X), (self.std_err_est ** 2) * np.identity(p))
         self.std_err_vars = pd.DataFrame({"Standard Errors" : (np.diagonal(self.var)) ** 0.5})
@@ -141,6 +143,18 @@ class LinearModel(Model):
         else:
             raise Exception("Plotting line of best fit only expressions that reference a single variable.")
 
+    def residual_plots(self):
+        terms = list(self.training_x)
+        plots = []
+        for term in terms:
+            plots.append(plt.scatter(self.training_x[str(term)], self.residuals))
+            plt.xlabel(str(term))
+            plt.ylabel("Residuals")
+            plt.title(str(term) + " v. Residuals")
+            plt.grid()
+            plt.show()
+        return plots
+        
     def partial_plots(self):
         terms = self.ex.flatten(separate_interactions = False)
 
