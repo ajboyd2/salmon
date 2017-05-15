@@ -52,7 +52,9 @@ class Expression:
         # and returning a list of the variables being multiplied or
         # added separately
         raise NotImplementedError()
-        
+    def copy(self):
+        # Creates a deep copy of an expression
+        raise NotImplementedError()    
 class Var(Expression):
 
     def __init__(self, name):
@@ -80,6 +82,9 @@ class Var(Expression):
     def flatten(self, separate_interactions = False):
         return [self]
 
+    def copy(self):
+        return Var(self.name)
+        
 class Quantitative(Var):
     
     def __init__(self, name, transformation = 1, coefficient = 1, shift = 0):
@@ -176,6 +181,9 @@ class Quantitative(Var):
         else:
             raise Exception("Only function names (strings) are accepted for transformations.")
 
+    def copy(self):
+        return Quantitative(self.name, self.transformation, self.coefficient, self.shift)
+            
 class Categorical(Var):
     
     def __init__(self, name, method = 'one-hot', levels = None):
@@ -188,6 +196,9 @@ class Categorical(Var):
     
     def __str__(self):
         return self.name
+        
+    def copy(self):
+        return Categorical(self.name, self.method, self.levels)
         
 class Interaction(Quantitative):
 
@@ -213,7 +224,10 @@ class Interaction(Quantitative):
             return self.e1.flatten(separate_interactions) + self.e2.flatten(separate_interactions)
         else:
             return [self]
-       
+
+    def copy(self):
+        return Interaction(self.e1.copy(), self.e2.copy(), self.transformation, self.coefficient, self.shift)
+    
 class Combination(Expression):
 
     def __init__(self, e1, e2 = None):
@@ -269,6 +283,9 @@ class Combination(Expression):
     def flatten(self, separate_interactions = False):
         return self.e1.flatten(separate_interactions) + self.e2.flatten(separate_interactions)        
 
+    def copy(self):
+        return Combination(self.e1.copy(), self.e2.copy())
+        
 def Poly(var, power):
     if isinstance(var, str):
         base = Quantitative(var)
