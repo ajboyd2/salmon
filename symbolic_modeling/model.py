@@ -94,7 +94,7 @@ class LinearModel(Model):
         # Multiply the weights to each column and sum across rows
         return pd.DataFrame({"Predicted " + str(self.re) : np.dot(X, self.bhat).sum(axis = 1)})
     
-    def plot(self, categorize_residuals = False):
+    def plot(self, categorize_residuals = True):
         terms = self.ex.flatten(True)
         unique_quants = list({term.name for term in terms if isinstance(term, Quantitative)})
         unique_cats = list({term.name for term in terms if isinstance(term, Categorical)})
