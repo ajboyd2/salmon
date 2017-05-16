@@ -26,7 +26,8 @@ class Model:
     
 class LinearModel(Model):
     def __init__(self, explanatory, response, intercept = True):
-        self.ex = explanatory
+        self.given_ex = explanatory
+        self.ex = None
         self.re = response
         self.intercept = intercept
         self.bhat = None
@@ -46,6 +47,11 @@ class LinearModel(Model):
         # Initialize the categorical levels
         self.categorical_levels = dict()
         self.training_data = data
+        
+        # Replace all Var's with either Q's or C's
+        self.ex = self.given_ex.copy()
+        self.ex = self.ex.interpret(data)
+        
         # Construct X matrix
         X = self.extract_columns(self.ex, data)
         if self.intercept:
