@@ -139,10 +139,7 @@ class Quantitative(Var):
             
     def __pow__(self, other):
         if isinstance(other, (int, float)) and isinstance(self.transformation, (int, float)):
-            if isinstance(self, Interaction):
-                return Interaction(self.e1, self.e2, self.transformation * other, self.coefficient, self.shift)
-            elif isinstance(self, Var):
-                return Quantitative(self.name, self.transformation * other, self.coefficient, self.shift)
+=           return Quantitative(self.name, self.transformation * other, self.coefficient, self.shift)
         else:
             raise Exception("Transforming a term must involve a number like (term ** number) and not be already non-linearly transformed.")
             
@@ -237,7 +234,13 @@ class Interaction(Quantitative):
         for var in vars:
             output += str(var) + "}{"
         return output[:-1]
-        
+ 
+   def __pow__(self, other):
+        if isinstance(other, (int, float)) and isinstance(self.transformation, (int, float)):
+            return Interaction(self.e1, self.e2, self.transformation * other, self.coefficient, self.shift)
+        else:
+            raise Exception("Transforming a term must involve a number like (term ** number) and not be already non-linearly transformed.") 
+ 
     def flatten(self, separate_interactions = False):
         if separate_interactions:
             return self.e1.flatten(separate_interactions) + self.e2.flatten(separate_interactions)
@@ -298,8 +301,8 @@ class Combination(Expression):
                     return ((self * self) ** ((n - 1) // 2)) * self
             elif n == 1:
                 return self
-        
-        raise Exception("Eponentiation of Combinations only supported with powers of positive integers.")
+        else:
+            raise Exception("Exponentiation of Combinations only supported with powers of positive integers.")
     
     def __str__(self):
         return str(self.e1) + " + " + str(self.e2)
