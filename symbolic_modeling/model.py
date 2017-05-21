@@ -68,9 +68,9 @@ class LinearModel(Model):
                                  index=X.columns, columns = ["Coefficients"])
         
         n = X.shape[0]
-        p = X.shape[1]
+        p = X.shape[1] - 1
 
-        self.fitted = np.dot(X, self.bhat).sum(axis = 1)
+        self.fitted = pd.DataFrame({"Fitted" : np.dot(X, self.bhat).sum(axis = 1)})
         self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - self.fitted})
         self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p - 1)) ** 0.5
         self.var = np.linalg.solve(np.dot(X.T, X), (self.std_err_est ** 2) * np.identity(p))
