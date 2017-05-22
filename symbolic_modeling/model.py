@@ -261,23 +261,26 @@ class LinearModel(Model):
                 raise Exception("Variable { " + expr.name + " } not found within data.")
             
             other_flag = False
-            if expr.levels is None:
-                if expr.name in self.categorical_levels:
-                    levels = self.categorical_levels[expr.name]
-                else:
-                    levels = data[expr.name].unique()
-                    levels.sort() # Give the levels an order
+            if expr.name in self.categorical_levels:
+                levels = self.categorical_levels[expr.name]
             else:
-                levels = expr.levels
-                data_levels = data[expr.name].unique()
-                for level in levels[:]:
-                    if level not in data_levels:
-                        levels.remove(level) # Remove levels that are not present in the dataset to avoid multicolinearity
-                for level in data_levels:
-                    if level not in levels:
-                        levels.append("~other~") # If there are other levels than those specified create a catchall category for them
-                        other_flag = True
-                        break
+                if expr.levels is None:
+                    if expr.name in self.categorical_levels:
+                        levels = self.categorical_levels[expr.name]
+                    else:
+                        levels = data[expr.name].unique()
+                        levels.sort() # Give the levels an order
+                else:
+                    levels = expr.levels
+                    data_levels = data[expr.name].unique()
+                    for level in levels[:]:
+                        if level not in data_levels:
+                            levels.remove(level) # Remove levels that are not present in the dataset to avoid multicolinearity
+                    for level in data_levels:
+                        if level not in levels:
+                            levels.append("~other~") # If there are other levels than those specified create a catchall category for them
+                            other_flag = True
+                            break
                             
             if update_levels:
                 self.categorical_levels[str(expr)] = levels
