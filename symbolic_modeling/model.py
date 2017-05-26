@@ -43,7 +43,15 @@ class LinearModel(Model):
         self.training_y = None
         self.categorical_levels = dict()
 
-    def fit(self, data):
+    def fit(self, X, Y = None):
+        # Wrapper to provide compatibility for sklearn functions
+        if Y is None:
+            data = X
+        else:
+            data = pd.concat([X,Y], axis = 1)
+        return self._fit(data)
+        
+    def _fit(self, data):
         # Initialize the categorical levels
         self.categorical_levels = dict()
         self.training_data = data
@@ -71,9 +79,9 @@ class LinearModel(Model):
         p = X.shape[1] - 1
 
         self.fitted = pd.DataFrame({"Fitted" : np.dot(X, self.bhat).sum(axis = 1)})
-        self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - self.fitted})
+        self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - self.fitted.iloc[:,0]})
         self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p - 1)) ** 0.5
-        self.var = np.linalg.solve(np.dot(X.T, X), (self.std_err_est ** 2) * np.identity(p))
+        self.var = np.linalg.solve(np.dot(X.T, X), (self.std_err_est ** 2) * np.identity(p + 1))
         self.std_err_vars = pd.DataFrame({"Standard Errors" : (np.diagonal(self.var)) ** 0.5})
         self.t_vals = pd.DataFrame({"t-statistics" : self.bhat["Coefficients"].reset_index(drop = True) / self.std_err_vars["Standard Errors"]})
         self.p_vals = pd.DataFrame({"p-values" : pd.Series(stats.t.cdf(self.t_vals["t-statistics"], n - p - 1)).apply(lambda x: 2 * x if x < 0.5 else 2 * (1 - x))})
@@ -100,6 +108,16 @@ class LinearModel(Model):
         # Multiply the weights to each column and sum across rows
         return pd.DataFrame({"Predicted " + str(self.re) : np.dot(X, self.bhat).sum(axis = 1)})
     
+    def score(self, X, y, **kwargs):
+        # Allow interfacing with sklearn's cross fold validation
+        #self.fit(X, y)
+        pred = self.predict(X)
+        sse = ((y.iloc[:,0] - pred.iloc[:,0]) ** 2).sum()
+        ssto = ((y.iloc[:,0] - y.iloc[:,0].mean()) ** 2).sum()
+        mse = sse / (len(y) - len(self.training_x.columns) - 2)
+        msto = ssto / (len(y) - 1)
+        return 1 - mse / msto # Adjusted R^2
+        
     def plot(self, categorize_residuals = True):
         terms = self.ex.flatten(True)
         unique_quants = list({term.name for term in terms if isinstance(term, Quantitative)})
