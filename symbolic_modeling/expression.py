@@ -119,7 +119,9 @@ class Quantitative(Var):
             return super().__add__(other)
     
     def __mul__(self, other):
-        if isinstance(other, Quantitative) and self.name == other.name and self.shift == other.shift and isinstance(self.transformation, (int, float)) and isinstance(other.transformation, (int, float)): # Combine variables of same base
+        if isinstance(self, Interaction) or isinstance(other, Interaction):
+            return super().__mul__(other)
+        elif isinstance(other, Quantitative) and self.name == other.name and self.shift == other.shift and isinstance(self.transformation, (int, float)) and isinstance(other.transformation, (int, float)): # Combine variables of same base
             return Quantitative(self.name, self.transformation + other.transformation, self.coefficient * other.coefficient, self.shift)
         elif isinstance(other, (int, float)):
             return Quantitative(self.name, self.transformation, self.coefficient * other, self.shift)
@@ -127,7 +129,9 @@ class Quantitative(Var):
             return super().__mul__(other)
             
     def __imul__(self, other):
-        if isinstance(other, Quantitative) and self.name == other.name and self.shift == other.shift and isinstance(self.transformation, (int, float)) and isinstance(other.transformation, (int, float)): # Combine variables of same base
+        if isinstance(self, Interaction) or isinstance(other, Interaction):
+            return super().__imul__(other)
+        elif isinstance(other, Quantitative) and self.name == other.name and self.shift == other.shift and isinstance(self.transformation, (int, float)) and isinstance(other.transformation, (int, float)): # Combine variables of same base
             self.transformation += other.transformation
             self.coefficient *= other.coefficient
             return self
