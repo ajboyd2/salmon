@@ -138,6 +138,7 @@ class LinearModel(Model):
             if len(unique_cats) == 0:
                 line_y = self.predict(line_x)
                 line_fit, = plt.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)])
+                plt.scatter(x, self.training_y[str(self.re)], c = "black")
             else:
                 combinations = set(self.training_data[unique_cats].apply(lambda x: tuple(x), 1))
                 plots = []
