@@ -121,7 +121,7 @@ class LinearModel(Model):
         msto = ssto / (len(y) - 1)
         return 1 - mse / msto # Adjusted R^2
         
-    def plot(self, categorize_residuals = True):
+    def plot(self, categorize_residuals = True, jitter = None):
         terms = self.ex.flatten(True)
         unique_quants = list({term.name for term in terms if isinstance(term, Quantitative)})
         unique_cats = list({term.name for term in terms if isinstance(term, Categorical)})
@@ -201,7 +201,11 @@ class LinearModel(Model):
                 linestyles.insert(0, line_type)
                 line_y = self.predict(line_x, for_plot = True)
                 plot, = plt.plot(line_x.index, line_y["Predicted " + str(self.re)], linestyle = line_type)
-                plt.scatter(points.loc[points_indices, 'index'], self.training_y.loc[points_indices, str(self.re)], c = plot.get_color())
+                if jitter is None or jitter is True:
+                    variability = np.random.normal(scale = 0.025, size = sum(points_indices))
+                else:
+                    variability = 0
+                plt.scatter(points.loc[points_indices, 'index'] + variability, self.training_y.loc[points_indices, str(self.re)], c = plot.get_color())
                 plots.append(plot)
             if not single_cat and len(cats_wo_most) > 0:
                 plt.legend(plots, labels, title = ", ".join(cats_wo_most), loc = "best")
