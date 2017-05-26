@@ -199,8 +199,8 @@ class LinearModel(Model):
                 line_y = self.predict(line_x, for_plot = True)
                 plot, = plt.plot(line_x.index, line_y["Predicted " + str(self.re)], linestyle = line_type)
                 plots.append(plot)
-            if not single_cat:
-                plt.legend(plots, labels, title = ", ".join(unique_cats), loc = "best")
+            if not single_cat and len(cats_wo_most) > 0:
+                plt.legend(plots, labels, title = ", ".join(cats_wo_most), loc = "best")
             plt.xlabel(ml_cat)
             plt.xticks(line_x.index, line_x[ml_cat])
             plt.ylabel(str(self.re))
