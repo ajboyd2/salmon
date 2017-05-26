@@ -1,0 +1,9 @@
+setup.py
+symbolic_modeling/__init__.py
+symbolic_modeling/expression.py
+symbolic_modeling/model.py
+symbolic_modeling/test.py
+symbolic_modeling.egg-info/PKG-INFO
+symbolic_modeling.egg-info/SOURCES.txt
+symbolic_modeling.egg-info/dependency_links.txt
+symbolic_modeling.egg-info/top_level.txt

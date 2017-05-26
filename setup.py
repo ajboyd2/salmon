@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="symbolic_modeling",
+    name="salmon",
     version="0.2.0",
 
     description="A symbolic statistical modeling tool.",
 
-    url="https://github.com/ajboyd2/statistical-modeling",
+    url="https://github.com/ajboyd2/salmon",
 
     author="Alex Boyd",
     author_email="ajboyd@calpoly.edu",

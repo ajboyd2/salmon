@@ -1,0 +1,16 @@
+Metadata-Version: 1.1
+Name: symbolic-modeling
+Version: 0.2.0
+Summary: A symbolic statistical modeling tool.
+Home-page: https://github.com/ajboyd2/statistical-modeling
+Author: Alex Boyd
+Author-email: ajboyd@calpoly.edu
+License: GPLv3
+Description: UNKNOWN
+Keywords: modeling symbolic regression
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Education
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Programming Language :: Python :: 3
