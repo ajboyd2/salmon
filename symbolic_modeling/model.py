@@ -27,8 +27,9 @@ class Model:
 class LinearModel(Model):
     def __init__(self, explanatory, response, intercept = True):
         self.given_ex = explanatory
+        self.given_re = response
         self.ex = None
-        self.re = response
+        self.re = None
         self.intercept = intercept
         self.bhat = None
         self.fitted = None
@@ -59,6 +60,8 @@ class LinearModel(Model):
         # Replace all Var's with either Q's or C's
         self.ex = self.given_ex.copy()
         self.ex = self.ex.interpret(data)
+        self.re = self.given_re.copy()
+        self.re = self.re.interpret(data)       
         
         # Construct X matrix
         X = self.extract_columns(self.ex, data)
@@ -83,8 +86,8 @@ class LinearModel(Model):
         self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p - 1)) ** 0.5
         self.var = np.linalg.solve(np.dot(X.T, X), (self.std_err_est ** 2) * np.identity(p + 1))
         self.std_err_vars = pd.DataFrame({"SE" : (np.diagonal(self.var)) ** 0.5})
-        self.t_vals = pd.DataFrame({"t" : self.bhat["Coefficients"].reset_index(drop = True) / self.std_err_vars["Standard Errors"]})
-        self.p_vals = pd.DataFrame({"p" : pd.Series(stats.t.cdf(self.t_vals["t-statistics"], n - p - 1)).apply(lambda x: 2 * x if x < 0.5 else 2 * (1 - x))})
+        self.t_vals = pd.DataFrame({"t" : self.bhat["Coefficients"].reset_index(drop = True) / self.std_err_vars["SE"]})
+        self.p_vals = pd.DataFrame({"p" : pd.Series(stats.t.cdf(self.t_vals["t"], n - p - 1)).apply(lambda x: 2 * x if x < 0.5 else 2 * (1 - x))})
         ret_val = pd.concat([self.bhat.reset_index(), self.std_err_vars, self.t_vals, self.p_vals], axis = 1).set_index("index")
         ret_val.index.name = None # Remove oddity of set_index
         
