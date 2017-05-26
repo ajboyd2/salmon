@@ -181,23 +181,27 @@ class LinearModel(Model):
             else:
                 combinations = set(self.training_data[cats_wo_most].apply(lambda x: tuple(x), 1))
             
-            line_x = pd.DataFrame({ml_cat : self.categorical_levels[ml_cat]})
+            line_x = pd.DataFrame({ml_cat : self.categorical_levels[ml_cat]}).reset_index() # To produce an index column
+            points = pd.merge(self.training_data, line_x, on = ml_cat)
             
             plots = []
             labels = []
             linestyles = [':', '-.', '--', '-']
             for combination in combinations:
+                points_indices = pd.Series([True] * len(points))
                 if not single_cat:
                     label = []
                     for element, var in zip(combination, cats_wo_most):
                         name = str(var)
                         line_x[name] = element
                         label.append(str(element))
+                        points_indices = points_indices & (points[name] == element) # Filter out points that don't apply to categories
                     labels.append(", ".join(label))
                 line_type = linestyles.pop()
                 linestyles.insert(0, line_type)
                 line_y = self.predict(line_x, for_plot = True)
                 plot, = plt.plot(line_x.index, line_y["Predicted " + str(self.re)], linestyle = line_type)
+                plt.scatter(points.loc[points_indices, 'index'], self.training_y.loc[points_indices, str(self.re)], c = plot.get_color())
                 plots.append(plot)
             if not single_cat and len(cats_wo_most) > 0:
                 plt.legend(plots, labels, title = ", ".join(cats_wo_most), loc = "best")
