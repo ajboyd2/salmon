@@ -236,7 +236,7 @@ class LinearModel(Model):
         for i in range(0, len(terms)):
         
             xi = terms[i]
-            sans_xi = sum(terms[:i] + terms[i+1:])
+            sans_xi = Combination(terms[:i] + terms[i+1:])
             yaxis = LinearModel(sans_xi, self.re)
             xaxis = LinearModel(sans_xi, xi)
             
