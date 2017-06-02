@@ -1,13 +1,3 @@
-
-
-```python
-import pandas as pd
-from salmon import *
-%matplotlib inline
-data = pd.read_csv("./data/harris.csv")
-data = data[data['Educ'] != 10].reset_index(drop=True) # Remove single outlier
-```
-
 # _SALMON_
 
 Salmon is a package for symbolic algebra of linear regression and modeling. The goal for this package is to ease the process of model building for linear regression by separating the model (with all its interactions and variables) from the data being used to fit it. 
@@ -21,6 +11,15 @@ Using salmon can be defined in three stages:
 3. Using the model
 
 As such, the documentation will be broken up into these three parts.
+
+```python
+# Setup
+import pandas as pd
+from salmon import *
+%matplotlib inline
+data = pd.read_csv("./data/harris.csv")
+data = data[data['Educ'] != 10].reset_index(drop=True) # Remove single outlier
+```
 
 # Model Definition
 
