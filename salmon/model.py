@@ -234,7 +234,6 @@ class LinearModel(Model):
             plt.ylabel(str(self.re))
             plt.grid()
             ax.set_ylim([min_y, max_y])
-            return points, points_indices, line_x
 
         else:
             raise Exception("Plotting line of best fit only expressions that reference a single variable.")
