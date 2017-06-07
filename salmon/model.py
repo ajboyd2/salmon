@@ -125,20 +125,32 @@ class LinearModel(Model):
         terms = self.ex.flatten(True)
         unique_quants = list({term.name for term in terms if isinstance(term, Quantitative)})
         unique_cats = list({term.name for term in terms if isinstance(term, Categorical)})
+        
+        min_y = min(self.training_y[str(self.re)])
+        max_y = max(self.training_y[str(self.re)])
+        diff = (max_y - min_y) * 0.05
+        min_y = min(min_y - diff, min_y + diff) # Add a small buffer
+        max_y = max(max_y - diff, max_y + diff) # TODO: Check if min() and max() are necessary here
+           
+        
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        
         if len(unique_quants) == 1:
             unique_quant = unique_quants.pop()
             
             x = self.training_data[unique_quant]
             min_x = min(x)
-            min_x = min(min_x * 1.05, min_x * 0.95) # Add a small buffer
             max_x = max(x)
-            max_x = max(max_x * 1.05, max_x * 0.95)
-           
+            diff = (max_x - min_x) * 0.05
+            min_x = min(min_x - diff, min_x + diff) # Add a small buffer
+            max_x = max(max_x - diff, max_x + diff) # TODO: Check if min() and max() are necessary here
+                        
             line_x = pd.DataFrame({unique_quant : np.linspace(min_x, max_x, 100)})
             if len(unique_cats) == 0:
                 line_y = self.predict(line_x)
                 line_fit, = plt.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)])
-                plt.scatter(x, self.training_y[str(self.re)], c = "black")
+                ax.scatter(x, self.training_y[str(self.re)], c = "black")
             else:
                 combinations = set(self.training_data[unique_cats].apply(lambda x: tuple(x), 1))
                 plots = []
@@ -153,23 +165,27 @@ class LinearModel(Model):
                     line_type = linestyles.pop()
                     linestyles.insert(0, line_type)
                     line_y = self.predict(line_x, for_plot = True)
-                    plot, = plt.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)], linestyle = line_type)
+                    plot, = ax.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)], linestyle = line_type)
                     plots.append(plot)
                     labels.append(", ".join(label))
                     if categorize_residuals:
                         indices_to_use = pd.Series([True] * len(x))
                         for element, var in zip(combination, unique_cats):
                             indices_to_use = indices_to_use & (self.training_data[var] == element)
-                        plt.scatter(x[indices_to_use], self.training_y[str(self.re)][indices_to_use], c = plot.get_color())
-                plt.legend(plots, labels, title = ", ".join(unique_cats), loc = "best")
+                        ax.scatter(x[indices_to_use], self.training_y[str(self.re)][indices_to_use], c = plot.get_color())
+                box = ax.get_position()
+                ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+                ax.legend(plots, labels, title = ", ".join(unique_cats), loc = "center left", bbox_to_anchor = (1, 0.5))
             if not categorize_residuals:
-                resids = plt.scatter(x, self.training_y[str(self.re)], c = "black")
+                resids = ax.scatter(x, self.training_y[str(self.re)], c = "black")
                 #plots.append(resids)
                 #labels.append("Residuals")
             plt.xlabel(unique_quant)
             plt.ylabel(str(self.re))
             plt.grid()
-            plt.show()
+            ax.set_xlim([min_x, max_x])
+            ax.set_ylim([min_y, max_y])
+            #fig.show()
         elif len(unique_quants) == 0 and len(unique_cats) > 0:
             cats_levels = self.training_data[unique_cats].apply(lambda x: len(set(x)), 0)
             ml_cat = cats_levels.idxmax() # Category with the most levels
@@ -201,20 +217,23 @@ class LinearModel(Model):
                 line_type = linestyles.pop()
                 linestyles.insert(0, line_type)
                 line_y = self.predict(line_x, for_plot = True)
-                plot, = plt.plot(line_x.index, line_y["Predicted " + str(self.re)], linestyle = line_type)
+                plot, = ax.plot(line_x.index, line_y["Predicted " + str(self.re)], linestyle = line_type)
                 if jitter is None or jitter is True:
                     variability = np.random.normal(scale = 0.025, size = sum(points_indices))
                 else:
                     variability = 0
-                plt.scatter(points.loc[points_indices, 'index'] + variability, self.training_y.loc[points_indices, str(self.re)], c = plot.get_color())
+                ax.scatter(points.loc[points_indices, 'index'] + variability, self.training_y.loc[points_indices, str(self.re)], c = plot.get_color())
                 plots.append(plot)
             if not single_cat and len(cats_wo_most) > 0:
-                plt.legend(plots, labels, title = ", ".join(cats_wo_most), loc = "best")
+                box = ax.get_position()
+                ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+                ax.legend(plots, labels, title = ", ".join(cats_wo_most), loc = "center left", bbox_to_anchor=(1, 0.5))
             plt.xlabel(ml_cat)
             plt.xticks(line_x.index, line_x[ml_cat])
             plt.ylabel(str(self.re))
             plt.grid()
-            plt.show()
+            ax.set_ylim([min_y, max_y])
+
         else:
             raise Exception("Plotting line of best fit only expressions that reference a single variable.")
 
@@ -236,6 +255,7 @@ class LinearModel(Model):
         for i in range(0, len(terms)):
         
             xi = terms[i]
+
             sans_xi = Combination(terms[:i] + terms[i+1:])
             yaxis = LinearModel(sans_xi, self.re)
             xaxis = LinearModel(sans_xi, xi)
