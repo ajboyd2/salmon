@@ -200,7 +200,7 @@ class LinearModel(Model):
             
             line_x = pd.DataFrame({ml_cat : self.categorical_levels[ml_cat]}).reset_index() # To produce an index column
             points = pd.merge(self.training_data, line_x, on = ml_cat)
-            
+
             plots = []
             labels = []
             linestyles = [':', '-.', '--', '-']
@@ -222,7 +222,8 @@ class LinearModel(Model):
                     variability = np.random.normal(scale = 0.025, size = sum(points_indices))
                 else:
                     variability = 0
-                ax.scatter(points.loc[points_indices, 'index'] + variability, self.training_y.loc[points_indices, str(self.re)], c = plot.get_color())
+                # Y values must come from points because earlier merge shuffles rows
+                ax.scatter(points.loc[points_indices, 'index'] + variability, points.loc[points_indices, str(self.re)], c = plot.get_color())
                 plots.append(plot)
             if not single_cat and len(cats_wo_most) > 0:
                 box = ax.get_position()
@@ -233,6 +234,7 @@ class LinearModel(Model):
             plt.ylabel(str(self.re))
             plt.grid()
             ax.set_ylim([min_y, max_y])
+            return points, points_indices, line_x
 
         else:
             raise Exception("Plotting line of best fit only expressions that reference a single variable.")
