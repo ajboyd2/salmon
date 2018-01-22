@@ -100,9 +100,7 @@ class LinearModel(Model):
         
     def predict(self, data, for_plot = False):
         # Construct the X matrix
-        X = self.extract_columns(self.ex, data, multicolinearity_drop = not for_plot)
-        if self.intercept:
-            X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
+        X = self.ex.evaluate(data, fit = False)
 
         # For plotting with categorical lines
         if for_plot:
