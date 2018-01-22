@@ -5,7 +5,7 @@ import scipy.stats as stats
 import matplotlib.pyplot as plt
 from itertools import product
 
-from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination
+from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination, Identity
 
 plt.style.use('ggplot')
 
@@ -26,8 +26,11 @@ class Model:
     
 class LinearModel(Model):
     def __init__(self, explanatory, response, intercept = True):
-        self.given_ex = explanatory
-        self.given_re = response
+        if intercept:
+            self.given_ex = explanatory + 1
+        else:
+            self.given_ex = explanatory
+        self.given_re = Identity(response) # This will collapse any combination of variables into a single column
         self.ex = None
         self.re = None
         self.intercept = intercept
@@ -64,22 +67,24 @@ class LinearModel(Model):
         self.re = self.re.interpret(data)       
         
         # Construct X matrix
-        X = self.extract_columns(self.ex, data)
-        if self.intercept:
-            X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
+        X = self.ex.evaluate(data)
+        #X = self.extract_columns(self.ex, data)
+        #if self.intercept:
+        #    X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
         self.training_x = X
         # Construct Y vector
-        y = self.extract_columns(self.re, data)
+        y = self.re.evaluate(data)
+        #y = self.extract_columns(self.re, data)
         self.training_y = y
         # Ensure correct dimensionality of y
-        if len(y.shape) > 1 and y.shape[1] > 1:
-            raise Exception("Response variable of linear model can only be a single term expression.")
+        #if len(y.shape) > 1 and y.shape[1] > 1:
+        #    raise Exception("Response variable of linear model can only be a single term expression.")
         # Solve equation
         self.bhat = pd.DataFrame(np.linalg.solve(np.dot(X.T, X), np.dot(X.T, y)), 
                                  index=X.columns, columns = ["Coefficients"])
-        
+    
         n = X.shape[0]
-        p = X.shape[1] - 1
+        p = X.shape[1] - (1 if self.intercept else 0)
 
         self.fitted = pd.DataFrame({"Fitted" : np.dot(X, self.bhat).sum(axis = 1)})
         self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - self.fitted.iloc[:,0]})

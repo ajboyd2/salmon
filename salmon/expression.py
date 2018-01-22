@@ -49,7 +49,7 @@ class Expression(ABC):
     def transform(self, transformation):
         if isinstance(transformation, str):
             if transformation in _t._default_transformations:
-                transformation = _t._default_transformations[transformation]()
+                transformation = _t._default_transformations[transformation](None)
             else:
                 raise Exception("Transformation specified is not a default function.")
         elif not isinstance(transformation, _t.Transformation):
@@ -130,6 +130,11 @@ class Expression(ABC):
         
     def _descale(self): # Overwrite on expression containers such as Interactions and Combinations
         self.scale = 1
+        
+    @abstractmethod
+    def evaluate(self, data, fit = True):
+        # Transform the incoming data depending on what type of variable the data is represented by
+        pass
 
 class Var(Expression):
 
@@ -161,6 +166,10 @@ class Var(Expression):
             return Quantitative(self.name, self.transformations)
         else:
             return Categorical(self.name)
+        
+    def evaluate(self, data, fit = True):
+        raise UnsupportedMethodException("Must call interpret prior to evaluating data for variables.")
+        
 
 class TransVar(Expression):
     
@@ -204,6 +213,13 @@ class TransVar(Expression):
         self.scale = 1
         self.var._descale()
         
+    def evaluate(self, data, fit = True):
+        base_data = self.var.evaluate(data, fit)
+        base_data = base_data.sum(axis = 1)
+        transformed_data = self.scale * self.transformation.transform(values = base_data, training = fit)
+        transformed_data.name = str(self)
+        return pd.DataFrame(transformed_data)
+    
 class PowerVar(TransVar):
     
     def __init__(self, var, power, scale = 1):
@@ -260,8 +276,8 @@ class PowerVar(TransVar):
 
 class Quantitative(Var):
     
-    def __init__(self, name, scale = 0):
-        super().__init__(scale = scale)
+    def __init__(self, name, scale = 1):
+        super().__init__(name = name, scale = scale)
         self.name = name
     
     def copy(self):
@@ -269,6 +285,11 @@ class Quantitative(Var):
         
     def interpret(self, data):
         return self
+    
+    def evaluate(self, data, fit = True):
+        transformed_data = self.scale * data[self.name]
+        transformed_data.name = str(self)
+        return pd.DataFrame(transformed_data)
     
 class Constant(Expression):
     
@@ -308,6 +329,11 @@ class Constant(Expression):
         
     def __rmul__(self, other):
         return self.__mul__(other)
+    
+    def evaluate(self, data, fit = True):
+        transformed_data = pd.DataFrame(pd.Series(self.scale, data.index, name = str(self)))
+        return transformed_data
+        
             
 class Categorical(Var):
     
@@ -323,7 +349,7 @@ class Categorical(Var):
         return self.name
         
     def copy(self):
-        return Categorical(self.name, self.method, None if self.levels is None else self.levels[:])
+        return Categorical(self.name, self.encoding, None if self.levels is None else self.levels[:])
                 
     def interpret(self, data):
         return self
@@ -331,8 +357,23 @@ class Categorical(Var):
     def transform(self, transformation):
         raise Exception("Categorical variables cannot be transformed.")
         
-    def evaluate(self, data):
-        return data
+    def _set_levels(self, data):
+        unique_values = data[self.name].unique()
+        unique_values.sort()
+        self.levels = unique_values[1:]
+        
+    def _one_hot_encode(self, data):
+        return pd.DataFrame({self.name + "{" + str(level) + "}" : (data[self.name] == level) * 1 for level in self.levels})
+        
+    def evaluate(self, data, fit = True):
+        if self.levels is None:
+            self._set_levels(data)
+        
+        if self.encoding == 'one-hot':
+            return self._one_hot_encode(data)
+        else:
+            raise NotImplementedException()
+        
         
 class Interaction(Expression):
     def __init__(self, terms, scale = 1):
@@ -419,6 +460,23 @@ class Interaction(Expression):
         for term in self.terms:
             term._descale()
             
+    def evaluate(self, data, fit = True):
+        transformed_data_sets = [var.evaluate(data, fit) for var in self.terms]
+        # rename columns in sets
+        for data_set in transformed_data_sets:
+            data_set.columns = ["({})".format(col) for col in data_set.columns]
+            
+        base_set = transformed_data_sets[0]
+        for data_set in transformed_data_sets[1:]:
+            new_set = pd.DataFrame()
+            for base_column in base_set:
+                for new_column in data_set:
+                    new_set[base_column + new_column] = base_set[base_column] * data_set[new_column]
+            
+            base_set = new_set
+            
+        return base_set
+    
 class Combination(Expression):
 
     def __init__(self, terms, scale = 1):
@@ -515,6 +573,9 @@ class Combination(Expression):
         self.scale = 1
         for term in self.terms:
             term._descale()
+            
+    def evaluate(self, data, fit = True):
+        return pd.concat([term.evaluate(data, fit) for term in self.terms], axis = 1)
     
 def MultinomialCoef(params):
     if len(params) == 1:
@@ -546,6 +607,7 @@ def Poly(var, power):
         
 # Transformations 
 Log = lambda var: var.transform("log")
+Log10 = lambda var: var.transform("log10")
 Sin = lambda var: var.transform("sin")
 Cos = lambda var: var.transform("cos")
 Exp = lambda var: var.transform("exp")
@@ -553,6 +615,7 @@ Standardize = lambda var: var.transform("standardize")
 Z = lambda var: var.transform("standardize")
 Cen = lambda var: var.transform("center")
 Center = lambda var: var.transform("center")
+Identity = lambda var: var.transform("identity")
 
 # Aliases
 V = Var
