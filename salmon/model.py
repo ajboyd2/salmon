@@ -125,9 +125,10 @@ class LinearModel(Model):
         return 1 - mse / msto # Adjusted R^2
         
     def plot(self, categorize_residuals = True, jitter = None):
-        terms = self.ex.flatten(True)
-        unique_quants = list({term.name for term in terms if isinstance(term, Quantitative)})
-        unique_cats = list({term.name for term in terms if isinstance(term, Categorical)})
+        terms = self.ex.reduce()
+        unique_quants = [term.name for term in terms['Q']]
+        unique_cats = [term.name for term in terms['C']]
+        self.categorical_levels = {term.name : term.levels for term in terms['C']}
         
         min_y = min(self.training_y[str(self.re)])
         max_y = max(self.training_y[str(self.re)])
@@ -254,7 +255,9 @@ class LinearModel(Model):
         return plots
         
     def partial_plots(self):
-        terms = self.ex.flatten(separate_interactions = False)
+        #terms = self.ex.flatten(separate_interactions = False)
+        term_dict = self.ex.reduce()
+        terms = list(terms['Q']) + list(terms['C'])
 
         for i in range(0, len(terms)):
         

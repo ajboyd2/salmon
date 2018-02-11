@@ -1,3 +1,4 @@
+import collections
 import pandas as pd
 import numpy as np
 from functools import reduce
@@ -8,6 +9,7 @@ from scipy.special import binom
 from . import transformation as _t 
 
 _supported_encodings = ['one-hot']
+
 
 # abstract
 class Expression(ABC):
@@ -74,9 +76,11 @@ class Expression(ABC):
                 return ret_exp
         elif isinstance(other, Combination):
             return other.__add__(self)
-        elif isinstance(other, Var):
+        elif isinstance(other, Var) or isinstance(other, TransVar):
             return Combination((self, other))
         else:
+            print(str(self))
+            print(str(other))
             raise Exception("Expressions do not support addition with the given arguments.")
         
     def __radd__(self, other):
@@ -135,6 +139,14 @@ class Expression(ABC):
     def evaluate(self, data, fit = True):
         # Transform the incoming data depending on what type of variable the data is represented by
         pass
+    
+    def reduce(self):
+        return self._reduce({"Q":set(), "C":set(), "V":set()})
+    
+    @abstractmethod
+    def _reduce(self, ret_dict):
+        # Reduce an expression to a dictionary containing lists of unique Quantitative and Categorical Variables
+        pass
 
 class Var(Expression):
 
@@ -170,6 +182,10 @@ class Var(Expression):
     def evaluate(self, data, fit = True):
         raise UnsupportedMethodException("Must call interpret prior to evaluating data for variables.")
         
+    def _reduce(self, ret_dict):
+        ret_dict["V"].add(self)
+        print(self, ret_dict)
+        return ret_dict
 
 class TransVar(Expression):
     
@@ -219,6 +235,10 @@ class TransVar(Expression):
         transformed_data = self.scale * self.transformation.transform(values = base_data, training = fit)
         transformed_data.name = str(self)
         return pd.DataFrame(transformed_data)
+    
+    def _reduce(self, ret_dict):
+        print(self, ret_dict)
+        return self.var._reduce(ret_dict)
     
 class PowerVar(TransVar):
     
@@ -273,7 +293,7 @@ class PowerVar(TransVar):
         if isinstance(other, int):
             return PowerVar(self.var.copy(), self.power * other)
         return super().__pow__(other)
-
+    
 class Quantitative(Var):
     
     def __init__(self, name, scale = 1):
@@ -291,6 +311,11 @@ class Quantitative(Var):
         transformed_data.name = str(self)
         return pd.DataFrame(transformed_data)
     
+    def _reduce(self, ret_dict):
+        ret_dict["Q"].add(self)
+        print(self, ret_dict)
+        return ret_dict
+        
 class Constant(Expression):
     
     def __init__(self, scale = 1):
@@ -334,22 +359,26 @@ class Constant(Expression):
         transformed_data = pd.DataFrame(pd.Series(self.scale, data.index, name = str(self)))
         return transformed_data
         
-            
+    def _reduce(self, ret_dict):
+        print(self, ret_dict)
+        return ret_dict
+    
 class Categorical(Var):
     
-    def __init__(self, name, encoding = 'one-hot', levels = None):
+    def __init__(self, name, encoding = 'one-hot', levels = None, baseline = None):
         self.scale = 1
         self.name = name
         if encoding not in _supported_encodings:
             raise Exception("Method " + str(method) + " not supported for Categorical variables.")
         self.encoding = encoding
         self.levels = levels
+        self.baseline = baseline
         
     def __str__(self):
         return self.name
         
     def copy(self):
-        return Categorical(self.name, self.encoding, None if self.levels is None else self.levels[:])
+        return Categorical(self.name, self.encoding, None if self.levels is None else self.levels[:], self.baseline)
                 
     def interpret(self, data):
         return self
@@ -357,13 +386,21 @@ class Categorical(Var):
     def transform(self, transformation):
         raise Exception("Categorical variables cannot be transformed.")
         
-    def _set_levels(self, data):
+    def set_baseline(self, value):
+        if isinstance(value, collections.Iterable):
+            self.baseline = value
+        else:
+            self.baseline = [value]
+        
+    def _set_levels(self, data, override_baseline = True):
         unique_values = data[self.name].unique()
         unique_values.sort()
-        self.levels = unique_values[1:]
+        self.levels = unique_values[:]
+        if override_baseline:
+            self.set_baseline(unique_values[0])
         
     def _one_hot_encode(self, data):
-        return pd.DataFrame({self.name + "{" + str(level) + "}" : (data[self.name] == level) * 1 for level in self.levels})
+        return pd.DataFrame({self.name + "{" + str(level) + "}" : (data[self.name] == level) * 1 for level in self.levels if level not in self.baseline})
         
     def evaluate(self, data, fit = True):
         if self.levels is None:
@@ -374,6 +411,10 @@ class Categorical(Var):
         else:
             raise NotImplementedException()
         
+    def _reduce(self, ret_dict):
+        ret_dict["C"].add(self)
+        print(self, ret_dict)
+        return ret_dict
         
 class Interaction(Expression):
     def __init__(self, terms, scale = 1):
@@ -477,6 +518,14 @@ class Interaction(Expression):
             
         return base_set
     
+    def _reduce(self, ret_dict):
+        print(self, ret_dict)
+        for term in self.terms:
+            ret_dict = term._reduce(ret_dict)
+        print(self, ret_dict)
+            
+        return ret_dict
+    
 class Combination(Expression):
 
     def __init__(self, terms, scale = 1):
@@ -577,6 +626,14 @@ class Combination(Expression):
     def evaluate(self, data, fit = True):
         return pd.concat([term.evaluate(data, fit) for term in self.terms], axis = 1)
     
+    def _reduce(self, ret_dict):
+        print(self, ret_dict)
+        for term in self.terms:
+            ret_dict = term._reduce(ret_dict)
+        print(self, ret_dict)
+            
+        return ret_dict
+    
 def MultinomialCoef(params):
     if len(params) == 1:
         return 1
@@ -596,6 +653,9 @@ def MultinomialExpansion(terms, power):
     return reduce(lambda x,y: x + y, combination_terms)
     
 def Poly(var, power):
+    if isinstance(var, str):
+        var = Q(var)
+    
     if not isinstance(power, int) or power < 0:
         raise Exception("Must raise to a non-negative integer power.")
     elif power == 0:
