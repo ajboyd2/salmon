@@ -147,6 +147,11 @@ class Expression(ABC):
     def _reduce(self, ret_dict):
         # Reduce an expression to a dictionary containing lists of unique Quantitative and Categorical Variables
         pass
+    
+    @abstractmethod
+    def get_terms(self):
+        # Return a list of top level terms
+        pass
 
 class Var(Expression):
 
@@ -186,6 +191,9 @@ class Var(Expression):
         ret_dict["V"].add(self)
         print(self, ret_dict)
         return ret_dict
+    
+    def get_terms(self):
+        return [self]
 
 class TransVar(Expression):
     
@@ -239,6 +247,9 @@ class TransVar(Expression):
     def _reduce(self, ret_dict):
         print(self, ret_dict)
         return self.var._reduce(ret_dict)
+    
+    def get_terms(self):
+        return [self]
     
 class PowerVar(TransVar):
     
@@ -294,6 +305,9 @@ class PowerVar(TransVar):
             return PowerVar(self.var.copy(), self.power * other)
         return super().__pow__(other)
     
+    def get_terms(self):
+        return [self]
+    
 class Quantitative(Var):
     
     def __init__(self, name, scale = 1):
@@ -315,6 +329,9 @@ class Quantitative(Var):
         ret_dict["Q"].add(self)
         print(self, ret_dict)
         return ret_dict
+    
+    def get_terms(self):
+        return [self]
         
 class Constant(Expression):
     
@@ -362,6 +379,9 @@ class Constant(Expression):
     def _reduce(self, ret_dict):
         print(self, ret_dict)
         return ret_dict
+    
+    def get_terms(self):
+        return list()
     
 class Categorical(Var):
     
@@ -415,6 +435,9 @@ class Categorical(Var):
         ret_dict["C"].add(self)
         print(self, ret_dict)
         return ret_dict
+    
+    def get_terms(self):
+        return [self]
         
 class Interaction(Expression):
     def __init__(self, terms, scale = 1):
@@ -526,6 +549,9 @@ class Interaction(Expression):
             
         return ret_dict
     
+    def get_terms(self):
+        return [self]
+    
 class Combination(Expression):
 
     def __init__(self, terms, scale = 1):
@@ -633,6 +659,9 @@ class Combination(Expression):
         print(self, ret_dict)
             
         return ret_dict
+    
+    def get_terms(self):
+        return self.terms
     
 def MultinomialCoef(params):
     if len(params) == 1:
