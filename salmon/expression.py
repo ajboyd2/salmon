@@ -79,8 +79,6 @@ class Expression(ABC):
         elif isinstance(other, Var) or isinstance(other, TransVar):
             return Combination((self, other))
         else:
-            print(str(self))
-            print(str(other))
             raise Exception("Expressions do not support addition with the given arguments.")
         
     def __radd__(self, other):
@@ -189,7 +187,6 @@ class Var(Expression):
         
     def _reduce(self, ret_dict):
         ret_dict["V"].add(self)
-        print(self, ret_dict)
         return ret_dict
     
     def get_terms(self):
@@ -245,7 +242,6 @@ class TransVar(Expression):
         return pd.DataFrame(transformed_data)
     
     def _reduce(self, ret_dict):
-        print(self, ret_dict)
         return self.var._reduce(ret_dict)
     
     def get_terms(self):
@@ -327,7 +323,6 @@ class Quantitative(Var):
     
     def _reduce(self, ret_dict):
         ret_dict["Q"].add(self)
-        print(self, ret_dict)
         return ret_dict
     
     def get_terms(self):
@@ -377,7 +372,6 @@ class Constant(Expression):
         return transformed_data
         
     def _reduce(self, ret_dict):
-        print(self, ret_dict)
         return ret_dict
     
     def get_terms(self):
@@ -433,7 +427,6 @@ class Categorical(Var):
         
     def _reduce(self, ret_dict):
         ret_dict["C"].add(self)
-        print(self, ret_dict)
         return ret_dict
     
     def get_terms(self):
@@ -542,10 +535,8 @@ class Interaction(Expression):
         return base_set
     
     def _reduce(self, ret_dict):
-        print(self, ret_dict)
         for term in self.terms:
             ret_dict = term._reduce(ret_dict)
-        print(self, ret_dict)
             
         return ret_dict
     
@@ -558,7 +549,6 @@ class Combination(Expression):
         self.scale = scale
         
         if any(not isinstance(t, Expression) for t in terms):
-            print(terms)
             raise Exception("Combination takes only Expressions for initialization.")
                         
         self.terms = set()
@@ -653,10 +643,8 @@ class Combination(Expression):
         return pd.concat([term.evaluate(data, fit) for term in self.terms], axis = 1)
     
     def _reduce(self, ret_dict):
-        print(self, ret_dict)
         for term in self.terms:
             ret_dict = term._reduce(ret_dict)
-        print(self, ret_dict)
             
         return ret_dict
     
