@@ -150,6 +150,11 @@ class Expression(ABC):
     def get_terms(self):
         # Return a list of top level terms
         pass
+    
+    @abstractmethod
+    def get_dof(self):
+        # Retrun the degrees of freedom for an expression (not including constants)
+        pass
 
 class Var(Expression):
 
@@ -191,6 +196,9 @@ class Var(Expression):
     
     def get_terms(self):
         return [self]
+    
+    def get_dof(self):
+        return 1
 
 class TransVar(Expression):
     
@@ -246,6 +254,9 @@ class TransVar(Expression):
     
     def get_terms(self):
         return [self]
+    
+    def get_dof(self):
+        return 1
     
 class PowerVar(TransVar):
     
@@ -304,6 +315,9 @@ class PowerVar(TransVar):
     def get_terms(self):
         return [self]
     
+    def get_dof(self):
+        return 1
+    
 class Quantitative(Var):
     
     def __init__(self, name, scale = 1):
@@ -327,6 +341,9 @@ class Quantitative(Var):
     
     def get_terms(self):
         return [self]
+    
+    def get_dof(self):
+        return 1
         
 class Constant(Expression):
     
@@ -376,6 +393,9 @@ class Constant(Expression):
     
     def get_terms(self):
         return list()
+    
+    def get_dof(self):
+        return 0
     
 class Categorical(Var):
     
@@ -431,6 +451,9 @@ class Categorical(Var):
     
     def get_terms(self):
         return [self]
+    
+    def get_dof(self):
+        return len(self.levels) - len(self.baseline)
         
 class Interaction(Expression):
     def __init__(self, terms, scale = 1):
@@ -543,6 +566,9 @@ class Interaction(Expression):
     def get_terms(self):
         return [self]
     
+    def get_dof(self):
+        return reduce(lambda x,y: x*y, term.get_dof() for term in self.terms)
+    
 class Combination(Expression):
 
     def __init__(self, terms, scale = 1):
@@ -650,6 +676,9 @@ class Combination(Expression):
     
     def get_terms(self):
         return self.terms
+    
+    def get_dof(self):
+        return reduce(lambda x,y: x+y, term.get_dof() for term in self.terms)
     
 def MultinomialCoef(params):
     if len(params) == 1:
