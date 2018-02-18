@@ -46,6 +46,9 @@ class LinearModel(Model):
         self.training_x = None
         self.training_y = None
         self.categorical_levels = dict()
+        
+    def __str__(self):
+        return str(self.given_ex) + " ~ " + str(self.given_re)
 
     def fit(self, X, Y = None):
         # Wrapper to provide compatibility for sklearn functions
