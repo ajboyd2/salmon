@@ -117,6 +117,18 @@ class LinearModel(Model):
         # Multiply the weights to each column and sum across rows
         return pd.DataFrame({"Predicted " + str(self.re) : np.dot(X, self.bhat).sum(axis = 1)})
     
+    def get_sse(self):
+        sse = ((self.training_y.iloc[:,0] - self.fitted.iloc[:,0]) ** 2).sum()
+        return sse
+        
+    def get_ssr(self):
+        ssr = self.get_sst() - self.get_sse()
+        return ssr
+    
+    def get_sst(self):
+        sst = ((self.training_y.iloc[:,0] - self.training_y[:,0].mean()) ** 2).sum()
+        return sst
+    
     def score(self, X, y, **kwargs):
         # Allow interfacing with sklearn's cross fold validation
         #self.fit(X, y)
