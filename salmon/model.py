@@ -176,6 +176,9 @@ class LinearModel(Model):
                                                                               "y" : {"min" : min_y, 
                                                                                      "max" : max_y,
                                                                                      "name" : str(self.re)}})
+        elif len(terms['Q']) == 0 and len(terms['C']) > 0:
+            raise Exception("To be added")
+        
                                                       
     def _plot_one_quant(self, categorize_residuals, jitter, terms, plot_objs):
         x_term = next(iter(terms['Q'])) # Get the "first" and only element in the set 
@@ -377,7 +380,7 @@ class LinearModel(Model):
         terms = list(self.training_x)
         plots = []
         for term in terms:
-            plots.append(plt.scatter(self.training_x[str(term)], self.residuals))
+            plots.append(plt.scatter(self.training_x[str(term)], self.residuals['Residuals']))
             plt.xlabel(str(term))
             plt.ylabel("Residuals")
             plt.title(str(term) + " v. Residuals")
