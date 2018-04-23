@@ -76,7 +76,7 @@ class Expression(ABC):
                 return ret_exp
         elif isinstance(other, Combination):
             return other.__add__(self)
-        elif isinstance(other, Var) or isinstance(other, TransVar):
+        elif isinstance(other, Var) or isinstance(other, TransVar) or isinstance(other, Constant):
             return Combination((self, other))
         else:
             raise Exception("Expressions do not support addition with the given arguments.")
