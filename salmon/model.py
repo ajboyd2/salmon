@@ -29,9 +29,12 @@ class LinearModel(Model):
         if intercept:
             self.given_ex = explanatory + 1
         else:
-            self.given_ex = explanatory
-            
-        self.intercept = self.given_ex.reduce()['Constant'] is not None
+            self.given_ex = explanatory    
+        constant = self.given_ex.reduce()['Constant']
+        self.intercept = constant is not None
+        if self.intercept:
+            self.given_ex = self.given_ex - constant # This was done to easily check all options for indicating a wanted intercept
+                
         self.given_re = Identity(response) # This will collapse any combination of variables into a single column
         self.ex = None
         self.re = None
@@ -67,17 +70,13 @@ class LinearModel(Model):
         # Replace all Var's with either Q's or C's
         self.ex = self.given_ex.copy()
         self.ex = self.ex.interpret(data)
-        temp_ex = self.ex
         self.re = self.given_re.copy()
         self.re = self.re.interpret(data)       
         
-        terms = temp_ex.reduce()
-        if self.intercept:
-            constant = terms['Constant']
-            temp_ex = temp_ex - constant
+        terms = self.ex.reduce()
         
         # Construct X matrix
-        X = temp_ex.evaluate(data)
+        X = self.ex.evaluate(data)
         X_means = X.mean()
         self.training_x = X
         self.training_x_means = X_means
@@ -120,13 +119,9 @@ class LinearModel(Model):
         
     def predict(self, data, for_plot = False):
         # Construct the X matrix
+        X = self.ex.evaluate(data, fit = False)
         if self.intercept:
-            constant = self.given_ex.reduce()['Constant']
-            X = (self.ex - constant).evaluate(data, fit = False)
-            X['Intercept'] = constant
-        else:
-            X = self.ex.evaluate(data, fit = False)
-
+            X['Intercept'] = 1
             
         # For plotting with categorical lines
         #if for_plot:
@@ -176,13 +171,13 @@ class LinearModel(Model):
         ax = plt.subplot(111)
         
         if len(terms['Q']) == 1:
-            return self._plot_one_quant(jitter, terms, {"figure" : fig, 
-                                                        "ax" : ax, 
-                                                        "y" : {"min" : min_y, 
-                                                               "max" : max_y,
-                                                               "name" : str(self.re)}})
+            return self._plot_one_quant(categorize_residuals, jitter, terms, {"figure" : fig, 
+                                                                              "ax" : ax, 
+                                                                              "y" : {"min" : min_y, 
+                                                                                     "max" : max_y,
+                                                                                     "name" : str(self.re)}})
                                                       
-    def _plot_one_quant(self, jitter, terms, plot_objs):
+    def _plot_one_quant(self, categorize_residuals, jitter, terms, plot_objs):
         x_term = next(iter(terms['Q'])) # Get the "first" and only element in the set 
         x_name = str(x_term)
         x = self.training_data[x_name]
@@ -194,25 +189,70 @@ class LinearModel(Model):
         
         plot_objs['x'] = {"min" : min_x, "max" : max_x, "name" : x_name}
         
+        # Quantitative inputs
+        line_x = pd.DataFrame({x_name : np.linspace(min_x, max_x, 100)})
+        
         if len(terms['C']) == 0:
-            self._plot_one_quant_zero_cats(x, jitter, terms, plot_objs)
-            
+            self._plot_one_quant_zero_cats(x, line_x, jitter, terms, plot_objs)
+        else:
+            self._plot_one_quant_some_cats(x, line_x, categorize_residuals, jitter, terms, plot_objs)
+
         plt.xlabel(x_name)
         plt.ylabel(plot_objs['y']['name'])
         plt.grid()
         plot_objs['ax'].set_xlim([min_x, max_x])
         plot_objs['ax'].set_ylim([plot_objs['y']['min'], plot_objs['y']['max']])
                                                       
-    def _plot_one_quant_zero_cats(self, x, jitter, terms, plot_objs):
+    def _plot_one_quant_zero_cats(self, x, line_x, jitter, terms, plot_objs):
         x_name = plot_objs['x']['name']
-        line_x = pd.DataFrame({x_name : np.linspace(plot_objs['x']['min'], plot_objs['x']['max'], 100)})
         line_y = self.predict(line_x)
         line_fit, = plt.plot(line_x[x_name], line_y["Predicted " + plot_objs['y']['name']])
         plot_objs['ax'].scatter(x, self.training_y[plot_objs['y']['name']], c = "black")
         
-    def _plot_one_quant_some_cats(self, jitter, terms, plot_objs):
-        pass
-    
+    def _plot_one_quant_some_cats(self, x, line_x, categorize_residuals, jitter, terms, plot_objs):
+        ax = plot_objs['ax']
+        x_name = plot_objs['x']['name']
+        y_name = plot_objs['y']['name']
+        
+
+        plots = []
+        labels = []
+        linestyles = [':', '-.', '--', '-']
+        
+        cats = list(terms['C'])
+        cat_names = [str(cat) for cat in cats]
+        levels = [cat.levels for cat in cats]
+        level_combinations = product(*levels) #cartesian product of all combinations
+        
+        dummy_data = line_x.copy() # rest of columns set in next few lines
+       
+        for level_set in level_combinations:
+            label = [] # To be used in legend
+            for (cat,level) in zip(cats,level_set):
+                dummy_data[str(cat)] = level # set dummy data for prediction
+                label.append(str(level))
+                               
+            line_type = linestyles.pop() # rotate through line styles
+            linestyles.insert(0, line_type)
+            
+            line_y = self.predict(dummy_data, for_plot = True)
+            plot, = ax.plot(dummy_data[x_name], line_y["Predicted " + y_name], linestyle = line_type)
+            plots.append(plot)
+            labels.append(", ".join(label))
+            
+            if categorize_residuals:
+                indices_to_use = pd.Series([True] * len(x)) # gradually gets filtered out
+                for (cat,level) in zip(cats,level_set):
+                    indices_to_use = indices_to_use & (self.training_data[str(cat)] == level)
+                ax.scatter(x[indices_to_use], self.training_y[y_name][indices_to_use], c = plot.get_color())
+
+        # Legend
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+        ax.legend(plots, labels, title = ", ".join(cat_names), loc = "center left", bbox_to_anchor = (1, 0.5))
+        
+        if not categorize_residuals:
+            resids = ax.scatter(x, self.training_y[str(self.re)], c = "black")
         
         
     def _plot(self, categorize_residuals = True, jitter = None):
