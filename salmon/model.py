@@ -120,19 +120,25 @@ class LinearModel(Model):
         
     def predict(self, data, for_plot = False):
         # Construct the X matrix
-        X = self.ex.evaluate(data, fit = False)
+        if self.intercept:
+            constant = self.given_ex.reduce()['Constant']
+            X = (self.ex - constant).evaluate(data, fit = False)
+            X['Intercept'] = constant
+        else:
+            X = self.ex.evaluate(data, fit = False)
 
+            
         # For plotting with categorical lines
-        if for_plot:
-            columns_present = set(list(X)) # Need to check if can do just set(X)
-            columns_needed = self.bhat.index.format()
-            columns_to_add = set(columns_needed) - columns_present
-            for column in columns_to_add:
-                X[column] = 0 # Add all non-present columns
-            X = X[columns_needed] # Remove unneccessary columns
+        #if for_plot:
+        #    columns_present = set(list(X)) # Need to check if can do just set(X)
+        #    columns_needed = self.bhat.index.format()
+        #    columns_to_add = set(columns_needed) - columns_present
+        #    for column in columns_to_add:
+        #        X[column] = 0 # Add all non-present columns
+        #    X = X[columns_needed] # Remove unneccessary columns
         
         # Multiply the weights to each column and sum across rows
-        return pd.DataFrame({"Predicted " + str(self.re) : np.dot(X, self.bhat).sum(axis = 1)})
+        return pd.DataFrame({"Predicted " + str(self.re) : X.dot(self.bhat).sum(axis = 1)})
     
     def get_sse(self):
         sse = ((self.training_y.iloc[:,0] - self.fitted.iloc[:,0]) ** 2).sum()
@@ -157,6 +163,59 @@ class LinearModel(Model):
         return 1 - mse / msto # Adjusted R^2
         
     def plot(self, categorize_residuals = True, jitter = None):
+        terms = self.ex.reduce()
+        
+        # Plotting Details:
+        min_y = min(self.training_y[str(self.re)])
+        max_y = max(self.training_y[str(self.re)])
+        diff = (max_y - min_y) * 0.05
+        min_y = min(min_y - diff, min_y + diff) # Add a small buffer
+        max_y = max(max_y - diff, max_y + diff) # TODO: Check if min() and max() are necessary here
+                
+        fig = plt.figure()
+        ax = plt.subplot(111)
+        
+        if len(terms['Q']) == 1:
+            return self._plot_one_quant(jitter, terms, {"figure" : fig, 
+                                                        "ax" : ax, 
+                                                        "y" : {"min" : min_y, 
+                                                               "max" : max_y,
+                                                               "name" : str(self.re)}})
+                                                      
+    def _plot_one_quant(self, jitter, terms, plot_objs):
+        x_term = next(iter(terms['Q'])) # Get the "first" and only element in the set 
+        x_name = str(x_term)
+        x = self.training_data[x_name]
+        min_x = min(x)
+        max_x = max(x)
+        diff = (max_x - min_x) * 0.05
+        min_x = min(min_x - diff, min_x + diff) # Add a small buffer
+        max_x = max(max_x - diff, max_x + diff) # TODO: Check if min() and max() are necessary here
+        
+        plot_objs['x'] = {"min" : min_x, "max" : max_x, "name" : x_name}
+        
+        if len(terms['C']) == 0:
+            self._plot_one_quant_zero_cats(x, jitter, terms, plot_objs)
+            
+        plt.xlabel(x_name)
+        plt.ylabel(plot_objs['y']['name'])
+        plt.grid()
+        plot_objs['ax'].set_xlim([min_x, max_x])
+        plot_objs['ax'].set_ylim([plot_objs['y']['min'], plot_objs['y']['max']])
+                                                      
+    def _plot_one_quant_zero_cats(self, x, jitter, terms, plot_objs):
+        x_name = plot_objs['x']['name']
+        line_x = pd.DataFrame({x_name : np.linspace(plot_objs['x']['min'], plot_objs['x']['max'], 100)})
+        line_y = self.predict(line_x)
+        line_fit, = plt.plot(line_x[x_name], line_y["Predicted " + plot_objs['y']['name']])
+        plot_objs['ax'].scatter(x, self.training_y[plot_objs['y']['name']], c = "black")
+        
+    def _plot_one_quant_some_cats(self, jitter, terms, plot_objs):
+        pass
+    
+        
+        
+    def _plot(self, categorize_residuals = True, jitter = None):
         terms = self.ex.reduce()
         unique_quants = [term.name for term in terms['Q']]
         unique_cats = [term.name for term in terms['C']]
