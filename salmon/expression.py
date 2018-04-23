@@ -66,7 +66,7 @@ class Expression(ABC):
         elif isinstance(other, (int, float)):
             ret_exp = self.copy()
             shift = Constant(other)
-            return Combination((ret_exp, shift))
+            return ret_exp + shift
         elif self.__sim__(other):
             ret_exp = self.copy()
             ret_exp.scale += other.scale
@@ -613,7 +613,9 @@ class Combination(Expression):
                 
         if similar_term is not None:
             self.terms.remove(similar_term)
-            self.terms.add(similar_term + other_term)
+            addition_result = similar_term + other_term
+            if addition_result != 0:
+                self.terms.add(addition_result)
         else:
             self.terms.add(other_term)       
             
