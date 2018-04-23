@@ -84,6 +84,9 @@ class Expression(ABC):
     def __radd__(self, other):
         return self.__add__(other)
     
+    def __sub__(self, other):
+        return self + -1 * other
+    
     def __mul__(self, other):
         if isinstance(other, float) or isinstance(other, int):
             ret_exp = self.copy()
