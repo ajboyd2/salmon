@@ -30,10 +30,11 @@ class LinearModel(Model):
             self.given_ex = explanatory + 1
         else:
             self.given_ex = explanatory
+            
+        self.intercept = self.given_ex.reduce()['Constant'] is not None
         self.given_re = Identity(response) # This will collapse any combination of variables into a single column
         self.ex = None
         self.re = None
-        self.intercept = intercept
         self.bhat = None
         self.fitted = None
         self.residuals = None
@@ -66,25 +67,41 @@ class LinearModel(Model):
         # Replace all Var's with either Q's or C's
         self.ex = self.given_ex.copy()
         self.ex = self.ex.interpret(data)
+        temp_ex = self.ex
         self.re = self.given_re.copy()
         self.re = self.re.interpret(data)       
         
+        terms = temp_ex.reduce()
+        if self.intercept:
+            constant = terms['Constant']
+            temp_ex = temp_ex - constant
+        
         # Construct X matrix
-        X = self.ex.evaluate(data)
-        #X = self.extract_columns(self.ex, data)
-        #if self.intercept:
-        #    X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
+        X = temp_ex.evaluate(data)
+        X_means = X.mean()
         self.training_x = X
+        self.training_x_means = X_means
         # Construct Y vector
         y = self.re.evaluate(data)
-        #y = self.extract_columns(self.re, data)
+        y_mean = y.mean()
         self.training_y = y
-        # Ensure correct dimensionality of y
-        #if len(y.shape) > 1 and y.shape[1] > 1:
-        #    raise Exception("Response variable of linear model can only be a single term expression.")
+        self.training_y_mean = y_mean
+
+        # Center if there is an intercept
+        if self.intercept:
+            X = X - X_means
+            y = y - y_mean
+        
         # Solve equation
         self.bhat = pd.DataFrame(np.linalg.solve(np.dot(X.T, X), np.dot(X.T, y)), 
                                  index=X.columns, columns = ["Coefficients"])
+        if self.intercept:
+            self.bhat.loc["Intercept"] = [y_mean[0] - X_means.dot(self.bhat)[0]]
+            X = X + X_means
+            X['Intercept'] = 1
+            y = y + y_mean
+            
+            
     
         n = X.shape[0]
         p = X.shape[1] - (1 if self.intercept else 0)
@@ -92,7 +109,7 @@ class LinearModel(Model):
         self.fitted = pd.DataFrame({"Fitted" : np.dot(X, self.bhat).sum(axis = 1)})
         self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - self.fitted.iloc[:,0]})
         self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p - 1)) ** 0.5
-        self.var = np.linalg.solve(np.dot(X.T, X), (self.std_err_est ** 2) * np.identity(p + 1))
+        self.var = np.linalg.solve(np.dot(X.T, X), (self.std_err_est ** 2) * np.identity(X.shape[1]))
         self.std_err_vars = pd.DataFrame({"SE" : (np.diagonal(self.var)) ** 0.5})
         self.t_vals = pd.DataFrame({"t" : self.bhat["Coefficients"].reset_index(drop = True) / self.std_err_vars["SE"]})
         self.p_vals = pd.DataFrame({"p" : pd.Series(stats.t.cdf(self.t_vals["t"], n - p - 1)).apply(lambda x: 2 * x if x < 0.5 else 2 * (1 - x))})
