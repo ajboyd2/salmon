@@ -139,7 +139,7 @@ class Expression(ABC):
         pass
     
     def reduce(self):
-        return self._reduce({"Q":set(), "C":set(), "V":set()})
+        return self._reduce({"Q":set(), "C":set(), "V":set(), "Constant": None})
     
     @abstractmethod
     def _reduce(self, ret_dict):
@@ -389,6 +389,7 @@ class Constant(Expression):
         return transformed_data
         
     def _reduce(self, ret_dict):
+        ret_dict['Constant'] = self.scale
         return ret_dict
     
     def get_terms(self):
@@ -567,7 +568,7 @@ class Interaction(Expression):
         return [self]
     
     def get_dof(self):
-        return reduce(lambda x,y: x*y, term.get_dof() for term in self.terms)
+        return reduce(lambda x,y: x*y, (term.get_dof() for term in self.terms))
     
 class Combination(Expression):
 
@@ -678,7 +679,7 @@ class Combination(Expression):
         return self.terms
     
     def get_dof(self):
-        return reduce(lambda x,y: x+y, term.get_dof() for term in self.terms)
+        return reduce(lambda x,y: x+y, (term.get_dof() for term in self.terms))
     
 def MultinomialCoef(params):
     if len(params) == 1:
