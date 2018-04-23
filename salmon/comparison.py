@@ -34,11 +34,15 @@ def _process_term(orig_model, term):
     new_model = LinearModel(orig_model.given_ex - term, orig_model.given_re)
     new_model.fit(orig_model.training_data)
     return new_model.get_ssr()
-    
-def _anova_terms(model):
+
+def _extract_dfs(model):
     reg_df = model.ex.get_dof()
     total_df = len(model.training_x) - 1
     error_df = total_df - reg_df
+    return reg_df, error_df, total_df
+
+def _anova_terms(model):
+    reg_df, error_df, total_df = _extract_dfs(model)
   
     # Full model values
     r_sse = model.get_sse()
@@ -79,14 +83,26 @@ def _anova_terms(model):
     
     return pd.DataFrame({
             "DF" : dfs,
-            "Adj SS": adj_ss,
-            "Adj MS" : adj_ms,
-            "F-Value" : f_vals,
-            "P-Value" : p_vals
+            "Adj_SS": adj_ss,
+            "Adj_MS" : adj_ms,
+            "F_Value" : f_vals,
+            "P_Value" : p_vals
         }, index = indices)
 
 def _anova_models(full_model, reduced_model):
     full_label = str(full_model)
     reduced_label = str(reduced_model)
+    
+    f_reg_df, f_error_df, f_total_df = _extract_dfs(full_model)
+    r_reg_df, r_error_df, r_total_df = _extract_dfs(reduced_model)
+    
+    f_sse = full_model.get_sse()
+    r_sse = reduced_model.get_sse()
+    
+    
+    
+    
+    
+    
     
     
