@@ -110,6 +110,9 @@ class LinearModel(Model):
         self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p - 1)) ** 0.5
         self.var = np.linalg.solve(np.dot(X.T, X), (self.std_err_est ** 2) * np.identity(X.shape[1]))
         self.std_err_vars = pd.DataFrame({"SE" : (np.diagonal(self.var)) ** 0.5})
+        # format the covariance matrix
+        self.var = pd.DataFrame(self.var, columns = X.columns, index = X.columns)
+        # inference
         self.t_vals = pd.DataFrame({"t" : self.bhat["Coefficients"].reset_index(drop = True) / self.std_err_vars["SE"]})
         self.p_vals = pd.DataFrame({"p" : pd.Series(stats.t.cdf(self.t_vals["t"], n - p - 1)).apply(lambda x: 2 * x if x < 0.5 else 2 * (1 - x))})
         ret_val = pd.concat([self.bhat.reset_index(), self.std_err_vars, self.t_vals, self.p_vals], axis = 1).set_index("index")
@@ -161,7 +164,7 @@ class LinearModel(Model):
         n = self.training_x.shape[0]
         p = X_new.shape[1]
         mse = self.get_sse() / (n - p)
-        s_yhat_squared = X_new.dot(self.var).dot(X_new.T) # X_new * var * X_new'
+        s_yhat_squared = (X_new.dot(self.var) * X_new).sum(axis = 1) # X_new_vect * var * X_new_vect^T (equivalent to np.diag(X_new.dot(self.var).dot(X_new.T)))
         s_pred_squared = mse + s_yhat_squared
 
         t_crit = stats.t.ppf(1 - (alpha / 2), n-p)
@@ -171,14 +174,13 @@ class LinearModel(Model):
     def _confidence_interval_width(self, X_new, alpha = 0.05):
         n = self.training_x.shape[0]
         p = X_new.shape[1]
-        s_yhat_squared = X_new.dot(self.var).dot(X_new.T) # X_new * var * X_new'
-
+        s_yhat_squared = (X_new.dot(self.var) * X_new).sum(axis = 1) # X_new_vect * var * X_new_vect^T (equivalent to np.diag(X_new.dot(self.var).dot(X_new.T)))
         #t_crit = stats.t.ppf(1 - (alpha / 2), n-p)
-        W_crit_squared = p * stat.f.ppf(1 - (alpha / 2), p, n-p)
+        W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, n-p)
         return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
         
     def plot(self, categorize_residuals = True, jitter = None, confidence_band = False, prediction_band = False):
-        if confidence_bands and prediction_bands:
+        if confidence_band and prediction_band:
             raise Exception("One one of {confidence_band, prediction_band} may be set to True at a time.")
 
         terms = self.ex.reduce()
@@ -240,13 +242,13 @@ class LinearModel(Model):
         line_y = self.predict(line_x)
         y_vals = line_y["Predicted " + plot_objs['y']['name']]
         line_fit, = plt.plot(line_x[x_name], y_vals)
-        plot_objs['ax'].scatter(x, self.training_y[plot_objs['y']['name']], c = "black")
 
         if confidence_band:
-            self._plot_band(line_x, y_vals, "black", plot_objs, True)
+            self._plot_band(line_x, y_vals, line_fit.get_color(), plot_objs, True)
         elif prediction_band:
-            self._plot_band(line_x, y_vals, "black", plot_objs, False)
+            self._plot_band(line_x, y_vals, line_fit.get_color(), plot_objs, False)
 
+        plot_objs['ax'].scatter(x, self.training_y[plot_objs['y']['name']], c = "black")
 
     def _plot_band(self, line_x, y_vals, color, plot_objs, use_confidence = False, alpha = 0.05): # By default will plot prediction bands
         x_name = plot_objs['x']['name']
@@ -258,7 +260,6 @@ class LinearModel(Model):
             widths = self._confidence_interval_width(X_new, alpha)
         else:
             widths = self._prediction_interval_width(X_new, alpha)
-
         plot_objs['ax'].fill_between(x = line_x[x_name], y1 = y_vals - widths, y2 = y_vals + widths, color = color, alpha = 0.3)
         
         
@@ -301,9 +302,9 @@ class LinearModel(Model):
                 ax.scatter(x[indices_to_use], self.training_y[y_name][indices_to_use], c = plot.get_color())
             
             if confidence_band:
-                self._plot_band(line_x, y_vals, plot.get_color(), plot_objs, True)
+                self._plot_band(dummy_data, y_vals, plot.get_color(), plot_objs, True)
             elif prediction_band:
-                self._plot_band(line_x, y_vals, plot.get_color(), plot_objs, False)
+                self._plot_band(dummy_data, y_vals, plot.get_color(), plot_objs, False)
 
         # Legend
         box = ax.get_position()
