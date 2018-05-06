@@ -117,16 +117,24 @@ class Expression(ABC):
             return self_copy
         else:
             return self.__mul__(other)
+
+    def __truediv__(self, other):
+        return self * (other ** -1)
+
+    def __rtruediv__(self, other):
+        return other * (self ** -1)
     
     def __pow__(self, other): # Assumes a single term variable, Combinations and Interactions are overloaded
         if other == 1:
             return self
         elif other == 0:
             return 1
-        elif isinstance(other, int) and other > 0: # Proper power
+        elif isinstance(other, (int, float)):# and other > 0: # Proper power
             return PowerVar(self, other)
-        elif isinstance(other, (int, float)): # Improper, will reduce upon evaluation
-            return TransVar(self, _t.Power(other))
+        else:
+            raise Exception("Can only raise to a constant power.")
+        #elif isinstance(other, (float)): # Improper, will reduce upon evaluation
+        #    return TransVar(self, _t.Power(other))
         
     def descale(self):
         ret_exp = self.copy()
@@ -297,13 +305,19 @@ class PowerVar(TransVar):
                 base.scale = 1
                 scalar = self.scale * (self.var.scale ** self.power) * (other.var.scale ** other.power)
                 power = self.power + other.power
-                return PowerVar(self.var.copy(), power = power, scale = scalar)
+                if power == 0:
+                    return Constant(scalar)
+                else:
+                    return PowerVar(self.var.copy(), power = power, scale = scalar)
         elif isinstance(other, Expression):
             if self.var.__sim__(other):
                 base = self.var.copy()
                 scalar = self.scale * (self.var.scale ** self.power) * (other.scale)
                 power = self.power + 1
-                return PowerVar(self.var.copy(), power = power, scale = scalar)
+                if power == 0:
+                    return Constant(scalar)
+                else:
+                    return PowerVar(self.var.copy(), power = power, scale = scalar)
             
         return super().__mul__(other)
     
