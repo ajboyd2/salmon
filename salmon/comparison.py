@@ -99,9 +99,11 @@ def _anova_models(full_model, reduced_model):
     f_sse = full_model.get_sse()
     r_sse = reduced_model.get_sse()
     
-    
-    
-    
+    conditional_msr = (r_sse - f_sse) / (r_reg_df - f_reg_df)
+    full_mse = f_sse / f_reg_df
+    f_stat = conditional_msr / full_mse
+
+    # what next?    
     
     
     
