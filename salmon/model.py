@@ -109,17 +109,35 @@ class LinearModel(Model):
         self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - self.fitted.iloc[:,0]})
         self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p - 1)) ** 0.5
         self.var = np.linalg.solve(np.dot(X.T, X), (self.std_err_est ** 2) * np.identity(X.shape[1]))
-        self.std_err_vars = pd.DataFrame({"SE" : (np.diagonal(self.var)) ** 0.5})
+        self.std_err_vars = pd.DataFrame({"SE" : (np.diagonal(self.var)) ** 0.5}, index = self.bhat.index)
         # format the covariance matrix
         self.var = pd.DataFrame(self.var, columns = X.columns, index = X.columns)
         # inference
-        self.t_vals = pd.DataFrame({"t" : self.bhat["Coefficients"].reset_index(drop = True) / self.std_err_vars["SE"]})
-        self.p_vals = pd.DataFrame({"p" : pd.Series(stats.t.cdf(self.t_vals["t"], n - p - 1)).apply(lambda x: 2 * x if x < 0.5 else 2 * (1 - x))})
-        ret_val = pd.concat([self.bhat.reset_index(), self.std_err_vars, self.t_vals, self.p_vals], axis = 1).set_index("index")
-        ret_val.index.name = None # Remove oddity of set_index
+        self.t_vals = pd.DataFrame({"t" : self.bhat["Coefficients"] / self.std_err_vars["SE"]})
+        self.p_vals = pd.DataFrame({"p" : pd.Series(stats.t.cdf(self.t_vals["t"], n - p - 1), index = self.bhat.index).apply(lambda x: 2 * x if x < 0.5 else 2 * (1 - x))})
+        ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals], axis = 1)#.set_index("index")
+        #ret_val.index.name = None # Remove oddity of set_index
         
         return ret_val 
+
+    def slope_confidence_intervals(self, alpha = None, conf = None):
+        if alpha is None:
+            if conf is None:
+                conf = 0.95
+            alpha = 1 - conf
+
+        crit_prob = 1 - (alpha / 2)
+        df = self.training_x.shape[0] - self.bhat.shape[0] # n - p
+        crit_value = stats.t.ppf(crit_prob, df)
         
+        se_vals = self.std_err_vars["SE"]
+        width = crit_value * se_vals
+        lower_bound = self.bhat["Coefficients"] - width
+        upper_bound = self.bhat["Coefficients"] + width 
+        return pd.DataFrame({str(round(1 - crit_prob, 5) * 100) + "%" : lower_bound, 
+                             str(round(crit_prob, 5) * 100) + "%" : upper_bound})#, 
+                             #index = self.bhat.index)
+
     def predict(self, data, for_plot = False):
         # Construct the X matrix
         X = self.ex.evaluate(data, fit = False)
