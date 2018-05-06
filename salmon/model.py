@@ -197,15 +197,20 @@ class LinearModel(Model):
         W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, n-p)
         return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
         
-    def plot(self, categorize_residuals = True, jitter = None, confidence_band = False, prediction_band = False):
+    def plot(self, categorize_residuals = True, jitter = None, confidence_band = False, prediction_band = False, original_y_space = False):
         if confidence_band and prediction_band:
             raise Exception("One one of {confidence_band, prediction_band} may be set to True at a time.")
 
         terms = self.ex.reduce()
         
+        # Redundant, we untransform in later function calls
+        # TODO: Fix later
+        y_vals = self.training_y[str(self.re)]
+        if original_y_space:
+            y_vals = self.re.untransform(y_vals)
         # Plotting Details:
-        min_y = min(self.training_y[str(self.re)])
-        max_y = max(self.training_y[str(self.re)])
+        min_y = min(y_vals)
+        max_y = max(y_vals)
         diff = (max_y - min_y) * 0.05
         min_y = min(min_y - diff, min_y + diff) # Add a small buffer
         max_y = max(max_y - diff, max_y + diff) # TODO: Check if min() and max() are necessary here
@@ -219,6 +224,7 @@ class LinearModel(Model):
                                         terms,
                                         confidence_band,
                                         prediction_band,
+                                        original_y_space,
                                         {"figure" : fig, 
                                          "ax" : ax, 
                                          "y" : {"min" : min_y, 
@@ -229,7 +235,7 @@ class LinearModel(Model):
         else:
             raise Exception("Plotting line of best fit only expressions that reference a single variable.")
                                                       
-    def _plot_one_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, plot_objs):
+    def _plot_one_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs):
         x_term = next(iter(terms['Q'])) # Get the "first" and only element in the set 
         x_name = str(x_term)
         x = self.training_data[x_name]
@@ -245,30 +251,38 @@ class LinearModel(Model):
         line_x = pd.DataFrame({x_name : np.linspace(min_x, max_x, 100)})
         
         if len(terms['C']) == 0:
-            self._plot_one_quant_zero_cats(x, line_x, jitter, terms, confidence_band, prediction_band, plot_objs)
+            self._plot_one_quant_zero_cats(x, line_x, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs)
         else:
-            self._plot_one_quant_some_cats(x, line_x, categorize_residuals, jitter, terms, confidence_band, prediction_band, plot_objs)
+            self._plot_one_quant_some_cats(x, line_x, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs)
 
         plt.xlabel(x_name)
-        plt.ylabel(plot_objs['y']['name'])
+        plt.ylabel(plot_objs['y']['name'] if not original_y_space else self.re.untransform_name())
         plt.grid()
         plot_objs['ax'].set_xlim([min_x, max_x])
         plot_objs['ax'].set_ylim([plot_objs['y']['min'], plot_objs['y']['max']])
                                                       
-    def _plot_one_quant_zero_cats(self, x, line_x, jitter, terms, confidence_band, prediction_band, plot_objs):
+    def _plot_one_quant_zero_cats(self, x, line_x, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs):
         x_name = plot_objs['x']['name']
         line_y = self.predict(line_x)
         y_vals = line_y["Predicted " + plot_objs['y']['name']]
-        line_fit, = plt.plot(line_x[x_name], y_vals)
+        if original_y_space:
+            y_vals_to_plot = self.re.untransform(y_vals)
+        else:
+            y_vals_to_plot = y_vals
+        line_fit, = plt.plot(line_x[x_name], y_vals_to_plot)
 
         if confidence_band:
-            self._plot_band(line_x, y_vals, line_fit.get_color(), plot_objs, True)
+            self._plot_band(line_x, y_vals, line_fit.get_color(), original_y_space, plot_objs, True)
         elif prediction_band:
-            self._plot_band(line_x, y_vals, line_fit.get_color(), plot_objs, False)
+            self._plot_band(line_x, y_vals, line_fit.get_color(), original_y_space, plot_objs, False)
 
-        plot_objs['ax'].scatter(x, self.training_y[plot_objs['y']['name']], c = "black")
+        training_y_vals = self.training_y[plot_objs['y']['name']]
+        if original_y_space:
+            training_y_vals = self.re.untransform(training_y_vals)
 
-    def _plot_band(self, line_x, y_vals, color, plot_objs, use_confidence = False, alpha = 0.05): # By default will plot prediction bands
+        plot_objs['ax'].scatter(x, training_y_vals, c = "black")
+
+    def _plot_band(self, line_x, y_vals, color, original_y_space, plot_objs, use_confidence = False, alpha = 0.05): # By default will plot prediction bands
         x_name = plot_objs['x']['name']
         X_new = self.ex.evaluate(line_x, fit = False)
         if self.intercept:
@@ -278,10 +292,18 @@ class LinearModel(Model):
             widths = self._confidence_interval_width(X_new, alpha)
         else:
             widths = self._prediction_interval_width(X_new, alpha)
-        plot_objs['ax'].fill_between(x = line_x[x_name], y1 = y_vals - widths, y2 = y_vals + widths, color = color, alpha = 0.3)
+
+        lower = y_vals - widths
+        upper = y_vals + widths
+
+        if original_y_space:
+            lower = self.re.untransform(lower)
+            upper = self.re.untransform(upper)
+
+        plot_objs['ax'].fill_between(x = line_x[x_name], y1 = lower, y2 = upper, color = color, alpha = 0.3)
         
         
-    def _plot_one_quant_some_cats(self, x, line_x, categorize_residuals, jitter, terms, confidence_band, prediction_band, plot_objs):
+    def _plot_one_quant_some_cats(self, x, line_x, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs):
         ax = plot_objs['ax']
         x_name = plot_objs['x']['name']
         y_name = plot_objs['y']['name']
@@ -298,6 +320,10 @@ class LinearModel(Model):
         
         dummy_data = line_x.copy() # rest of columns set in next few lines
        
+        training_y_vals = self.training_y[y_name]
+        if original_y_space:
+            training_y_vals = self.re.untransform(training_y_vals)
+
         for level_set in level_combinations:
             label = [] # To be used in legend
             for (cat,level) in zip(cats,level_set):
@@ -309,20 +335,25 @@ class LinearModel(Model):
             
             line_y = self.predict(dummy_data, for_plot = True)
             y_vals = line_y["Predicted " + y_name]
-            plot, = ax.plot(dummy_data[x_name], y_vals, linestyle = line_type)
+            if original_y_space:
+                y_vals_to_plot = self.re.untransform(y_vals)
+            else:
+                y_vals_to_plot = y_vals
+            plot, = ax.plot(dummy_data[x_name], y_vals_to_plot, linestyle = line_type)
             plots.append(plot)
             labels.append(", ".join(label))
             
+
             if categorize_residuals:
                 indices_to_use = pd.Series([True] * len(x)) # gradually gets filtered out
                 for (cat,level) in zip(cats,level_set):
                     indices_to_use = indices_to_use & (self.training_data[str(cat)] == level)
-                ax.scatter(x[indices_to_use], self.training_y[y_name][indices_to_use], c = plot.get_color())
+                ax.scatter(x[indices_to_use], training_y_vals[indices_to_use], c = plot.get_color())
             
             if confidence_band:
-                self._plot_band(dummy_data, y_vals, plot.get_color(), plot_objs, True)
+                self._plot_band(dummy_data, y_vals, plot.get_color(), original_y_space, plot_objs, True)
             elif prediction_band:
-                self._plot_band(dummy_data, y_vals, plot.get_color(), plot_objs, False)
+                self._plot_band(dummy_data, y_vals, plot.get_color(), original_y_space, plot_objs, False)
 
         # Legend
         box = ax.get_position()
@@ -330,7 +361,7 @@ class LinearModel(Model):
         ax.legend(plots, labels, title = ", ".join(cat_names), loc = "center left", bbox_to_anchor = (1, 0.5))
         
         if not categorize_residuals:
-            resids = ax.scatter(x, self.training_y[str(self.re)], c = "black")
+            resids = ax.scatter(x, training_y_vals, c = "black")
         
     # Deprecated
     def _plot(self, categorize_residuals = True, jitter = None):

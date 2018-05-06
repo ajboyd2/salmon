@@ -167,6 +167,12 @@ class Expression(ABC):
         # Retrun the degrees of freedom for an expression (not including constants)
         pass
 
+    def untransform(self, data):
+        return data * (1 / self.scale)
+
+    def untransform_name(self):
+        return str(self * (1 / self.scale))
+
 class Var(Expression):
 
     def __init__(self, name, scale = 1):
@@ -268,6 +274,14 @@ class TransVar(Expression):
     
     def get_dof(self):
         return 1
+
+    def untransform(self, data):
+        unscaled = data  * (1 / self.scale)
+        inverted = self.transformation.invert(unscaled)
+        return self.var.untransform(inverted)
+
+    def untransform_name(self):
+        return self.var.untransform_name()
     
 class PowerVar(TransVar):
     
@@ -592,6 +606,8 @@ class Combination(Expression):
     def __init__(self, terms, scale = 1):
         self.scale = scale
         
+        terms = [Constant(term) if isinstance(term, (int, float)) else term for term in terms]
+
         if any(not isinstance(t, Expression) for t in terms):
             raise Exception("Combination takes only Expressions for initialization.")
                         
