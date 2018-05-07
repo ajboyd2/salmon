@@ -461,15 +461,27 @@ class Categorical(Var):
     def _set_levels(self, data, override_baseline = True):
         unique_values = data[self.name].unique()
         unique_values.sort()
-        self.levels = unique_values[:]
-        if override_baseline:
-            self.set_baseline(unique_values[0])
+        if self.levels is None:
+            self.levels = unique_values[:]
+            if override_baseline:
+                self.set_baseline(unique_values[0])
+        else:
+            unique_values = set(unique_values)
+            diff = unique_values - set(self.levels)
+            if len(diff) == 0:
+                self.set_baseline(self.levels[0])
+            else:
+                self.set_baseline(diff)
+                self.levels = list(self.levels)
+                for element in diff:
+                    self.levels.append(element)
+        
         
     def _one_hot_encode(self, data):
         return pd.DataFrame({self.name + "{" + str(level) + "}" : (data[self.name] == level) * 1 for level in self.levels if level not in self.baseline})
         
     def evaluate(self, data, fit = True):
-        if self.levels is None:
+        if self.levels is None or self.baseline is None:
             self._set_levels(data)
         
         if self.encoding == 'one-hot':
