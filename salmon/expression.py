@@ -463,7 +463,7 @@ class Categorical(Var):
         unique_values.sort()
         if self.levels is None:
             self.levels = unique_values[:]
-            if override_baseline:
+            if self.baseline is None:
                 self.set_baseline(unique_values[0])
         else:
             unique_values = set(unique_values)
