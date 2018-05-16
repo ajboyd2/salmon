@@ -99,12 +99,29 @@ def _anova_models(full_model, reduced_model):
     f_sse = full_model.get_sse()
     r_sse = reduced_model.get_sse()
     
-    conditional_msr = (r_sse - f_sse) / (r_reg_df - f_reg_df)
-    full_mse = f_sse / f_reg_df
-    f_stat = conditional_msr / full_mse
-
+    denom_df = f_reg_df
+    denom_ms = f_sse / denom_df
+    numer_df = r_reg_df - f_reg_df
+    numer_ss = r_sse - f_sse
     # what next?    
-    
+    _, f_val, p_val = _calc_stats(numer_ss, numer_df, denom_ms, denom_df)
+
+    indices = [reduced_label, full_label]
+    resid_df = [r_error_df, f_error_df]
+    ssr = [reduced_model.get_ssr(), full_model.get_ssr()] 
+    df = [np.nan, resid_df[0] - resid_df[1]]
+    sse = [np.nan, numer_ss]
+    f = [np.nan, f_val]
+    p = [np.nan, p_val]
+
+    return pd.DataFrame({
+        "Residual DF" : resid_df,
+        "SSR" : ssr, 
+        "DF" : df,
+        "SSE" : sse,
+        "F" : f,
+        "P-Val" : p},
+        index = indices)
     
     
     
