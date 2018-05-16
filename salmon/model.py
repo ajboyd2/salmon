@@ -138,7 +138,7 @@ class LinearModel(Model):
                              str(round(crit_prob, 5) * 100) + "%" : upper_bound})#, 
                              #index = self.bhat.index)
 
-    def predict(self, data, for_plot = False):
+    def predict(self, data, for_plot = False, confidence_interval = False, prediction_interval = False):
         # Construct the X matrix
         X = self.ex.evaluate(data, fit = False)
         if self.intercept:
@@ -197,7 +197,7 @@ class LinearModel(Model):
         W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, n-p)
         return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
         
-    def plot(self, categorize_residuals = True, jitter = None, confidence_band = False, prediction_band = False, original_y_space = False):
+    def plot(self, categorize_residuals = True, jitter = None, confidence_band = False, prediction_band = False, original_y_space = True):
         if confidence_band and prediction_band:
             raise Exception("One one of {confidence_band, prediction_band} may be set to True at a time.")
 
@@ -218,23 +218,98 @@ class LinearModel(Model):
         fig = plt.figure()
         ax = plt.subplot(111)
         
+        plot_args = {"categorize_residuals": categorize_residuals, 
+                    "jitter": jitter, 
+                    "terms": terms,
+                    "confidence_band": confidence_band,
+                    "prediction_band": prediction_band,
+                    "original_y_space": original_y_space,
+                    "plot_objs": {"figure" : fig, 
+                                  "ax" : ax, 
+                                  "y" : {"min" : min_y, 
+                                  "max" : max_y,
+                                  "name" : str(self.re)}}}
+
         if len(terms['Q']) == 1:
-            return self._plot_one_quant(categorize_residuals, 
-                                        jitter, 
-                                        terms,
-                                        confidence_band,
-                                        prediction_band,
-                                        original_y_space,
-                                        {"figure" : fig, 
-                                         "ax" : ax, 
-                                         "y" : {"min" : min_y, 
-                                         "max" : max_y,
-                                         "name" : str(self.re)}})
+            return self._plot_one_quant(**plot_args)
         elif len(terms['Q']) == 0 and len(terms['C']) > 0:
-            return self._plot_zero_quant() # TODO Make function
+            return self._plot_zero_quant(**plot_args) # TODO Make function
         else:
             raise Exception("Plotting line of best fit only expressions that reference a single variable.")
-                                                      
+
+    def _plot_zero_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs):
+        ax = plot_objs['ax']
+        unique_cats = list(terms['C'])
+        levels = [cat.levels for cat in unique_cats]
+        level_amounts = [len(level_ls) for level_ls in levels]
+        ml_index = level_amounts.index(max(level_amounts))
+        ml_cat = unique_cats[ml_index]
+        ml_levels = levels[ml_index]
+        cats_wo_most = unique_cats[:]
+        cats_wo_most.remove(ml_cat) # List of categorical variables without the ml_cat
+        levels_wo_most = levels[:]
+        levels_wo_most.remove(levels[ml_index]) # List of levels for categorical variables without the ml_cat
+        single_cat = len(cats_wo_most) == 0
+        if single_cat:
+            level_combinations = [None]
+        else:
+            level_combinations = product(*levels_wo_most) # Cartesian product
+        
+        line_x = pd.DataFrame({str(ml_cat) : ml_levels}).reset_index() # To produce an index column to be used for the x-axis alignment
+        points = pd.merge(self.training_data, line_x, on = str(ml_cat))
+
+        plot_objs['x'] = {'name': 'index'}
+
+        points["<Y_RESIDS_TO_PLOT>"] = self.re.evaluate(points)
+        if original_y_space:
+            points["<Y_RESIDS_TO_PLOT>"] = self.re.untransform(points["<Y_RESIDS_TO_PLOT>"]) # Inefficient due to transforming, then untransforming. Need to refactor later.
+
+        plots = []
+        labels = []
+        linestyles = [':', '-.', '--', '-']
+        for combination in level_combinations:
+            points_indices = pd.Series([True] * len(points))
+            if not single_cat:
+                label = []
+                for element, var in zip(combination, cats_wo_most):
+                    name = str(var)
+                    line_x[name] = element
+                    label.append(str(element))
+                    points_indices = points_indices & (points[name] == element) # Filter out points that don't apply to categories
+                labels.append(", ".join(label))
+            line_type = linestyles.pop()
+            linestyles.insert(0, line_type)
+            line_y = self.predict(line_x, for_plot = True)
+            y_vals = line_y["Predicted " + plot_objs['y']['name']]
+            if original_y_space:
+                y_vals_to_plot = self.re.untransform(y_vals)
+            else:
+                y_vals_to_plot = y_vals
+            plot, = ax.plot(line_x.index, y_vals_to_plot, linestyle = line_type)
+            if jitter is None or jitter is True:
+                variability = np.random.normal(scale = 0.025, size = sum(points_indices))
+            else:
+                variability = 0
+            # Y values must come from points because earlier merge shuffles rows
+            ax.scatter(points.loc[points_indices, 'index'] + variability, points.loc[points_indices, "<Y_RESIDS_TO_PLOT>"], c = plot.get_color())
+            plots.append(plot)
+
+            if confidence_band:
+                self._plot_band(line_x, y_vals, plot.get_color(), original_y_space, plot_objs, True)
+            elif prediction_band:
+                self._plot_band(line_x, y_vals, plot.get_color(), original_y_space, plot_objs, False)
+
+
+        if not single_cat and len(cats_wo_most) > 0:
+            box = ax.get_position()
+            ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+            ax.legend(plots, labels, title = ", ".join([str(cat) for cat in cats_wo_most]), loc = "center left", bbox_to_anchor=(1, 0.5))
+        plt.xlabel(str(ml_cat))
+        plt.xticks(line_x.index, line_x[str(ml_cat)])
+        plt.ylabel(plot_objs['y']['name'] if not original_y_space else self.re.untransform_name())
+        plt.grid()
+        ax.set_ylim([plot_objs['y']['min'], plot_objs['y']['max']])
+
     def _plot_one_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs):
         x_term = next(iter(terms['Q'])) # Get the "first" and only element in the set 
         x_name = str(x_term)
