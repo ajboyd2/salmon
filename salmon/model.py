@@ -138,23 +138,30 @@ class LinearModel(Model):
                              str(round(crit_prob, 5) * 100) + "%" : upper_bound})#, 
                              #index = self.bhat.index)
 
-    def predict(self, data, for_plot = False, confidence_interval = False, prediction_interval = False):
+    def predict(self, data, for_plot = False, confidence_interval = False, prediction_interval = False, alpha = 0.05):
         # Construct the X matrix
         X = self.ex.evaluate(data, fit = False)
         if self.intercept:
             X['Intercept'] = 1
+
+        predictions = pd.DataFrame({"Predicted " + str(self.re) : X.dot(self.bhat).sum(axis = 1)})
             
-        # For plotting with categorical lines
-        #if for_plot:
-        #    columns_present = set(list(X)) # Need to check if can do just set(X)
-        #    columns_needed = self.bhat.index.format()
-        #    columns_to_add = set(columns_needed) - columns_present
-        #    for column in columns_to_add:
-        #        X[column] = 0 # Add all non-present columns
-        #    X = X[columns_needed] # Remove unneccessary columns
+        if confidence_interval or prediction_interval:
+            if confidence_interval:
+                widths = self._confidence_interval_width(X, alpha)
+            else:
+                widths = self._prediction_interval_width(X, alpha)
+
+            crit_prob = 1 - (alpha / 2)
+
+            lower = y_vals - widths
+            upper = y_vals + widths
+
+            predictions[str(round(1 - crit_prob, 5) * 100) + "%"] = lower
+            predictions[str(round(crit_prob, 5) * 100) + "%"] = upper
+
         
-        # Multiply the weights to each column and sum across rows
-        return pd.DataFrame({"Predicted " + str(self.re) : X.dot(self.bhat).sum(axis = 1)})
+        return predictions
     
     def get_sse(self):
         sse = ((self.training_y.iloc[:,0] - self.fitted.iloc[:,0]) ** 2).sum()
@@ -197,7 +204,7 @@ class LinearModel(Model):
         W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, n-p)
         return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
         
-    def plot(self, categorize_residuals = True, jitter = None, confidence_band = False, prediction_band = False, original_y_space = True):
+    def plot(self, categorize_residuals = True, jitter = None, confidence_band = False, prediction_band = False, original_y_space = True, alpha = 0.05):
         if confidence_band and prediction_band:
             raise Exception("One one of {confidence_band, prediction_band} may be set to True at a time.")
 
@@ -224,6 +231,7 @@ class LinearModel(Model):
                     "confidence_band": confidence_band,
                     "prediction_band": prediction_band,
                     "original_y_space": original_y_space,
+                    "alpha" : alpha,
                     "plot_objs": {"figure" : fig, 
                                   "ax" : ax, 
                                   "y" : {"min" : min_y, 
@@ -237,7 +245,7 @@ class LinearModel(Model):
         else:
             raise Exception("Plotting line of best fit only expressions that reference a single variable.")
 
-    def _plot_zero_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs):
+    def _plot_zero_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
         ax = plot_objs['ax']
         unique_cats = list(terms['C'])
         levels = [cat.levels for cat in unique_cats]
@@ -295,9 +303,9 @@ class LinearModel(Model):
             plots.append(plot)
 
             if confidence_band:
-                self._plot_band(line_x, y_vals, plot.get_color(), original_y_space, plot_objs, True)
+                self._plot_band(line_x, y_vals, plot.get_color(), original_y_space, plot_objs, True, alpha)
             elif prediction_band:
-                self._plot_band(line_x, y_vals, plot.get_color(), original_y_space, plot_objs, False)
+                self._plot_band(line_x, y_vals, plot.get_color(), original_y_space, plot_objs, False, alpha)
 
 
         if not single_cat and len(cats_wo_most) > 0:
@@ -310,7 +318,7 @@ class LinearModel(Model):
         plt.grid()
         ax.set_ylim([plot_objs['y']['min'], plot_objs['y']['max']])
 
-    def _plot_one_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs):
+    def _plot_one_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
         x_term = next(iter(terms['Q'])) # Get the "first" and only element in the set 
         x_name = str(x_term)
         x = self.training_data[x_name]
@@ -326,9 +334,9 @@ class LinearModel(Model):
         line_x = pd.DataFrame({x_name : np.linspace(min_x, max_x, 100)})
         
         if len(terms['C']) == 0:
-            self._plot_one_quant_zero_cats(x, line_x, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs)
+            self._plot_one_quant_zero_cats(x, line_x, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs)
         else:
-            self._plot_one_quant_some_cats(x, line_x, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs)
+            self._plot_one_quant_some_cats(x, line_x, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs)
 
         plt.xlabel(x_name)
         plt.ylabel(plot_objs['y']['name'] if not original_y_space else self.re.untransform_name())
@@ -336,7 +344,7 @@ class LinearModel(Model):
         plot_objs['ax'].set_xlim([min_x, max_x])
         plot_objs['ax'].set_ylim([plot_objs['y']['min'], plot_objs['y']['max']])
                                                       
-    def _plot_one_quant_zero_cats(self, x, line_x, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs):
+    def _plot_one_quant_zero_cats(self, x, line_x, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
         x_name = plot_objs['x']['name']
         line_y = self.predict(line_x)
         y_vals = line_y["Predicted " + plot_objs['y']['name']]
@@ -347,9 +355,9 @@ class LinearModel(Model):
         line_fit, = plt.plot(line_x[x_name], y_vals_to_plot)
 
         if confidence_band:
-            self._plot_band(line_x, y_vals, line_fit.get_color(), original_y_space, plot_objs, True)
+            self._plot_band(line_x, y_vals, line_fit.get_color(), original_y_space, plot_objs, True, alpha)
         elif prediction_band:
-            self._plot_band(line_x, y_vals, line_fit.get_color(), original_y_space, plot_objs, False)
+            self._plot_band(line_x, y_vals, line_fit.get_color(), original_y_space, plot_objs, False, alpha)
 
         training_y_vals = self.training_y[plot_objs['y']['name']]
         if original_y_space:
@@ -378,7 +386,7 @@ class LinearModel(Model):
         plot_objs['ax'].fill_between(x = line_x[x_name], y1 = lower, y2 = upper, color = color, alpha = 0.3)
         
         
-    def _plot_one_quant_some_cats(self, x, line_x, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, plot_objs):
+    def _plot_one_quant_some_cats(self, x, line_x, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
         ax = plot_objs['ax']
         x_name = plot_objs['x']['name']
         y_name = plot_objs['y']['name']
@@ -426,9 +434,9 @@ class LinearModel(Model):
                 ax.scatter(x[indices_to_use], training_y_vals[indices_to_use], c = plot.get_color())
             
             if confidence_band:
-                self._plot_band(dummy_data, y_vals, plot.get_color(), original_y_space, plot_objs, True)
+                self._plot_band(dummy_data, y_vals, plot.get_color(), original_y_space, plot_objs, True, alpha)
             elif prediction_band:
-                self._plot_band(dummy_data, y_vals, plot.get_color(), original_y_space, plot_objs, False)
+                self._plot_band(dummy_data, y_vals, plot.get_color(), original_y_space, plot_objs, False, alpha)
 
         # Legend
         box = ax.get_position()
