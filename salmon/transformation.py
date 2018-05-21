@@ -72,8 +72,8 @@ class Standardize(Transformation):
         return (data * self.past_std) + self.past_mean
     
 # Aliases
-Sin = lambda i: Transformation(np.sin, "sin({})", "Sine",  np.arcsin)
-Cos = lambda i: Transformation(np.cos, "cos({})", "Cosine", np.arccos)
+Sin = lambda i: Transformation(np.sin, "sin({})", "Sine")
+Cos = lambda i: Transformation(np.cos, "cos({})", "Cosine")
 Log = lambda i: Transformation(np.log, "log({})", "Natural Log", np.exp)
 Log10 = lambda i: Transformation(np.log10, "log({})", "Log Base 10", lambda x: 10 * x)
 Exp = lambda i: Transformation(np.exp, "exp({})", "Exponential", np.log)
