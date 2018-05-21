@@ -5,7 +5,7 @@ import scipy.stats as stats
 import matplotlib.pyplot as plt
 from itertools import product
 
-from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination
+from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination, Identity
 
 plt.style.use('ggplot')
 
@@ -26,11 +26,18 @@ class Model:
     
 class LinearModel(Model):
     def __init__(self, explanatory, response, intercept = True):
-        self.given_ex = explanatory
-        self.given_re = response
+        if intercept:
+            self.given_ex = explanatory + 1
+        else:
+            self.given_ex = explanatory    
+        constant = self.given_ex.reduce()['Constant']
+        self.intercept = constant is not None
+        if self.intercept:
+            self.given_ex = self.given_ex - constant # This was done to easily check all options for indicating a wanted intercept
+                
+        self.given_re = Identity(response) # This will collapse any combination of variables into a single column
         self.ex = None
         self.re = None
-        self.intercept = intercept
         self.bhat = None
         self.fitted = None
         self.residuals = None
@@ -43,6 +50,9 @@ class LinearModel(Model):
         self.training_x = None
         self.training_y = None
         self.categorical_levels = dict()
+        
+    def __str__(self):
+        return str(self.given_ex) + " ~ " + str(self.given_re)
 
     def fit(self, X, Y = None):
         # Wrapper to provide compatibility for sklearn functions
@@ -63,53 +73,119 @@ class LinearModel(Model):
         self.re = self.given_re.copy()
         self.re = self.re.interpret(data)       
         
+        terms = self.ex.reduce()
+        
         # Construct X matrix
-        X = self.extract_columns(self.ex, data)
-        if self.intercept:
-            X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
+        X = self.ex.evaluate(data)
+        X_means = X.mean()
         self.training_x = X
+        self.training_x_means = X_means
         # Construct Y vector
-        y = self.extract_columns(self.re, data)
+        y = self.re.evaluate(data)
+        y_mean = y.mean()
         self.training_y = y
-        # Ensure correct dimensionality of y
-        if len(y.shape) > 1 and y.shape[1] > 1:
-            raise Exception("Response variable of linear model can only be a single term expression.")
+        self.training_y_mean = y_mean
+
+        # Center if there is an intercept
+        if self.intercept:
+            X = X - X_means
+            y = y - y_mean
+        
         # Solve equation
         self.bhat = pd.DataFrame(np.linalg.solve(np.dot(X.T, X), np.dot(X.T, y)), 
                                  index=X.columns, columns = ["Coefficients"])
-        
+        if self.intercept:
+            self.bhat.loc["Intercept"] = [y_mean[0] - X_means.dot(self.bhat)[0]]
+            X = X + X_means
+            X['Intercept'] = 1
+            y = y + y_mean
+            
+            
+    
         n = X.shape[0]
-        p = X.shape[1] - 1
+        p = X.shape[1] - (1 if self.intercept else 0)
 
+        # Y_Hat and Residuals
         self.fitted = pd.DataFrame({"Fitted" : np.dot(X, self.bhat).sum(axis = 1)})
         self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - self.fitted.iloc[:,0]})
+        
+        # Sigma
         self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p - 1)) ** 0.5
-        self.var = np.linalg.solve(np.dot(X.T, X), (self.std_err_est ** 2) * np.identity(p + 1))
-        self.std_err_vars = pd.DataFrame({"SE" : (np.diagonal(self.var)) ** 0.5})
-        self.t_vals = pd.DataFrame({"t" : self.bhat["Coefficients"].reset_index(drop = True) / self.std_err_vars["SE"]})
-        self.p_vals = pd.DataFrame({"p" : pd.Series(stats.t.cdf(self.t_vals["t"], n - p - 1)).apply(lambda x: 2 * x if x < 0.5 else 2 * (1 - x))})
-        ret_val = pd.concat([self.bhat.reset_index(), self.std_err_vars, self.t_vals, self.p_vals], axis = 1).set_index("index")
-        ret_val.index.name = None # Remove oddity of set_index
+
+        # Covariance Matrix        
+        self.var = np.linalg.solve(np.dot(X.T, X), 
+                                   (self.std_err_est ** 2) * np.identity(X.shape[1]))
+
+        # Coefficient SE, Diagonal of Cov. Matrix
+        self.std_err_vars = pd.DataFrame({"SE" : (np.diagonal(self.var)) ** 0.5}, 
+                                         index = self.bhat.index)
+        
+        # format the covariance matrix
+        self.var = pd.DataFrame(self.var, columns = X.columns, index = X.columns)
+        
+        # Coefficient Inference
+        self.t_vals = pd.DataFrame({"t" : self.bhat["Coefficients"] / self.std_err_vars["SE"]})
+        self.p_vals = pd.DataFrame({"p" : pd.Series(2 * stats.t.cdf(-abs(self.t_vals["t"]), n - p - 1), 
+                                   index = self.bhat.index)
+
+        ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals], axis = 1)
         
         return ret_val 
-        
-    def predict(self, data, for_plot = False):
-        # Construct the X matrix
-        X = self.extract_columns(self.ex, data, multicolinearity_drop = not for_plot)
-        if self.intercept:
-            X = pd.concat([LinearModel.ones_column(data), X], axis = 1)
 
-        # For plotting with categorical lines
-        if for_plot:
-            columns_present = set(list(X)) # Need to check if can do just set(X)
-            columns_needed = self.bhat.index.format()
-            columns_to_add = set(columns_needed) - columns_present
-            for column in columns_to_add:
-                X[column] = 0 # Add all non-present columns
-            X = X[columns_needed] # Remove unneccessary columns
+    def confidence_intervals(self, alpha = None, conf = None):
+        if alpha is None:
+            if conf is None:
+                conf = 0.95
+            alpha = 1 - conf
+
+        crit_prob = 1 - (alpha / 2)
+        df = self.training_x.shape[0] - self.bhat.shape[0] # n - p
+        crit_value = stats.t.ppf(crit_prob, df)
         
-        # Multiply the weights to each column and sum across rows
-        return pd.DataFrame({"Predicted " + str(self.re) : np.dot(X, self.bhat).sum(axis = 1)})
+        se_vals = self.std_err_vars["SE"]
+        width = crit_value * se_vals
+        lower_bound = self.bhat["Coefficients"] - width
+        upper_bound = self.bhat["Coefficients"] + width 
+        return pd.DataFrame({str(round(1 - crit_prob, 5) * 100) + "%" : lower_bound, 
+                             str(round(crit_prob, 5) * 100) + "%" : upper_bound})#, 
+                             #index = self.bhat.index)
+
+    def predict(self, data, for_plot = False, confidence_interval = False, prediction_interval = False, alpha = 0.05):
+        # Construct the X matrix
+        X = self.ex.evaluate(data, fit = False)
+        if self.intercept:
+            X['Intercept'] = 1
+
+        predictions = pd.DataFrame({"Predicted " + str(self.re) : X.dot(self.bhat).sum(axis = 1)})
+            
+        if confidence_interval or prediction_interval:
+            if confidence_interval:
+                widths = self._confidence_interval_width(X, alpha)
+            else:
+                widths = self._prediction_interval_width(X, alpha)
+
+            crit_prob = 1 - (alpha / 2)
+
+            lower = y_vals - widths
+            upper = y_vals + widths
+
+            predictions[str(round(1 - crit_prob, 5) * 100) + "%"] = lower
+            predictions[str(round(crit_prob, 5) * 100) + "%"] = upper
+
+        
+        return predictions
+    
+    def get_sse(self):
+        sse = ((self.training_y.iloc[:,0] - self.fitted.iloc[:,0]) ** 2).sum()
+        return sse
+        
+    def get_ssr(self):
+        ssr = self.get_sst() - self.get_sse()
+        return ssr
+    
+    def get_sst(self):
+        sst = ((self.training_y.iloc[:,0] - self.training_y[:,0].mean()) ** 2).sum()
+        return sst
     
     def score(self, X, y, **kwargs):
         # Allow interfacing with sklearn's cross fold validation
@@ -120,129 +196,273 @@ class LinearModel(Model):
         mse = sse / (len(y) - len(self.training_x.columns) - 2)
         msto = ssto / (len(y) - 1)
         return 1 - mse / msto # Adjusted R^2
+
+    def _prediction_interval_width(self, X_new, alpha = 0.05):
+        n = self.training_x.shape[0]
+        p = X_new.shape[1]
+        mse = self.get_sse() / (n - p)
+        s_yhat_squared = (X_new.dot(self.var) * X_new).sum(axis = 1) # X_new_vect * var * X_new_vect^T (equivalent to np.diag(X_new.dot(self.var).dot(X_new.T)))
+        s_pred_squared = mse + s_yhat_squared
+
+        t_crit = stats.t.ppf(1 - (alpha / 2), n-p)
+
+        return t_crit * (s_pred_squared ** 0.5)
+
+    def _confidence_interval_width(self, X_new, alpha = 0.05):
+        n = self.training_x.shape[0]
+        p = X_new.shape[1]
+        s_yhat_squared = (X_new.dot(self.var) * X_new).sum(axis = 1) # X_new_vect * var * X_new_vect^T (equivalent to np.diag(X_new.dot(self.var).dot(X_new.T)))
+        #t_crit = stats.t.ppf(1 - (alpha / 2), n-p)
+        W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, n-p)
+        return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
         
-    def plot(self, categorize_residuals = True, jitter = None):
-        terms = self.ex.flatten(True)
-        unique_quants = list({term.name for term in terms if isinstance(term, Quantitative)})
-        unique_cats = list({term.name for term in terms if isinstance(term, Categorical)})
+    def plot(self, categorize_residuals = True, jitter = None, confidence_band = False, prediction_band = False, original_y_space = True, alpha = 0.05):
+        if confidence_band and prediction_band:
+            raise Exception("One one of {confidence_band, prediction_band} may be set to True at a time.")
+
+        terms = self.ex.reduce()
         
-        min_y = min(self.training_y[str(self.re)])
-        max_y = max(self.training_y[str(self.re)])
+        # Redundant, we untransform in later function calls
+        # TODO: Fix later
+        y_vals = self.training_y[str(self.re)]
+        if original_y_space:
+            y_vals = self.re.untransform(y_vals)
+        # Plotting Details:
+        min_y = min(y_vals)
+        max_y = max(y_vals)
         diff = (max_y - min_y) * 0.05
         min_y = min(min_y - diff, min_y + diff) # Add a small buffer
         max_y = max(max_y - diff, max_y + diff) # TODO: Check if min() and max() are necessary here
-           
-        
+                
         fig = plt.figure()
         ax = plt.subplot(111)
         
-        if len(unique_quants) == 1:
-            unique_quant = unique_quants.pop()
-            
-            x = self.training_data[unique_quant]
-            min_x = min(x)
-            max_x = max(x)
-            diff = (max_x - min_x) * 0.05
-            min_x = min(min_x - diff, min_x + diff) # Add a small buffer
-            max_x = max(max_x - diff, max_x + diff) # TODO: Check if min() and max() are necessary here
-                        
-            line_x = pd.DataFrame({unique_quant : np.linspace(min_x, max_x, 100)})
-            if len(unique_cats) == 0:
-                line_y = self.predict(line_x)
-                line_fit, = plt.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)])
-                ax.scatter(x, self.training_y[str(self.re)], c = "black")
-            else:
-                combinations = set(self.training_data[unique_cats].apply(lambda x: tuple(x), 1))
-                plots = []
-                labels = []
-                linestyles = [':', '-.', '--', '-']
-                for combination in combinations:
-                    label = []
-                    for element, var in zip(combination, unique_cats):
-                        name = str(var)
-                        line_x[name] = element
-                        label.append(str(element))
-                    line_type = linestyles.pop()
-                    linestyles.insert(0, line_type)
-                    line_y = self.predict(line_x, for_plot = True)
-                    plot, = ax.plot(line_x[unique_quant], line_y["Predicted " + str(self.re)], linestyle = line_type)
-                    plots.append(plot)
-                    labels.append(", ".join(label))
-                    if categorize_residuals:
-                        indices_to_use = pd.Series([True] * len(x))
-                        for element, var in zip(combination, unique_cats):
-                            indices_to_use = indices_to_use & (self.training_data[var] == element)
-                        ax.scatter(x[indices_to_use], self.training_y[str(self.re)][indices_to_use], c = plot.get_color())
-                box = ax.get_position()
-                ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-                ax.legend(plots, labels, title = ", ".join(unique_cats), loc = "center left", bbox_to_anchor = (1, 0.5))
-            if not categorize_residuals:
-                resids = ax.scatter(x, self.training_y[str(self.re)], c = "black")
-                #plots.append(resids)
-                #labels.append("Residuals")
-            plt.xlabel(unique_quant)
-            plt.ylabel(str(self.re))
-            plt.grid()
-            ax.set_xlim([min_x, max_x])
-            ax.set_ylim([min_y, max_y])
-            #fig.show()
-        elif len(unique_quants) == 0 and len(unique_cats) > 0:
-            cats_levels = self.training_data[unique_cats].apply(lambda x: len(set(x)), 0)
-            ml_cat = cats_levels.idxmax() # Category with the most levels
-            ml_index = unique_cats.index(ml_cat) # Index corresponding to ml_cat
-            cats_wo_most = unique_cats[:]
-            cats_wo_most.remove(ml_cat) # List of categorical variables without the ml_cat
-            single_cat = len(cats_wo_most) == 0
-            if single_cat:
-                combinations = {None}
-            else:
-                combinations = set(self.training_data[cats_wo_most].apply(lambda x: tuple(x), 1))
-            
-            line_x = pd.DataFrame({ml_cat : self.categorical_levels[ml_cat]}).reset_index() # To produce an index column
-            points = pd.merge(self.training_data, line_x, on = ml_cat)
+        plot_args = {"categorize_residuals": categorize_residuals, 
+                    "jitter": jitter, 
+                    "terms": terms,
+                    "confidence_band": confidence_band,
+                    "prediction_band": prediction_band,
+                    "original_y_space": original_y_space,
+                    "alpha" : alpha,
+                    "plot_objs": {"figure" : fig, 
+                                  "ax" : ax, 
+                                  "y" : {"min" : min_y, 
+                                  "max" : max_y,
+                                  "name" : str(self.re)}}}
 
-            plots = []
-            labels = []
-            linestyles = [':', '-.', '--', '-']
-            for combination in combinations:
-                points_indices = pd.Series([True] * len(points))
-                if not single_cat:
-                    label = []
-                    for element, var in zip(combination, cats_wo_most):
-                        name = str(var)
-                        line_x[name] = element
-                        label.append(str(element))
-                        points_indices = points_indices & (points[name] == element) # Filter out points that don't apply to categories
-                    labels.append(", ".join(label))
-                line_type = linestyles.pop()
-                linestyles.insert(0, line_type)
-                line_y = self.predict(line_x, for_plot = True)
-                plot, = ax.plot(line_x.index, line_y["Predicted " + str(self.re)], linestyle = line_type)
-                if jitter is None or jitter is True:
-                    variability = np.random.normal(scale = 0.025, size = sum(points_indices))
-                else:
-                    variability = 0
-                # Y values must come from points because earlier merge shuffles rows
-                ax.scatter(points.loc[points_indices, 'index'] + variability, points.loc[points_indices, str(self.re)], c = plot.get_color())
-                plots.append(plot)
-            if not single_cat and len(cats_wo_most) > 0:
-                box = ax.get_position()
-                ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-                ax.legend(plots, labels, title = ", ".join(cats_wo_most), loc = "center left", bbox_to_anchor=(1, 0.5))
-            plt.xlabel(ml_cat)
-            plt.xticks(line_x.index, line_x[ml_cat])
-            plt.ylabel(str(self.re))
-            plt.grid()
-            ax.set_ylim([min_y, max_y])
-
+        if len(terms['Q']) == 1:
+            return self._plot_one_quant(**plot_args)
+        elif len(terms['Q']) == 0 and len(terms['C']) > 0:
+            return self._plot_zero_quant(**plot_args) # TODO Make function
         else:
             raise Exception("Plotting line of best fit only expressions that reference a single variable.")
+
+    def _plot_zero_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
+        ax = plot_objs['ax']
+        unique_cats = list(terms['C'])
+        levels = [cat.levels for cat in unique_cats]
+        level_amounts = [len(level_ls) for level_ls in levels]
+        ml_index = level_amounts.index(max(level_amounts))
+        ml_cat = unique_cats[ml_index]
+        ml_levels = levels[ml_index]
+        cats_wo_most = unique_cats[:]
+        cats_wo_most.remove(ml_cat) # List of categorical variables without the ml_cat
+        levels_wo_most = levels[:]
+        levels_wo_most.remove(levels[ml_index]) # List of levels for categorical variables without the ml_cat
+        single_cat = len(cats_wo_most) == 0
+        if single_cat:
+            level_combinations = [None]
+        else:
+            level_combinations = product(*levels_wo_most) # Cartesian product
+        
+        line_x = pd.DataFrame({str(ml_cat) : ml_levels}).reset_index() # To produce an index column to be used for the x-axis alignment
+        points = pd.merge(self.training_data, line_x, on = str(ml_cat))
+
+        plot_objs['x'] = {'name': 'index'}
+
+        points["<Y_RESIDS_TO_PLOT>"] = self.re.evaluate(points)
+        if original_y_space:
+            points["<Y_RESIDS_TO_PLOT>"] = self.re.untransform(points["<Y_RESIDS_TO_PLOT>"]) # Inefficient due to transforming, then untransforming. Need to refactor later.
+
+        plots = []
+        labels = []
+        linestyles = [':', '-.', '--', '-']
+        for combination in level_combinations:
+            points_indices = pd.Series([True] * len(points))
+            if not single_cat:
+                label = []
+                for element, var in zip(combination, cats_wo_most):
+                    name = str(var)
+                    line_x[name] = element
+                    label.append(str(element))
+                    points_indices = points_indices & (points[name] == element) # Filter out points that don't apply to categories
+                labels.append(", ".join(label))
+            line_type = linestyles.pop()
+            linestyles.insert(0, line_type)
+            line_y = self.predict(line_x, for_plot = True)
+            y_vals = line_y["Predicted " + plot_objs['y']['name']]
+            if original_y_space:
+                y_vals_to_plot = self.re.untransform(y_vals)
+            else:
+                y_vals_to_plot = y_vals
+            plot, = ax.plot(line_x.index, y_vals_to_plot, linestyle = line_type)
+            if jitter is None or jitter is True:
+                variability = np.random.normal(scale = 0.025, size = sum(points_indices))
+            else:
+                variability = 0
+            # Y values must come from points because earlier merge shuffles rows
+            ax.scatter(points.loc[points_indices, 'index'] + variability, points.loc[points_indices, "<Y_RESIDS_TO_PLOT>"], c = plot.get_color())
+            plots.append(plot)
+
+            if confidence_band:
+                self._plot_band(line_x, y_vals, plot.get_color(), original_y_space, plot_objs, True, alpha)
+            elif prediction_band:
+                self._plot_band(line_x, y_vals, plot.get_color(), original_y_space, plot_objs, False, alpha)
+
+
+        if not single_cat and len(cats_wo_most) > 0:
+            box = ax.get_position()
+            ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+            ax.legend(plots, labels, title = ", ".join([str(cat) for cat in cats_wo_most]), loc = "center left", bbox_to_anchor=(1, 0.5))
+        plt.xlabel(str(ml_cat))
+        plt.xticks(line_x.index, line_x[str(ml_cat)])
+        plt.ylabel(plot_objs['y']['name'] if not original_y_space else self.re.untransform_name())
+        plt.grid()
+        ax.set_ylim([plot_objs['y']['min'], plot_objs['y']['max']])
+
+    def _plot_one_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
+        x_term = next(iter(terms['Q'])) # Get the "first" and only element in the set 
+        x_name = str(x_term)
+        x = self.training_data[x_name]
+        min_x = min(x)
+        max_x = max(x)
+        diff = (max_x - min_x) * 0.05
+        min_x = min(min_x - diff, min_x + diff) # Add a small buffer
+        max_x = max(max_x - diff, max_x + diff) # TODO: Check if min() and max() are necessary here
+        
+        plot_objs['x'] = {"min" : min_x, "max" : max_x, "name" : x_name}
+        
+        # Quantitative inputs
+        line_x = pd.DataFrame({x_name : np.linspace(min_x, max_x, 100)})
+        
+        if len(terms['C']) == 0:
+            self._plot_one_quant_zero_cats(x, line_x, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs)
+        else:
+            self._plot_one_quant_some_cats(x, line_x, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs)
+
+        plt.xlabel(x_name)
+        plt.ylabel(plot_objs['y']['name'] if not original_y_space else self.re.untransform_name())
+        plt.grid()
+        plot_objs['ax'].set_xlim([min_x, max_x])
+        plot_objs['ax'].set_ylim([plot_objs['y']['min'], plot_objs['y']['max']])
+                                                      
+    def _plot_one_quant_zero_cats(self, x, line_x, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
+        x_name = plot_objs['x']['name']
+        line_y = self.predict(line_x)
+        y_vals = line_y["Predicted " + plot_objs['y']['name']]
+        if original_y_space:
+            y_vals_to_plot = self.re.untransform(y_vals)
+        else:
+            y_vals_to_plot = y_vals
+        line_fit, = plt.plot(line_x[x_name], y_vals_to_plot)
+
+        if confidence_band:
+            self._plot_band(line_x, y_vals, line_fit.get_color(), original_y_space, plot_objs, True, alpha)
+        elif prediction_band:
+            self._plot_band(line_x, y_vals, line_fit.get_color(), original_y_space, plot_objs, False, alpha)
+
+        training_y_vals = self.training_y[plot_objs['y']['name']]
+        if original_y_space:
+            training_y_vals = self.re.untransform(training_y_vals)
+
+        plot_objs['ax'].scatter(x, training_y_vals, c = "black")
+
+    def _plot_band(self, line_x, y_vals, color, original_y_space, plot_objs, use_confidence = False, alpha = 0.05): # By default will plot prediction bands
+        x_name = plot_objs['x']['name']
+        X_new = self.ex.evaluate(line_x, fit = False)
+        if self.intercept:
+            X_new['Intercept'] = 1
+
+        if use_confidence:
+            widths = self._confidence_interval_width(X_new, alpha)
+        else:
+            widths = self._prediction_interval_width(X_new, alpha)
+
+        lower = y_vals - widths
+        upper = y_vals + widths
+
+        if original_y_space:
+            lower = self.re.untransform(lower)
+            upper = self.re.untransform(upper)
+
+        plot_objs['ax'].fill_between(x = line_x[x_name], y1 = lower, y2 = upper, color = color, alpha = 0.3)
+        
+        
+    def _plot_one_quant_some_cats(self, x, line_x, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
+        ax = plot_objs['ax']
+        x_name = plot_objs['x']['name']
+        y_name = plot_objs['y']['name']
+        
+
+        plots = []
+        labels = []
+        linestyles = [':', '-.', '--', '-']
+        
+        cats = list(terms['C'])
+        cat_names = [str(cat) for cat in cats]
+        levels = [cat.levels for cat in cats]
+        level_combinations = product(*levels) #cartesian product of all combinations
+        
+        dummy_data = line_x.copy() # rest of columns set in next few lines
+       
+        training_y_vals = self.training_y[y_name]
+        if original_y_space:
+            training_y_vals = self.re.untransform(training_y_vals)
+
+        for level_set in level_combinations:
+            label = [] # To be used in legend
+            for (cat,level) in zip(cats,level_set):
+                dummy_data[str(cat)] = level # set dummy data for prediction
+                label.append(str(level))
+                               
+            line_type = linestyles.pop() # rotate through line styles
+            linestyles.insert(0, line_type)
+            
+            line_y = self.predict(dummy_data, for_plot = True)
+            y_vals = line_y["Predicted " + y_name]
+            if original_y_space:
+                y_vals_to_plot = self.re.untransform(y_vals)
+            else:
+                y_vals_to_plot = y_vals
+            plot, = ax.plot(dummy_data[x_name], y_vals_to_plot, linestyle = line_type)
+            plots.append(plot)
+            labels.append(", ".join(label))
+            
+
+            if categorize_residuals:
+                indices_to_use = pd.Series([True] * len(x)) # gradually gets filtered out
+                for (cat,level) in zip(cats,level_set):
+                    indices_to_use = indices_to_use & (self.training_data[str(cat)] == level)
+                ax.scatter(x[indices_to_use], training_y_vals[indices_to_use], c = plot.get_color())
+            
+            if confidence_band:
+                self._plot_band(dummy_data, y_vals, plot.get_color(), original_y_space, plot_objs, True, alpha)
+            elif prediction_band:
+                self._plot_band(dummy_data, y_vals, plot.get_color(), original_y_space, plot_objs, False, alpha)
+
+        # Legend
+        box = ax.get_position()
+        ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+        ax.legend(plots, labels, title = ", ".join(cat_names), loc = "center left", bbox_to_anchor = (1, 0.5))
+        
+        if not categorize_residuals:
+            resids = ax.scatter(x, training_y_vals, c = "black")
 
     def residual_plots(self):
         terms = list(self.training_x)
         plots = []
         for term in terms:
-            plots.append(plt.scatter(self.training_x[str(term)], self.residuals))
+            plots.append(plt.scatter(self.training_x[str(term)], self.residuals['Residuals']))
             plt.xlabel(str(term))
             plt.ylabel("Residuals")
             plt.title(str(term) + " v. Residuals")
@@ -251,7 +471,9 @@ class LinearModel(Model):
         return plots
         
     def partial_plots(self):
-        terms = self.ex.flatten(separate_interactions = False)
+        #terms = self.ex.flatten(separate_interactions = False)
+        term_dict = self.ex.reduce()
+        terms = list(terms['Q']) + list(terms['C'])
 
         for i in range(0, len(terms)):
         

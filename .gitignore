@@ -9,3 +9,23 @@ symbolic_modeling.egg-info/top_level.txt
 symbolic_modeling/__pycache__/__init__.cpython-35.pyc
 symbolic_modeling/__pycache__/expression.cpython-35.pyc
 symbolic_modeling/__pycache__/model.cpython-35.pyc
+/.ipynb_checkpoints/SALMON Documentation-checkpoint.ipynb
+/.ipynb_checkpoints/trial_area-checkpoint.ipynb
+/build/lib/salmon/__init__.py
+/build/lib/salmon/expression.py
+/build/lib/salmon/model.py
+/build/lib/salmon/test.py
+/build/lib/salmon/transformation.py
+/dist/salmon-0.2.0-py3.6.egg
+/salmon.egg-info/dependency_links.txt
+/salmon.egg-info/PKG-INFO
+/salmon.egg-info/SOURCES.txt
+/salmon.egg-info/top_level.txt
+/salmon/__pycache__/__init__.cpython-36.pyc
+/salmon/__pycache__/expression.cpython-36.pyc
+/salmon/__pycache__/model.cpython-36.pyc
+/salmon/__pycache__/transformation.cpython-36.pyc
+/salmon.egg-info/dependency_links.txt
+/salmon.egg-info/PKG-INFO
+/salmon.egg-info/SOURCES.txt
+/salmon.egg-info/top_level.txt
