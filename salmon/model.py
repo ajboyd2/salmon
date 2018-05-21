@@ -125,7 +125,7 @@ class LinearModel(Model):
         
         # Coefficient Inference
         self.t_vals = pd.DataFrame({"t" : self.bhat["Coefficients"] / self.std_err_vars["SE"]})
-        self.p_vals = pd.DataFrame({"p" : pd.Series(2 * stats.t.cdf(-abs(self.t_vals["t"]), n - p - 1), 
+        self.p_vals = pd.DataFrame({"p" : pd.Series(2 * stats.t.cdf(-abs(self.t_vals["t"]), n - p - 1))}, 
                                    index = self.bhat.index)
 
         ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals], axis = 1)
@@ -573,16 +573,54 @@ class LinearModel(Model):
         else:
             raise Exception("LinearModel only suppoprts expressions consisting of Quantitative, Categorical, Interaction, and Combination.")
             
-    # static method
-    def transform(expr, data):
-        if not isinstance(expr, Var):
-            raise Exception("Transformation of data is only supported on singular terms of expressions.")
-        
-        if isinstance(expr.transformation, (int, float)):
-            return ((data + expr.shift) * expr.coefficient) ** expr.transformation
-        elif isinstance(expr.transformation, str):
-            return getattr(np, expr.transformation)((data + expr.shift) * expr.coefficient)
-        else:
-            raise Exception("Transformation of data only supported for powers and numpy functions.")
+    def residual_diagnostic_plots(self, **kwargs):
+        f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, **kwargs)
+        self.residual_quantile_plot(ax = ax1)
+        self.residual_fitted_plot(ax = ax2)
+        self.residual_histogram(ax = ax3)
+        self.residual_order_plot(ax = ax4)
 
+        f.suptitle("Residal Diagnostic Plots for " + str(self))
+
+        return f, (ax1, ax2, ax3, ax4)
+
+    def residual_quantile_plot(self, ax = None):
+        if ax is None:
+            f, ax = plt.subplot(111)
+
+        stats.probplot(self.residuals["Residuals"], dist = "norm", plot = ax)
+        ax.set_title("Residual Q-Q Plot")
+        return ax
+
+    def residual_fitted_plot(self, ax = None):
+        if ax is None:
+            f, ax = plt.subplot(111)
+
+        ax.scatter(self.fitted["Fitted"], self.residuals["Residuals"])
+        ax.set_title("Fitted Values v. Residuals")
+        ax.set_xlabel("Fitted Value")
+        ax.set_ylabel("Residual")
+
+        return ax
+
+    def residual_histogram(self, ax = None):
+        if ax is None:
+            f, ax = plt.subplot(111)
         
+        ax.hist(self.residuals["Residuals"])
+        ax.set_title("Histogram of Residuals")
+        ax.set_xlabel("Residual")
+        ax.set_ylabel("Frequency")
+
+        return ax
+
+    def residual_order_plot(self, ax = None):
+        if ax is None:
+            f, ax = plt.subplot(111)
+
+        ax.plot(self.residuals.index, self.residuals["Residuals"], "o-")
+        ax.set_title("Order v. Residuals")
+        ax.set_xlabel("Row Index")
+        ax.set_ylabel("Residual")
+
+        return ax
