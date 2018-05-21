@@ -187,15 +187,30 @@ class LinearModel(Model):
         sst = ((self.training_y.iloc[:,0] - self.training_y[:,0].mean()) ** 2).sum()
         return sst
     
-    def score(self, X, y, **kwargs):
+    def r_squared(self, X = None, y = None, adjusted = False, **kwargs):
         # Allow interfacing with sklearn's cross fold validation
         #self.fit(X, y)
+        if X is None:
+            X = self.training_data
+        if y is None:
+            y = self.training_y
+
         pred = self.predict(X)
         sse = ((y.iloc[:,0] - pred.iloc[:,0]) ** 2).sum()
         ssto = ((y.iloc[:,0] - y.iloc[:,0].mean()) ** 2).sum()
-        mse = sse / (len(y) - len(self.training_x.columns) - 2)
-        msto = ssto / (len(y) - 1)
-        return 1 - mse / msto # Adjusted R^2
+
+        if adjusted:
+            numerator = sse
+            denominator = ssto
+        else:
+            numerator = sse / (len(y) - len(self.training_x.columns) - 2)
+            denominator = ssto / (len(y) - 1)
+            
+        return 1 - numerator / denominator 
+
+    def score(self, X = None, y = None, adjusted = False, **kwargs):
+        # Wrapper for sklearn api for cross fold validation
+        return self.r_squared(X, y, adjusted, **kwargs)
 
     def _prediction_interval_width(self, X_new, alpha = 0.05):
         n = self.training_x.shape[0]
