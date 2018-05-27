@@ -125,8 +125,8 @@ class LinearModel(Model):
         
         # Coefficient Inference
         self.t_vals = pd.DataFrame({"t" : self.bhat["Coefficients"] / self.std_err_vars["SE"]})
-        self.p_vals = pd.DataFrame({"p" : pd.Series(2 * stats.t.cdf(-abs(self.t_vals["t"]), n - p - 1))}, 
-                                   index = self.bhat.index)
+        self.p_vals = pd.DataFrame({"p" : pd.Series(2 * stats.t.cdf(-abs(self.t_vals["t"]), n - p - 1), 
+                                                    index = self.bhat.index)})
 
         ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals], axis = 1)
         
@@ -601,7 +601,7 @@ class LinearModel(Model):
 
     def residual_quantile_plot(self, ax = None):
         if ax is None:
-            f, ax = plt.subplot(111)
+            f, ax = plt.subplots(1,1)
 
         stats.probplot(self.residuals["Residuals"], dist = "norm", plot = ax)
         ax.set_title("Residual Q-Q Plot")
@@ -609,7 +609,7 @@ class LinearModel(Model):
 
     def residual_fitted_plot(self, ax = None):
         if ax is None:
-            f, ax = plt.subplot(111)
+            f, ax = plt.subplots(1,1)
 
         ax.scatter(self.fitted["Fitted"], self.residuals["Residuals"])
         ax.set_title("Fitted Values v. Residuals")
@@ -620,7 +620,7 @@ class LinearModel(Model):
 
     def residual_histogram(self, ax = None):
         if ax is None:
-            f, ax = plt.subplot(111)
+            f, ax = plt.subplots(1,1)
         
         ax.hist(self.residuals["Residuals"])
         ax.set_title("Histogram of Residuals")
@@ -631,7 +631,7 @@ class LinearModel(Model):
 
     def residual_order_plot(self, ax = None):
         if ax is None:
-            f, ax = plt.subplot(111)
+            f, ax = plt.subplots(1,1)
 
         ax.plot(self.residuals.index, self.residuals["Residuals"], "o-")
         ax.set_title("Order v. Residuals")
