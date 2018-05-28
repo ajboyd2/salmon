@@ -52,8 +52,10 @@ class LinearModel(Model):
         self.categorical_levels = dict()
         
     def __str__(self):
-        return str(self.given_ex) + " ~ " + str(self.given_re)
-
+        if self.intercept:
+            return str(self.given_re) + " ~ " + str(1 + self.given_ex)
+        else:
+            return str(self.given_re) + " ~ " + str(self.given_ex)
     def fit(self, X, Y = None):
         # Wrapper to provide compatibility for sklearn functions
         if Y is None:
