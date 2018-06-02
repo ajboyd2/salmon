@@ -328,7 +328,7 @@ class LinearModel(Model):
             else:
                 variability = 0
             # Y values must come from points because earlier merge shuffles rows
-            ax.scatter(points.loc[points_indices, 'index'] + variability, points.loc[points_indices, "<Y_RESIDS_TO_PLOT>"], c = plot.get_color())
+            ax.scatter(points.loc[points_indices, 'index'] + variability, points.loc[points_indices, "<Y_RESIDS_TO_PLOT>"], c = "black" if single_cat else plot.get_color())
             plots.append(plot)
 
             if confidence_band:
@@ -641,3 +641,4 @@ class LinearModel(Model):
         ax.set_ylabel("Residual")
 
         return ax
+
