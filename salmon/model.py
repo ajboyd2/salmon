@@ -152,19 +152,22 @@ class LinearModel(Model):
                              str(round(crit_prob, 5) * 100) + "%" : upper_bound})#, 
                              #index = self.bhat.index)
 
-    def predict(self, data, for_plot = False, confidence_interval = False, prediction_interval = False, alpha = 0.05):
+    def predict(self, data, for_plot = False, confidence_interval = False, prediction_interval = False):
         # Construct the X matrix
         X = self.ex.evaluate(data, fit = False)
         if self.intercept:
             X['Intercept'] = 1
 
-        predictions = pd.DataFrame({"Predicted " + str(self.re) : X.dot(self.bhat).sum(axis = 1)})
+        y_vals = X.dot(self.bhat).sum(axis = 1)
+        predictions = pd.DataFrame({"Predicted " + str(self.re) : y_vals})
             
         if confidence_interval or prediction_interval:
             if confidence_interval:
-                widths = self._confidence_interval_width(X, alpha)
+                alpha = confidence_interval
+                widths = self._confidence_interval_width(X, confidence_interval)
             else:
-                widths = self._prediction_interval_width(X, alpha)
+                alpha = prediction_interval
+                widths = self._prediction_interval_width(X, prediction_interval)
 
             crit_prob = 1 - (alpha / 2)
 
