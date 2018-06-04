@@ -49,7 +49,7 @@ def _anova_terms(model):
     r_ssr = model.get_ssr()
     r_sst = model.get_sst()
     
-    r_mse = sse / error_df
+    r_mse = r_sse / error_df
     r_msr, r_f_val, r_p_val = _calc_stats(r_ssr, reg_df, r_mse, error_df)
     
     # Calculate the general terms now

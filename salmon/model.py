@@ -189,7 +189,7 @@ class LinearModel(Model):
         return ssr
     
     def get_sst(self):
-        sst = ((self.training_y.iloc[:,0] - self.training_y[:,0].mean()) ** 2).sum()
+        sst = ((self.training_y.iloc[:,0] - self.training_y.iloc[:,0].mean()) ** 2).sum()
         return sst
     
     def r_squared(self, X = None, y = None, adjusted = False, **kwargs):
