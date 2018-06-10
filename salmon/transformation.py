@@ -13,6 +13,15 @@ class Transformation():
         
     def __str__(self):
         return self.pattern
+
+    def __eq__(self, other):
+        if isinstance(other, Transformation):
+            return self.pattern == other.pattern and self.name == other.name
+        else:
+            return False
+
+    def __hash__(self):
+        return hash((self.pattern, self.name))
         
     def compose(self, inner):
         return self.pattern.format(inner)

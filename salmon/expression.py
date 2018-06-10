@@ -453,7 +453,7 @@ class Categorical(Var):
         raise Exception("Categorical variables cannot be transformed.")
         
     def set_baseline(self, value):
-        if isinstance(value, collections.Iterable):
+        if isinstance(value, collections.Iterable) and not isinstance(value, str):
             self.baseline = value
         else:
             self.baseline = [value]
@@ -497,6 +497,7 @@ class Categorical(Var):
         return [self]
     
     def get_dof(self):
+
         return len(self.levels) - len(self.baseline)
         
 class Interaction(Expression):
@@ -552,7 +553,7 @@ class Interaction(Expression):
         return Interaction({term.copy() for term in self.terms}, self.scale)
         
     def interpret(self, data):
-        self.terms = [term.interpret(data) for term in self.terms]
+        self.terms = set(term.interpret(data) for term in self.terms)
         return self
     
     def __mul__(self, other):

@@ -76,10 +76,10 @@ def _anova_terms(model):
     # Finish off the dataframe's values
     indices += ["Error", "Total"]
     adj_ss += [r_sse, r_sst]
-    adj_ms += [r_mse]
+    adj_ms += [r_mse, ""]
     dfs += [error_df, total_df]
-    f_vals += [np.nan, np.nan]
-    p_vals += [np.nan, np.nan]
+    f_vals += ["", ""]
+    p_vals += ["", ""]
     
     return pd.DataFrame({
             "DF" : dfs,
@@ -87,7 +87,7 @@ def _anova_terms(model):
             "Adj_MS" : adj_ms,
             "F_Value" : f_vals,
             "P_Value" : p_vals
-        }, index = indices)
+        }, index = indices, columns = ["DF", "Adj_SS", "Adj_MS", "F_Value", "P_Value"])
 
 def _anova_models(full_model, reduced_model):
     full_label = str(full_model)
@@ -101,27 +101,27 @@ def _anova_models(full_model, reduced_model):
     
     denom_df = f_reg_df
     denom_ms = f_sse / denom_df
-    numer_df = r_reg_df - f_reg_df
+    numer_df = f_reg_df - r_reg_df
     numer_ss = r_sse - f_sse
     # what next?    
     _, f_val, p_val = _calc_stats(numer_ss, numer_df, denom_ms, denom_df)
-
-    indices = [reduced_label, full_label]
+    
+    indices = ["Reduced Model", "Full Model"]#[reduced_label, full_label]
     resid_df = [r_error_df, f_error_df]
     ssr = [reduced_model.get_ssr(), full_model.get_ssr()] 
-    df = [np.nan, resid_df[0] - resid_df[1]]
-    sse = [np.nan, numer_ss]
-    f = [np.nan, f_val]
-    p = [np.nan, p_val]
+    df = ["", resid_df[0] - resid_df[1]]
+    sse = ["", numer_ss]
+    f = ["", f_val]
+    p = ["", p_val]
 
     return pd.DataFrame({
         "Residual DF" : resid_df,
         "SSR" : ssr, 
         "DF" : df,
         "SSE" : sse,
-        "F" : f,
-        "P-Val" : p},
-        index = indices)
+        "F_Value" : f,
+        "P_Value" : p},
+        index = indices, columns = ["Residual DF", "SSR", "DF", "SSE", "F_Value", "P_Value"])
     
     
     
