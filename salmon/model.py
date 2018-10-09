@@ -236,47 +236,62 @@ class LinearModel(Model):
         W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, n-p)
         return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
         
-    def plot(self, categorize_residuals = True, jitter = None, confidence_band = False, prediction_band = False, original_y_space = True, alpha = 0.5):
+    def plot(self, categorize_residuals = True, jitter = None, confidence_band = False, prediction_band = False, y_space = 'o', alpha = 0.5, **kwargs):
         if confidence_band and prediction_band:
             raise Exception("One one of {confidence_band, prediction_band} may be set to True at a time.")
 
         terms = self.ex.reduce()
-        
-        # Redundant, we untransform in later function calls
-        # TODO: Fix later
-        y_vals = self.training_y[str(self.re)]
-        if original_y_space:
-            y_vals = self.re.untransform(y_vals)
-        # Plotting Details:
-        min_y = min(y_vals)
-        max_y = max(y_vals)
-        diff = (max_y - min_y) * 0.05
-        min_y = min(min_y - diff, min_y + diff) # Add a small buffer
-        max_y = max(max_y - diff, max_y + diff) # TODO: Check if min() and max() are necessary here
-                
-        fig = plt.figure()
-        ax = plt.subplot(111)
-        
-        plot_args = {"categorize_residuals": categorize_residuals, 
-                    "jitter": jitter, 
-                    "terms": terms,
-                    "confidence_band": confidence_band,
-                    "prediction_band": prediction_band,
-                    "original_y_space": original_y_space,
-                    "alpha" : alpha,
-                    "plot_objs": {"figure" : fig, 
-                                  "ax" : ax, 
-                                  "y" : {"min" : min_y, 
-                                  "max" : max_y,
-                                  "name" : str(self.re)}}}
-
-        if len(terms['Q']) == 1:
-            return self._plot_one_quant(**plot_args)
-        elif len(terms['Q']) == 0 and len(terms['C']) > 0:
-            return self._plot_zero_quant(**plot_args) # TODO Make function
+                        
+        if y_space == 'b':
+            fig, (ax_o, ax_t) = plt.subplots(1, 2, **kwargs)
+            y_spaces = ['o', 't']
+            axs = [ax_o, ax_t]
+        elif y_space == 't':
+            fig, ax_t = plt.subplots(1,1, **kwargs)
+            y_spaces = ['t']
+            axs = [ax_t]
         else:
-            raise Exception("Plotting line of best fit only expressions that reference a single variable.")
+            fig, ax_o = plt.subplots(1,1, **kwargs)
+            y_spaces = ['o']
+            axs = [ax_o]
+        
 
+        for y_space_type, ax in zip(y_spaces, axs):
+            original_y_space = y_space_type == "o"
+
+            # Redundant, we untransform in later function calls
+            # TODO: Fix later
+            y_vals = self.training_y[str(self.re)]
+            if original_y_space:
+                y_vals = self.re.untransform(y_vals)
+            # Plotting Details:
+            min_y = min(y_vals)
+            max_y = max(y_vals)
+            diff = (max_y - min_y) * 0.05
+            min_y = min(min_y - diff, min_y + diff) # Add a small buffer
+            max_y = max(max_y - diff, max_y + diff) # TODO: Check if min() and max() are necessary here
+
+            plot_args = {"categorize_residuals": categorize_residuals, 
+                        "jitter": jitter, 
+                        "terms": terms,
+                        "confidence_band": confidence_band,
+                        "prediction_band": prediction_band,
+                        "original_y_space": original_y_space,
+                        "alpha" : alpha,
+                        "plot_objs": {"figure" : fig, 
+                                    "ax" : ax, 
+                                    "y" : {"min" : min_y, 
+                                    "max" : max_y,
+                                    "name" : str(self.re)}}}
+
+            if len(terms['Q']) == 1:
+                self._plot_one_quant(**plot_args)
+            elif len(terms['Q']) == 0 and len(terms['C']) > 0:
+                self._plot_zero_quant(**plot_args) # TODO Make function
+            else:
+                raise Exception("Plotting line of best fit only expressions that reference a single variable.")
+        return fig
+        
     def _plot_zero_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
         ax = plot_objs['ax']
         unique_cats = list(terms['C'])
@@ -344,10 +359,11 @@ class LinearModel(Model):
             box = ax.get_position()
             ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
             ax.legend(plots, labels, title = ", ".join([str(cat) for cat in cats_wo_most]), loc = "center left", bbox_to_anchor=(1, 0.5))
-        plt.xlabel(str(ml_cat))
-        plt.xticks(line_x.index, line_x[str(ml_cat)])
-        plt.ylabel(plot_objs['y']['name'] if not original_y_space else self.re.untransform_name())
-        plt.grid()
+        ax.set_xlabel(str(ml_cat))
+        ax.set_xticks(line_x.index)
+        ax.set_xticklabels(line_x[str(ml_cat)])
+        ax.set_ylabel(plot_objs['y']['name'] if not original_y_space else self.re.untransform_name())
+        ax.grid()
         ax.set_ylim([plot_objs['y']['min'], plot_objs['y']['max']])
 
     def _plot_one_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
@@ -370,21 +386,23 @@ class LinearModel(Model):
         else:
             self._plot_one_quant_some_cats(x, line_x, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs)
 
-        plt.xlabel(x_name)
-        plt.ylabel(plot_objs['y']['name'] if not original_y_space else self.re.untransform_name())
-        plt.grid()
-        plot_objs['ax'].set_xlim([min_x, max_x])
-        plot_objs['ax'].set_ylim([plot_objs['y']['min'], plot_objs['y']['max']])
+        ax = plot_objs['ax']
+        ax.set_xlabel(x_name)
+        ax.set_ylabel(plot_objs['y']['name'] if not original_y_space else self.re.untransform_name())
+        ax.grid()
+        ax.set_xlim([min_x, max_x])
+        ax.set_ylim([plot_objs['y']['min'], plot_objs['y']['max']])
                                                       
     def _plot_one_quant_zero_cats(self, x, line_x, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
         x_name = plot_objs['x']['name']
+        ax = plot_objs['ax']
         line_y = self.predict(line_x)
         y_vals = line_y["Predicted " + plot_objs['y']['name']]
         if original_y_space:
             y_vals_to_plot = self.re.untransform(y_vals)
         else:
             y_vals_to_plot = y_vals
-        line_fit, = plt.plot(line_x[x_name], y_vals_to_plot)
+        line_fit, = ax.plot(line_x[x_name], y_vals_to_plot)
 
         if confidence_band:
             self._plot_band(line_x, y_vals, line_fit.get_color(), original_y_space, plot_objs, True, confidence_band)
@@ -395,7 +413,7 @@ class LinearModel(Model):
         if original_y_space:
             training_y_vals = self.re.untransform(training_y_vals)
 
-        plot_objs['ax'].scatter(x, training_y_vals, c = "black", alpha = alpha)
+        ax.scatter(x, training_y_vals, c = "black", alpha = alpha)
 
     def _plot_band(self, line_x, y_vals, color, original_y_space, plot_objs, use_confidence = False, alpha = 0.05): # By default will plot prediction bands
         x_name = plot_objs['x']['name']
@@ -478,24 +496,23 @@ class LinearModel(Model):
         if not categorize_residuals:
             resids = ax.scatter(x, training_y_vals, c = "black", alpha = alpha)
 
-    def residual_plots(self):
+    def residual_plots(self, **kwargs):
         terms = list(self.training_x)
-        plots = []
-        for term in terms:
-            plots.append(plt.scatter(self.training_x[str(term)], self.residuals['Residuals']))
-            plt.xlabel(str(term))
-            plt.ylabel("Residuals")
-            plt.title(str(term) + " v. Residuals")
-            plt.grid()
-            plt.show()
-        return plots
+        fig, axs = plt.subplots(1, len(terms), **kwargs)
+        for term, ax in zip(terms, axs):
+            ax.scatter(self.training_x[str(term)], self.residuals['Residuals'])
+            ax.set_xlabel(str(term))
+            ax.set_ylabel("Residuals")
+            ax.set_title(str(term) + " v. Residuals")
+            ax.grid()
+        return fig, axs
         
-    def partial_plots(self):
+    def partial_plots(self, alpha = 0.5, **kwargs):
         #terms = self.ex.flatten(separate_interactions = False)
-        term_dict = self.ex.reduce()
-        terms = list(terms['Q']) + list(terms['C'])
+        terms = self.ex.get_terms()
+        fig, axs = plt.subplots(1, len(terms), **kwargs)
 
-        for i in range(0, len(terms)):
+        for i, ax in zip(range(0, len(terms)), axs):
         
             xi = terms[i]
 
@@ -506,10 +523,11 @@ class LinearModel(Model):
             yaxis.fit(self.training_data)
             xaxis.fit(self.training_data)
             
-            plt.scatter(xaxis.residuals, yaxis.residuals)
-            plt.title("Leverage Plot for " + str(xi))
-            plt.show()
-            
+            ax.scatter(xaxis.residuals["Residuals"], yaxis.residuals["Residuals"], alpha = alpha)
+            ax.set_title("Leverage Plot for " + str(xi))
+
+        return fig, axs
+
     # static method
     def ones_column(data):
         return pd.DataFrame({"Intercept" : np.repeat(1, data.shape[0])})
