@@ -11,22 +11,53 @@ from . import transformation as _t
 _supported_encodings = ['one-hot']
 
 
-# abstract
+# ABC is a parent object that allows for Abstract methods
 class Expression(ABC):
+    ''' The parent abstract class that all subsequent representations of coefficients stem from and Model objects utilize. 
+    '''
     
     def __init__(self, scale = 1):
+        ''' Create an expression. Cannot be done directly, only through inheritance.
+
+        Arguments:
+            scale - A real value, default is 1. This represents a constant scaling that is applied to the Expression.
+
+        Returns:
+            An Expression object.
+        '''
+
         self.scale = scale
         
     @abstractmethod
     def __str__(self):
+        ''' Represent an Expression object as a String utilizing standard algebraic notation.
+        '''
         pass
         
     def __eq__(self, other):
+        ''' Check if an Expression is equivalent to another object.
+
+        Arguments:
+            other - An object to compare self to.
+
+        Returns:
+            A boolean that is True if they are equivalent, False if otherwise.
+        '''
+
         if isinstance(other, Expression):
             return self.scale == other.scale
         return False
     
     def __sim__(self, other):
+        ''' Check if an Expression is similar to another object. This is done for the purposes of algebraic simplification.
+
+        Arguments:
+            other - An object to compare self to.
+
+        Returns:
+            A boolean that is True if they are similar, False if otherwise.
+        '''
+
         if isinstance(other, Expression):
             self_copy = self.copy()
             self_copy.scale = 1
@@ -36,19 +67,40 @@ class Expression(ABC):
         return False
         
     def __hash__(self):
+        ''' Hash an Expression for the purposes of storing Expressions in sets and dictionaries.
+
+        Returns:
+            A real value that represents the hash of the object.
+        '''
         return hash(str(self))
 
     @abstractmethod
     def copy(self):
-        # Creates a deep copy of an expression
+        '''Creates a deep copy of an expression'''
         pass    
         
     @abstractmethod
     def interpret(self, data):
-        # Cast a Var to either a Quantitative or Categorical
+        ''' Cast a Var object or any nested Var objects in a functional manner to 
+        be either a Quantitative or Categorical variable.
+
+        Arguments:
+            data - A DataFrame object that contains a column == self.name
+
+        Returns:
+            A similar object that is either Quantitative or Categorical object.
+        '''        
         pass
 
     def transform(self, transformation):
+        '''Apply a transformation to an Expression object.
+
+        Arguments:
+            transformation - Either a transformation object of a str representation of common Transformations.
+
+        Returns:
+            A transformed Expression in the form of a TransVar object.
+        '''
         if isinstance(transformation, str):
             if transformation in _t._default_transformations:
                 transformation = _t._default_transformations[transformation](None)
@@ -61,6 +113,16 @@ class Expression(ABC):
         return TransVar(self_copy, transformation)
         
     def __add__(self, other):
+        ''' Form a combination of two Expressions by the addition operator (+).
+
+        Arguments:
+            other - An Expresssion object.
+
+        Returns:
+            Another Expression object that models the two operands added together. 
+            In most cases this is with a Combination object. Other cases it may be a simplified 
+            object of the same types as the original operands (i.e. X + X = 2*X).
+        '''
         if other == 0:
             return self
         elif isinstance(other, (int, float)):
@@ -82,12 +144,25 @@ class Expression(ABC):
             raise Exception("Expressions do not support addition with the given arguments.")
         
     def __radd__(self, other):
+        ''' See __add__. '''
         return self.__add__(other)
     
     def __sub__(self, other):
+        ''' Subtract one Expression object from another. This is a special case of addition. See __add__. '''
         return self + -1 * other
     
     def __mul__(self, other):
+        ''' Multiply two Expression objects together. When possible, simplification will be done. 
+        This is called with the multiplication operator (*).
+
+        Arguments:
+            other - An Expression object
+
+        Returns:
+            An Expression modeling the two operands multiplied together. If the inputs were single terms, 
+            then the output will be an Interaction object. If at least one was a combination of terms, 
+            then the output will most likely be a Combination object consisting of interactions as distribution will occur.
+        '''
         if isinstance(other, float) or isinstance(other, int):
             ret_exp = self.copy()
             ret_exp.scale *= other
@@ -107,6 +182,7 @@ class Expression(ABC):
             raise Exception("Expressions do not support multiplication with the given arguments.")
             
     def __rmul__(self, other):
+        ''' See __mul__.'''
         if isinstance(other, (int, float)):
             self_copy = self.copy()
             self_copy.scale *= other
@@ -119,12 +195,25 @@ class Expression(ABC):
             return self.__mul__(other)
 
     def __truediv__(self, other):
+        ''' Divide one expression by another. This is a special case of __mul__ and __pow__. '''
         return self * (other ** -1)
 
     def __rtruediv__(self, other):
+        ''' See __truediv__. '''
         return other * (self ** -1)
     
-    def __pow__(self, other): # Assumes a single term variable, Combinations and Interactions are overloaded
+    def __pow__(self, other): 
+        ''' Raise an Expression object to a constant power. 
+        
+        Arguments:
+            other - A real value.
+        
+        Returns:
+            An Expression object that represents the original object raised to a constant power.
+            More than likely this will either be a PowerVar object if the original object was a single term,
+            or a Combination / Interaction if the original was one of those.
+        '''
+        # This particualr function assumes a single term variable as this operation for Combinations and Interactions are overloaded
         if other == 1:
             return self
         elif other == 0:
@@ -137,45 +226,83 @@ class Expression(ABC):
         #    return TransVar(self, _t.Power(other))
         
     def descale(self):
+        ''' Remove scaling on an Expression. Done in a functional manner so original object is unaffected. '''
         ret_exp = self.copy()
         ret_exp._descale()
         return ret_exp
         
-    def _descale(self): # Overwrite on expression containers such as Interactions and Combinations
+    def _descale(self): 
+        ''' Helper function for descaling Expressions. '''
+        # Overwrite on expression containers such as Interactions and Combinations
         self.scale = 1
         
     @abstractmethod
     def evaluate(self, data, fit = True):
+        ''' Given data, apply the appropriate transformations, combinations, and interactions.
+
+        Arguments:
+            data - A DataFrame whose column names match the names of the base Variable objects.
+            fit - A flag to reference when evaluating the data to know when to overwrite Categorical levels.
+        
+        Returns:
+            An appropriate DataFrame consisting of specified columns for each term in the Expression.
+        '''
         # Transform the incoming data depending on what type of variable the data is represented by
         pass
     
     def reduce(self):
+        ''' Obtain the base Quantitative, Categorical, Constant, and Varable terms. 
+        
+        Returns:
+            A dictionary mapping the respective types of terms to a set collection of the unique terms present.
+        '''
         return self._reduce({"Q":set(), "C":set(), "V":set(), "Constant": None})
     
     @abstractmethod
     def _reduce(self, ret_dict):
+        ''' A helper method for the reduce function to allow for recursion. '''
         # Reduce an expression to a dictionary containing lists of unique Quantitative and Categorical Variables
         pass
     
     @abstractmethod
     def get_terms(self):
-        # Return a list of top level terms
+        ''' Return a list of the top level terms. '''
         pass
     
     @abstractmethod
     def get_dof(self):
-        # Retrun the degrees of freedom for an expression (not including constants)
+        ''' Retrun the degrees of freedom for an expression (not including constants) '''
         pass
 
     def untransform(self, data):
+        ''' Untransform data by inverting the applied operations to it for the purposes of plotting. 
+        
+        Returns:
+            A DataFrame object with appropriately inverted columns. 
+        '''
         return data * (1 / self.scale)
 
     def untransform_name(self):
+        ''' Get the untransformed name of the model after inversions have been applied. '''
         return str(self * (1 / self.scale))
 
 class Var(Expression):
+    ''' A base object that represents a generic single term.
+    If a model consists of Y ~ X1 + X2 + X3, X2 would be a single term, as would X1 and X3. 
+    
+    This is more general when compared to a Quantitative or Categorical object, as it does not impose 
+    any restrictions on the data it represents. Upon model fitting, a Var will check to see if the 
+    data it represents is better suited for being a Quantitative variable or a Categorical one. 
+    '''
 
     def __init__(self, name, scale = 1):
+        ''' Creates a Var object.
+
+        Arguments:
+            name - A str that will later be used to access a column in specific DataFrames. 
+                   This name should coincide with the data it is representing.
+            scale - A real value that will multiplicatively scale the term.
+        '''
         super().__init__(scale = scale)
         self.name = name
         
@@ -218,8 +345,21 @@ class Var(Expression):
         return 1
 
 class TransVar(Expression):
+    ''' Represents an Expression that has a Transformation object applied to it.
+
+    In the general case, Transformations do not support distributing across terms. As such,
+    regardless of what the original Expression pre-transformation was, the new TransVar object
+    will be treated as a single term.
+    '''
     
     def __init__(self, var, transformation, scale = 1):
+        ''' Creates a TransVar object.
+
+        Arguments:
+            var - An Expression object to be transformed.
+            transformation - A Transformation object to be applied to var.
+            scale - A real value that will multiplicatively scale the term.
+        '''
         self.scale = scale
         self.var = var
         self.transformation = transformation
@@ -284,8 +424,17 @@ class TransVar(Expression):
         return self.var.untransform_name()
     
 class PowerVar(TransVar):
-    
+    ''' A special case of the TransVar as a Power transformation can easily be distributed across terms.
+    As such, special consideration is taken into account when multiplying two PowerVar objects.
+    '''
     def __init__(self, var, power, scale = 1):
+        ''' Creates a PowerVar object.
+
+        Arguments:
+            var - An Expression object to be raised to a power.
+            power - A real value to raise var to.
+            scale - A real value that will multiplicatively scale the term.
+        '''
         self.scale = scale * (var.scale ** power)
         self.var = var.copy()
         self.var.scale = 1
@@ -350,8 +499,16 @@ class PowerVar(TransVar):
         return 1
     
 class Quantitative(Var):
+    ''' A base term that inherits from Var. This specifically models Quantitative terms. '''
     
     def __init__(self, name, scale = 1):
+        ''' Creates a Quantitative object.
+
+        Arguments:
+            name - A str that will later be used to access a column in specific DataFrames. 
+                   This name should coincide with the data it is representing.
+            scale - A real value that will multiplicatively scale the term.
+        '''
         super().__init__(name = name, scale = scale)
         self.name = name
     
@@ -377,8 +534,14 @@ class Quantitative(Var):
         return 1
         
 class Constant(Expression):
+    ''' Represents a standalone term for constant values. '''
     
     def __init__(self, scale = 1):
+        ''' Create a Constant object.
+
+        Arguments:
+            scale - A real value that IS the constant value.
+        '''
         self.scale = scale
         
     def __str__(self):
@@ -430,8 +593,19 @@ class Constant(Expression):
         return 0
     
 class Categorical(Var):
-    
+    ''' The other base term that stems from the Var class. Represents solely categorical data. '''
+
     def __init__(self, name, encoding = 'one-hot', levels = None, baseline = None):
+        ''' Creates a Categorical object.
+
+        Arguments:
+            name - A str that will later be used to access a column in specific DataFrames. 
+                   This name should coincide with the data it is representing.
+            encoding - A str that represnts the supported encoding scheme to use. Default is one-hot.
+            levels - A list object that holds all values to be considered as different levels during encoding. 
+                Any left out will be treated similarly as the baseline. A value of None will have levels learned upon fitting. 
+            baseline - A list of objects to be collectively treated as a baseline.
+        '''
         self.scale = 1
         self.name = name
         if encoding not in _supported_encodings:
@@ -501,7 +675,17 @@ class Categorical(Var):
         return len(self.levels) - len(self.baseline)
         
 class Interaction(Expression):
+    ''' An Interaction models two or more terms multiplied together. An Interaction is treated as a single term.
+    If multiple terms are the result of a multiplication, then the result will be a Combination of Interactions.
+    '''
+
     def __init__(self, terms, scale = 1):
+        ''' Create an Interaction object.
+
+        Arguments:
+            terms - A collection of terms to be modeled as multiplied together.
+            scale - A real value that will multiplicatively scale the term.
+        '''
         self.scale = scale
 
         if any(not isinstance(t, Expression) for t in terms):
@@ -615,8 +799,15 @@ class Interaction(Expression):
         return reduce(lambda x,y: x*y, (term.get_dof() for term in self.terms))
     
 class Combination(Expression):
+    ''' A Combination models several single terms added together. '''
 
     def __init__(self, terms, scale = 1):
+        ''' Create a Combination object.
+
+        Arguments:
+            terms - A collection of Expressions to add together.
+            scale - A real value that will multiplicatively scale the term.
+        '''
         self.scale = scale
         
         terms = [Constant(term) if isinstance(term, (int, float)) else term for term in terms]
@@ -730,11 +921,28 @@ class Combination(Expression):
         return reduce(lambda x,y: x+y, (term.get_dof() for term in self.terms))
     
 def MultinomialCoef(params):
+    ''' Calculate the coefficients necessary when raising polynomials to a power.
+
+    Arguments:
+        params - A list of powers of individual terms.
+
+    Returns:
+        An integer that is the coefficient for that term.
+    '''
     if len(params) == 1:
         return 1
     return binom(sum(params), params[-1]) * MultinomialCoef(params[:-1]) 
 
 def MultinomialExpansion(terms, power):
+    ''' Raise a collection of single terms (polynomial) to a power.
+
+    Arguments:
+        terms - A collection of Expression objects representing a polynomial.
+        power - An integer to raise the polynomial to.
+
+    Returns:
+        A expanded / distributed Combination representing the polynomial raised to the specified power.
+    '''
     combination_terms = []
     generators = [range(power+1) for _ in range(len(terms))]
     for powers in product(*generators): # Inefficient, optimize later
@@ -748,6 +956,17 @@ def MultinomialExpansion(terms, power):
     return reduce(lambda x,y: x + y, combination_terms)
     
 def Poly(var, power):
+    ''' A quick way to create a standard polynomial from one base expression.
+
+    Arguments:
+        var - An Expression object. 
+        power - An integer to raise var to the power of.
+
+    Returns:
+        A Combination object. If var was a single term, then the standard polynomial is returned. 
+        If var was a Combination, then a Combination of all Interactions up to order 'power' is 
+        returned due to distribution rules.
+    '''
     if isinstance(var, str):
         var = Q(var)
     
