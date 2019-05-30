@@ -77,7 +77,7 @@ def _process_term(orig_model, term):
     '''
     new_model = LinearModel(orig_model.given_ex - term, orig_model.given_re)
     new_model.fit(orig_model.training_data)
-    return new_model.get_ssr()
+    return new_model.get_sse()
 
 def _extract_dfs(model):
     ''' Obtains the different degrees of freedom for a model in reference to an F-test.
@@ -191,12 +191,12 @@ def _anova_models(full_model, reduced_model):
 
     return pd.DataFrame({
         "Residual DF" : resid_df,
-        "SSR" : ssr, 
+        "Explained SS" : ssr, 
         "DF" : df,
-        "SSE" : sse,
+        "Residual SS" : sse,
         "F_Value" : f,
         "P_Value" : p},
-        index = indices, columns = ["Residual DF", "SSR", "DF", "SSE", "F_Value", "P_Value"])
+        index = indices, columns = ["Residual DF", "Explained SS", "DF", "Residual SS", "F_Value", "P_Value"])
     
     
     
