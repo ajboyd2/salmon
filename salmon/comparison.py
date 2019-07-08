@@ -79,7 +79,7 @@ def _process_term(orig_model, term):
     new_model.fit(orig_model.training_data)
     return new_model.get_sse()
 
-def _extract_dfs(model):
+def _extract_dfs(model, dict_out=False):
     ''' Obtains the different degrees of freedom for a model in reference to an F-test.
 
     Arguments:
@@ -94,7 +94,15 @@ def _extract_dfs(model):
     reg_df = model.ex.get_dof()
     total_df = len(model.training_x) - 1
     error_df = total_df - reg_df
-    return reg_df, error_df, total_df
+
+    if dict_out:
+        return dict(
+            model_df=reg_df,
+            total_df=total_df,
+            error_df=error_df
+        )
+    else:
+        return reg_df, error_df, total_df
 
 def _anova_terms(model):
     ''' Perform a global F-test by analyzing all possible models when you leave one coefficient out while fitting.

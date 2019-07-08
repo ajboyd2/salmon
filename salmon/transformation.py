@@ -145,7 +145,7 @@ Cos = lambda i: Transformation(np.cos, "cos({})", "Cosine")
 Log = lambda i: Transformation(np.log, "log({})", "Natural Log", np.exp)
 Log10 = lambda i: Transformation(np.log10, "log({})", "Log Base 10", lambda x: 10 * x)
 Exp = lambda i: Transformation(np.exp, "exp({})", "Exponential", np.log)
-Z = lambda i: Standardize()
+Std = lambda i: Standardize()
 Cen = lambda i: Center()
 Identity = lambda i: Transformation(lambda x: x, "{}", "Identity", lambda x: x)
 Increment = lambda i: Transformation(lambda x: x + i, "{}+"+str(i) if i >= 0 else "{}-"+str(-i), "Increment", lambda x: x - i)
@@ -158,7 +158,7 @@ _default_transformations = {
     "log" : Log,
     "log10" : Log10,
     "exp" : Exp,
-    "standardize" : Z,
+    "standardize" : Std,
     "center": Cen,
     "identity": Identity
 }

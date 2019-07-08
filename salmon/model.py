@@ -5,7 +5,7 @@ import scipy.stats as stats
 import matplotlib.pyplot as plt
 from itertools import product
 
-from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination, Identity
+from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination, Identity, Constant
 
 plt.style.use('ggplot')
 
@@ -65,6 +65,10 @@ class LinearModel(Model):
                 If this is a Combination, they will be added together and treated as a single variable.
             intercept - A boolean that indicates if an intercept is wanted (True) or not (False).
         '''
+
+        if isinstance(explanatory, (int, float)):
+            explanatory = Constant(explanatory)
+
         if intercept:
             self.given_ex = explanatory + 1
         else:
@@ -115,6 +119,51 @@ class LinearModel(Model):
         else:
             data = pd.concat([X,Y], axis = 1)
         return self._fit(data)
+
+    def _fit_intercept_only(self, data):
+        # Construct X matrix
+        self.ex = Constant(1)
+        X = self.ex.evaluate(data)
+        X.columns = ["Intercept"]
+        self.training_x = X
+        # Construct Y vector
+        y = self.re.evaluate(data)
+        y_mean = y.mean()
+        self.training_y = y
+
+        # Solve equation
+        self.bhat = pd.DataFrame(np.linalg.solve(np.dot(X.T, X), np.dot(X.T, y)),
+                                 index=X.columns, columns=["Coefficients"])
+
+        n = X.shape[0]
+        p = X.shape[1] - (1 if self.intercept else 0)
+
+        # Y_Hat and Residuals
+        self.fitted = pd.DataFrame({"Fitted": np.dot(X, self.bhat).sum(axis=1)})
+        self.residuals = pd.DataFrame({"Residuals": y.iloc[:, 0] - self.fitted.iloc[:, 0]})
+
+        # Sigma
+        self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p - 1)) ** 0.5
+
+        # Covariance Matrix
+        self.var = np.linalg.solve(np.dot(X.T, X),
+                                   (self.std_err_est ** 2) * np.identity(X.shape[1]))
+
+        # Coefficient SE, Diagonal of Cov. Matrix
+        self.std_err_vars = pd.DataFrame({"SE": (np.diagonal(self.var)) ** 0.5},
+                                         index=self.bhat.index)
+
+        # format the covariance matrix
+        self.var = pd.DataFrame(self.var, columns=X.columns, index=X.columns)
+
+        # Coefficient Inference
+        self.t_vals = pd.DataFrame({"t": self.bhat["Coefficients"] / self.std_err_vars["SE"]})
+        self.p_vals = pd.DataFrame({"p": pd.Series(2 * stats.t.cdf(-abs(self.t_vals["t"]), n - p - 1),
+                                                   index=self.bhat.index)})
+
+        ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals], axis=1)
+
+        return ret_val
         
     def _fit(self, data):
         ''' Helper function for fitting a model with given data. 
@@ -130,11 +179,14 @@ class LinearModel(Model):
         self.training_data = data
         
         # Replace all Var's with either Q's or C's
-        self.ex = self.given_ex.copy()
-        self.ex = self.ex.interpret(data)
         self.re = self.given_re.copy()
         self.re = self.re.interpret(data)       
-        
+        if self.given_ex == 0:
+            return self._fit_intercept_only(data)
+
+        self.ex = self.given_ex.copy()
+        self.ex = self.ex.interpret(data)
+
         terms = self.ex.reduce()
         
         # Construct X matrix
@@ -155,7 +207,7 @@ class LinearModel(Model):
         
         # Solve equation
         self.bhat = pd.DataFrame(np.linalg.solve(np.dot(X.T, X), np.dot(X.T, y)), 
-                                 index=X.columns, columns = ["Coefficients"])
+                                 index=X.columns, columns=["Coefficients"])
         if self.intercept:
             self.bhat.loc["Intercept"] = [y_mean[0] - X_means.dot(self.bhat)[0]]
             X = X + X_means

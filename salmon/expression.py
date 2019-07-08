@@ -590,7 +590,7 @@ class Constant(Expression):
         return list()
     
     def get_dof(self):
-        return 0
+        return 1
     
 class Categorical(Var):
     ''' The other base term that stems from the Var class. Represents solely categorical data. '''
@@ -821,7 +821,7 @@ class Combination(Expression):
                     
     def __eq__(self, other):
         if isinstance(other, Combination):
-            if len(self.terms.difference(other.terms)) == 0 and len(other.terms.difference(slef.terms)) == 0:
+            if len(self.terms.difference(other.terms)) == 0 and len(other.terms.difference(self.terms)) == 0:
                 return super().__eq__(other)
         return False
 
