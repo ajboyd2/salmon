@@ -388,7 +388,17 @@ class LinearModel(Model):
         W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, n-p)
         return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
         
-    def plot(self, categorize_residuals = True, jitter = None, confidence_band = False, prediction_band = False, y_space = 'o', alpha = 0.5, **kwargs):
+    def plot(
+        self,
+        categorize_residuals=True,
+        jitter=None,
+        confidence_band=False,
+        prediction_band=False,
+        original_y_space=True,
+        transformed_y_space=False,
+        alpha=0.5,
+        **kwargs
+    ):
         ''' Visualizes the fitted LinearModel and its line of best fit.
 
         Arguments:
@@ -409,19 +419,20 @@ class LinearModel(Model):
 
         terms = self.ex.reduce()
                         
-        if y_space == 'b':
+        if original_y_space and transformed_y_space:
             fig, (ax_o, ax_t) = plt.subplots(1, 2, **kwargs)
             y_spaces = ['o', 't']
             axs = [ax_o, ax_t]
-        elif y_space == 't':
+        elif transformed_y_space: # at least one of the two is False
             fig, ax_t = plt.subplots(1,1, **kwargs)
             y_spaces = ['t']
             axs = [ax_t]
-        else:
+        elif original_y_space:
             fig, ax_o = plt.subplots(1,1, **kwargs)
             y_spaces = ['o']
             axs = [ax_o]
-        
+        else:
+            raise AssertionError("At least one of either 'original_y_space' or 'transformed_y_space' should be True in model.plot(...) call.")
 
         for y_space_type, ax in zip(y_spaces, axs):
             original_y_space = y_space_type == "o"
@@ -438,18 +449,24 @@ class LinearModel(Model):
             min_y = min(min_y - diff, min_y + diff) # Add a small buffer
             max_y = max(max_y - diff, max_y + diff) # TODO: Check if min() and max() are necessary here
 
-            plot_args = {"categorize_residuals": categorize_residuals, 
-                        "jitter": jitter, 
-                        "terms": terms,
-                        "confidence_band": confidence_band,
-                        "prediction_band": prediction_band,
-                        "original_y_space": original_y_space,
-                        "alpha" : alpha,
-                        "plot_objs": {"figure" : fig, 
-                                    "ax" : ax, 
-                                    "y" : {"min" : min_y, 
-                                    "max" : max_y,
-                                    "name" : str(self.re)}}}
+            plot_args = {
+                "categorize_residuals": categorize_residuals,
+                "jitter": jitter,
+                "terms": terms,
+                "confidence_band": confidence_band,
+                "prediction_band": prediction_band,
+                "original_y_space": original_y_space,
+                "alpha": alpha,
+                "plot_objs": {
+                    "figure": fig,
+                    "ax": ax,
+                    "y": {
+                        "min": min_y,
+                        "max": max_y,
+                        "name": str(self.re)
+                    }
+                }
+            }
 
             if len(terms['Q']) == 1:
                 self._plot_one_quant(**plot_args)
@@ -461,6 +478,7 @@ class LinearModel(Model):
         
     def _plot_zero_quant(self, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
         ''' A helper function for plotting models in the case no quantitiative variables are present. '''
+
         ax = plot_objs['ax']
         unique_cats = list(terms['C'])
         levels = [cat.levels for cat in unique_cats]
