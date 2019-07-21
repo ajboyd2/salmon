@@ -2,42 +2,93 @@ from .model import LinearModel
 from .comparison import _extract_dfs
 from .expression import Constant
 import numpy as np
-
-def _r_squared(model):
-    return model.r_squared(adjusted=False)
+from abc import ABC
 
 
-def _r_squared_adjusted(model):
-    return model.r_squared(adjusted=True)
+class Score(ABC):
+
+    def __init__(self, model, order):
+        self.order = order
+        self.model = model
+
+        if model is None:
+            self._score = np.inf * (-1 if order else 1)
+        else:
+            self._score = self.compute()
+
+    @abstractmethod
+    def compute(self):
+        pass
+
+    def compare(self, other):
+        ''' Return true if self is better than other based on 'order' '''
+        assert(type(self) is type(other))  # make sure we are not comparing different types of scores
+        if self.order:
+            return self._score < other._score
+        else:
+            return self._score > other._score
 
 
-def _mse(model):
-    dfs = _extract_dfs(model, dict_out=True)
-    sse = model.get_sse()
-    return sse / dfs["error_df"]
+class RSquared(Score):
+
+    def __init__(self, model, adjusted=False):
+        self.adjusted=adjusted
+
+        super(RSquared, self).__init__(
+            model=model,
+            order=True
+        )
+
+    def compute(self):
+        ''' Calculate the (adjusted) R^2 value of the model.
+
+        Arguments:
+            X - An optional DataFrame of the explanatory data to be used for calculating R^2. Default is the training data.
+            Y - An optional DataFrame of the response data to be used for calculating R^2. Default is the training data.
+            adjusted - A boolean indicating if the R^2 value is adjusted (True) or not (False).
+
+        Returns:
+            A real value of the computed R^2 value.
+        '''
+
+        X = self.model.training_data
+        y = self.model.training_y
+
+        pred = self.model.predict(X)
+        sse = ((y.iloc[:, 0] - pred.iloc[:, 0]) ** 2).sum()
+        ssto = ((y.iloc[:, 0] - y.iloc[:, 0].mean()) ** 2).sum()
+
+        if self.adjusted:
+            numerator = sse
+            denominator = ssto
+        else:
+            numerator = sse / (len(y) - len(self.model.training_x.columns) - 2)
+            denominator = ssto / (len(y) - 1)
+
+        return 1 - numerator / denominator
+
+
+class MSE(Score):
+
+    def __init__(self, model):
+        super(MSE, self).__init__(
+            model=model,
+            order=False
+        )
+
+    def compute(self):
+        dfs = _extract_dfs(model, dict_out=True)
+        sse = model.get_sse()
+        return sse / dfs["error_df"]
 
 # TODO: Implement Cp, AIC, BIC
 
 
 _metrics = dict(
-    r_squared=_r_squared,
-    r_squared_adjusted=_r_squared_adjusted,
-    mse=_mse
+    r_squared=RSquared,
+    r_squared_adjusted=lambda model: RSquared(model=model, adjusted=True),
+    mse=MSE
 )
-
-_order_highest = dict(
-    r_squared=True,
-    r_squared_adjusted=True,
-    mse=False
-)
-
-
-def _compare(old_metric, new_metric, order):
-    ''' Return true if new_metric is better than old_metric based on 'order' '''
-    if order:
-        return old_metric < new_metric
-    else:
-        return old_metric > new_metric
 
 
 def stepwise(full_model, metric_name, forward=False, naive=False):
@@ -56,7 +107,6 @@ def stepwise(full_model, metric_name, forward=False, naive=False):
         ))
 
     metric_func = _metrics[metric_name]
-    order = _order_highest[metric_name]
 
     if naive:
         ex_term_list = ex_terms.get_terms()
@@ -69,7 +119,9 @@ def stepwise(full_model, metric_name, forward=False, naive=False):
         best_metric = metric_func(best_model)
 
         while len(ex_term_list) > 0:
-            potential_models = []
+            best_potential_metric = metric_func(None)
+            best_potential_model = None
+            best_idx = None
             for i, term in enumerate(ex_term_list):
                 try:
                     if forward:
@@ -78,24 +130,24 @@ def stepwise(full_model, metric_name, forward=False, naive=False):
                         potential_model = LinearModel(best_model.given_ex - term, re_term)
 
                     potential_model.fit(data)
-                    potential_models.append((metric_func(potential_model), potential_model, i))
+                    potential_metric = metric_func(potential_model)
+
+                    if best_potential_metric.compare(potential_metric):
+                        best_potential_metric = potential_metric
+                        best_potential_model = potential_model
+                        best_idx = i
+
                 except np.linalg.linalg.LinAlgError:
-                    potential_models.append((float('inf') * (-1 if order else 1), None, i))
+                    continue
 
-            best_potential_metric, best_potential_model, best_idx = sorted(
-                potential_models,
-                key=lambda x: x[0],
-                reverse=order
-            )[0]
-
-            if _compare(best_metric, best_potential_metric, order):
+            if best_metric.compare(best_potential_metric):
                 best_metric = best_potential_metric
                 best_model = best_potential_model
                 del ex_term_list[best_idx]
             else:
                 break
     else:
-        raise NotImplementedError("Non-naive forward stepwise model building is not implemented yet.")
+        raise NotImplementedError("Non-naive stepwise model building is not implemented yet.")
 
     return dict(
         forward=forward,
