@@ -78,7 +78,7 @@ class MSE(Score):
 
     def compute(self):
         dfs = _extract_dfs(model, dict_out=True)
-        sse = model.get_sse()
+        sse = self.model.get_sse()
         return sse / dfs["error_df"]
 
 # TODO: Implement Cp, AIC, BIC
