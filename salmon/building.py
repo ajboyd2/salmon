@@ -77,7 +77,7 @@ class MSE(Score):
         )
 
     def compute(self):
-        dfs = _extract_dfs(model, dict_out=True)
+        dfs = _extract_dfs(self.model, dict_out=True)
         sse = self.model.get_sse()
         return sse / dfs["error_df"]
 
