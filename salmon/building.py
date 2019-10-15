@@ -2,7 +2,7 @@ from .model import LinearModel
 from .comparison import _extract_dfs
 from .expression import Constant
 import numpy as np
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class Score(ABC):
@@ -108,46 +108,56 @@ def stepwise(full_model, metric_name, forward=False, naive=False):
 
     metric_func = _metrics[metric_name]
 
-    if naive:
-        ex_term_list = ex_terms.get_terms()
-        if forward:
-            best_model = LinearModel(Constant(1), re_term)
-            best_model.fit(data)
-        else:
-            best_model = full_model
-
-        best_metric = metric_func(best_model)
-
-        while len(ex_term_list) > 0:
-            best_potential_metric = metric_func(None)
-            best_potential_model = None
-            best_idx = None
-            for i, term in enumerate(ex_term_list):
-                try:
-                    if forward:
-                        potential_model = LinearModel(best_model.given_ex + term, re_term)
-                    else:
-                        potential_model = LinearModel(best_model.given_ex - term, re_term)
-
-                    potential_model.fit(data)
-                    potential_metric = metric_func(potential_model)
-
-                    if best_potential_metric.compare(potential_metric):
-                        best_potential_metric = potential_metric
-                        best_potential_model = potential_model
-                        best_idx = i
-
-                except np.linalg.linalg.LinAlgError:
-                    continue
-
-            if best_metric.compare(best_potential_metric):
-                best_metric = best_potential_metric
-                best_model = best_potential_model
-                del ex_term_list[best_idx]
-            else:
-                break
+    ex_term_list = ex_terms.get_terms()
+    if forward:
+        best_model = LinearModel(Constant(1), re_term)
+        best_model.fit(data)
     else:
-        raise NotImplementedError("Non-naive stepwise model building is not implemented yet.")
+        best_model = full_model
+
+    best_metric = metric_func(best_model)
+      
+
+    while len(ex_term_list) > 0:
+        best_potential_metric = metric_func(None)
+        best_potential_model = None
+        best_idx = None
+    
+        if forward and not naive:
+            leaves = set(term for term in ex_term_list if not term.contains(sum(ex_term_list))) # Find all terms that do not depend on other terms
+    
+        for i, term in enumerate(ex_term_list):
+            try:
+                if forward:
+                    # validate if adding term is valid
+                    if not naive:
+                        if term not in leaves:
+                            continue
+                    potential_model = LinearModel(best_model.given_ex + term, re_term)
+                else:
+                    # validate if removing term is valid
+                    if not naive:
+                        if (best_model.given_ex - term).contains(term):
+                            continue
+                    potential_model = LinearModel(best_model.given_ex - term, re_term)
+
+                potential_model.fit(data)
+                potential_metric = metric_func(potential_model)
+
+                if best_potential_metric.compare(potential_metric):
+                    best_potential_metric = potential_metric
+                    best_potential_model = potential_model
+                    best_idx = i
+
+            except np.linalg.linalg.LinAlgError:
+                continue
+
+        if best_metric.compare(best_potential_metric):
+            best_metric = best_potential_metric
+            best_model = best_potential_model
+            del ex_term_list[best_idx]
+        else:
+            break
 
     return dict(
         forward=forward,

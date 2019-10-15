@@ -285,6 +285,11 @@ class Expression(ABC):
     def untransform_name(self):
         ''' Get the untransformed name of the model after inversions have been applied. '''
         return str(self * (1 / self.scale))
+    
+    @abstractmethod
+    def contains(self, other):
+        ''' Returns true if this object is contains the other. '''
+        pass
 
 class Var(Expression):
     ''' A base object that represents a generic single term.
@@ -343,6 +348,9 @@ class Var(Expression):
     
     def get_dof(self):
         return 1
+    
+    def contains(self, other):
+        return False  # impossible for a simple variable to contain another
 
 class TransVar(Expression):
     ''' Represents an Expression that has a Transformation object applied to it.
@@ -422,6 +430,12 @@ class TransVar(Expression):
 
     def untransform_name(self):
         return self.var.untransform_name()
+
+    def contains(self, other):
+        if isinstance(other, Combination):
+            return any(self.contains(other_term) for other_term in other.terms)
+
+        return self.var.__eq__(other) or self.var.contains(other)
     
 class PowerVar(TransVar):
     ''' A special case of the TransVar as a Power transformation can easily be distributed across terms.
@@ -497,6 +511,18 @@ class PowerVar(TransVar):
     
     def get_dof(self):
         return 1
+
+    def contains(self, other):
+        if isinstance(other, Combination):
+            return any(self.contains(other_term) for other_term in other.terms)
+
+        if isinstance(other, PowerVar):
+            if self.var.__eq__(other.var):
+                return self.power > other.power
+            else:
+                return self.var.contains(other)
+        else:
+            return self.var.__eq__(other) or self.var.contains(other)
     
 class Quantitative(Var):
     ''' A base term that inherits from Var. This specifically models Quantitative terms. '''
@@ -591,6 +617,9 @@ class Constant(Expression):
     
     def get_dof(self):
         return 1
+
+    def contains(self, other):
+        return False
     
 class Categorical(Var):
     ''' The other base term that stems from the Var class. Represents solely categorical data. '''
@@ -671,7 +700,6 @@ class Categorical(Var):
         return [self]
     
     def get_dof(self):
-
         return len(self.levels) - len(self.baseline)
         
 class Interaction(Expression):
@@ -797,6 +825,23 @@ class Interaction(Expression):
     
     def get_dof(self):
         return reduce(lambda x,y: x*y, (term.get_dof() for term in self.terms))
+
+    def contains(self, other):
+        if isinstance(other, Combination):
+            return any(self.contains(other_term) for other_term in other.terms)
+
+        self_terms = self.terms
+        if isinstance(other, Interaction):
+            other_terms = other.terms
+        else:
+            other_terms = [other]
+        all_terms_found = True
+        for o_t in  other_terms:
+            single_term_found = False
+            for s_t in self_terms:
+                single_term_found = single_term_found or s_t.__eq__(o_t) or s_t.contains(o_t)
+            all_terms_found = all_terms_found and single_term_found
+        return all_terms_found
     
 class Combination(Expression):
     ''' A Combination models several single terms added together. '''
@@ -919,6 +964,18 @@ class Combination(Expression):
     
     def get_dof(self):
         return reduce(lambda x,y: x+y, (term.get_dof() for term in self.terms))
+
+    def contains(self, other):
+        self_terms = self.terms
+        if isinstance(other, Combination):
+            other_terms = other.terms
+        else:
+            other_terms = [other]
+        for s_t in self_terms:
+            for o_t in  other_terms:
+                if s_t.__eq__(o_t) or s_t.contains(o_t):
+                    return True
+        return False
     
 def MultinomialCoef(params):
     ''' Calculate the coefficients necessary when raising polynomials to a power.
