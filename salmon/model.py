@@ -187,7 +187,7 @@ class LinearModel(Model):
 
         ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals], axis=1)
 
-        return ret_val
+        return _round_data_by_val(ret_val)
         
     def _fit(self, data):
         ''' Helper function for fitting a model with given data. 
@@ -271,7 +271,7 @@ class LinearModel(Model):
 
         ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals, self.lower_conf, self.upper_conf], axis = 1)
         
-        return ret_val 
+        return _round_data_by_val(ret_val) 
 
     def likelihood(self, data=None):
         ''' Calculate likelihood for a fitted model on either original data or new data. '''
@@ -313,8 +313,8 @@ class LinearModel(Model):
         width = crit_value * se_vals
         lower_bound = self.bhat["Coefficients"] - width
         upper_bound = self.bhat["Coefficients"] + width 
-        return pd.DataFrame({str(round(1 - crit_prob, 5) * 100) + "%" : lower_bound, 
-                             str(round(crit_prob, 5) * 100) + "%" : upper_bound})#, 
+        return _round_data_by_val(pd.DataFrame({str(round(1 - crit_prob, 5) * 100) + "%" : lower_bound, 
+                             str(round(crit_prob, 5) * 100) + "%" : upper_bound}))#, 
                              #index = self.bhat.index)
 
     def predict(self, data, for_plot = False, confidence_interval = False, prediction_interval = False):
@@ -356,7 +356,7 @@ class LinearModel(Model):
             predictions[str(round(crit_prob, 5) * 100) + "%"] = upper
 
         
-        return predictions
+        return _round_data_by_val(predictions)
     
     def get_sse(self):
         ''' Get the SSE of a fitted model. '''
