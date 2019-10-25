@@ -10,6 +10,29 @@ from .expression import Expression, Var, Quantitative, Categorical, Interaction,
 
 plt.style.use('ggplot')
 
+
+def _round_data_by_col(df, sig_figs=4):
+    ''' Helper function to wrap every outputted dataframe to round to a specified number of significant figures.'''
+    num_digits = lambda x: -int(math.floor(math.log10(abs(x)))) + (sig_figs - 1)
+    # find max number of digits in each column
+    digits_per_col = df.applymap(num_digits).min(axis=0)
+    def multi_func(functions):
+        def f(col):
+           return functions[col.name](col)
+        return f
+    return df.apply(
+        multi_func({
+            col_name: lambda col: col.round(decimals=col_val) for col_name, col_val in digits_per_col.items()
+        })
+    )
+
+def _round_data_by_val(df, sig_figs=4):
+    ''' Helper function to wrap every outputted dataframe to round to a specified number of significant figures.'''
+    num_digits = lambda x: -int(math.floor(math.log10(abs(x)))) + (sig_figs - 1)
+    # find max number of digits in each column
+    return df.applymap(lambda x: round(x, num_digits(x)))
+
+
 class Model:
     ''' A general Model class that both Linear models and (in the future) General Linear models stem from. '''
 
