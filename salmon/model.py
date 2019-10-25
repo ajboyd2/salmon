@@ -4,6 +4,7 @@ import numpy as np
 import scipy.stats as stats
 import matplotlib.pyplot as plt
 from itertools import product
+import math
 
 from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination, Identity, Constant
 
@@ -223,7 +224,7 @@ class LinearModel(Model):
         self.fitted = pd.DataFrame({"Fitted" : np.dot(X, self.bhat).sum(axis = 1)})
         self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - self.fitted.iloc[:,0]})
         
-        # Sigma
+        # Sigma Hat
         self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p)) ** 0.5
 
         # Covariance Matrix        
@@ -248,6 +249,21 @@ class LinearModel(Model):
         ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals, self.lower_conf, self.upper_conf], axis = 1)
         
         return ret_val 
+
+    def likelihood(self, data=None):
+        ''' Calculate likelihood for a fitted model on either original data or new data. '''
+
+        if data is None:
+            residuals = self.residuals.iloc[:, 0]
+        else:
+            y = self.re.evaluate(data)
+            y_hat = self.predict(data, for_plot=False, confidence_interval=False, prediction_interval=False)
+            residuals = y.iloc[:, 0] - y_hat.iloc[:, 0]
+
+        var = self.std_err_est ** 2 
+        n = len(residuals)
+
+        return (2 * math.pi * var) ** (-n / 2) * math.exp(-1 / (2 * var) * (residuals ** 2).sum())
 
     def confidence_intervals(self, alpha = None, conf = None):
         ''' Calculate confidence intervals for fitted coefficients. Model must be fitted prior to execution.
