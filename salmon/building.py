@@ -1,18 +1,21 @@
+import numpy as np
+import math
+
+from abc import ABC, abstractmethod
+
 from .model import LinearModel
 from .comparison import _extract_dfs
 from .expression import Constant
-import numpy as np
-from abc import ABC, abstractmethod
 
 
 class Score(ABC):
 
-    def __init__(self, model, order):
-        self.order = order
+    def __init__(self, model, higher_is_better):
+        self.higher_is_better = higher_is_better
         self.model = model
 
         if model is None:
-            self._score = np.inf * (-1 if order else 1)
+            self._score = np.inf * (-1 if higher_is_better else 1)
         else:
             self._score = self.compute()
 
@@ -21,9 +24,9 @@ class Score(ABC):
         pass
 
     def compare(self, other):
-        ''' Return true if self is better than other based on 'order' '''
+        ''' Return true if self is better than other based on 'higher_is_better' '''
         assert(type(self) is type(other))  # make sure we are not comparing different types of scores
-        if self.order:
+        if self.higher_is_better:
             return self._score < other._score
         else:
             return self._score > other._score
@@ -36,7 +39,7 @@ class RSquared(Score):
 
         super(RSquared, self).__init__(
             model=model,
-            order=True
+            higher_is_better=True
         )
 
     def compute(self):
@@ -73,7 +76,7 @@ class MSE(Score):
     def __init__(self, model):
         super(MSE, self).__init__(
             model=model,
-            order=False
+            higher_is_better=False
         )
 
     def compute(self):
@@ -81,17 +84,67 @@ class MSE(Score):
         sse = self.model.get_sse()
         return sse / dfs["error_df"]
 
-# TODO: Implement Cp, AIC, BIC
+
+class MallowsCp(Score):
+
+    def __init__(self, model):
+        super(MallowsCp, self).__init__(
+            model=model,
+            higher_is_better=False,
+        )
+
+    def compute(self):
+        dfs = _extract_dfs(self.model, dict_out=True)
+        sse = self.model.get_sse()
+        sigma_sq = self.model.std_err_est ** 2
+        n, p = self.model.n, self.model.p
+
+        return sse / sigma_sq - n + (2 * p)
+
+
+class AIC(Score):
+
+    def __init__(self, model):
+        super(AIC, self).__init__(
+            model=model,
+            higher_is_better=False,
+        )
+
+    def compute(self):
+        p = self.model.p
+        log_likelihood = self.model.log_likelihood()
+
+        return 2 * (p - log_likelihood)
+
+
+class BIC(Score):
+
+    def __init__(self, model):
+        super(BIC, self).__init__(
+            model=model,
+            higher_is_better=False,
+        )
+
+    def compute(self):
+        n, p = self.model.n, self.model.p
+        log_likelihood = self.model.log_likelihood()
+
+        return math.log(n) * p - 2 * log_likelihood
 
 
 _metrics = dict(
     r_squared=RSquared,
     r_squared_adjusted=lambda model: RSquared(model=model, adjusted=True),
-    mse=MSE
+    mse=MSE,
+    cp=MallowsCp,
+    aic=AIC,
+    bic=BIC,
 )
 
 
 def stepwise(full_model, metric_name, forward=False, naive=False):
+
+    metric_name = metric_name.lower()
 
     ex_terms = full_model.ex
     re_term = full_model.re

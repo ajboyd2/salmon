@@ -242,6 +242,7 @@ class LinearModel(Model):
     
         n = X.shape[0]
         p = X.shape[1]
+        self.n, self.p = n, p
 
         # Y_Hat and Residuals
         self.fitted = pd.DataFrame({"Fitted" : np.dot(X, self.bhat).sum(axis = 1)})
