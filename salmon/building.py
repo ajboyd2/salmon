@@ -142,7 +142,10 @@ _metrics = dict(
 )
 
 
-def stepwise(full_model, metric_name, forward=False, naive=False):
+def stepwise(full_model, metric_name, forward=False, naive=False, data=None):
+
+    if data is not None:
+        full_model.fit(data)
 
     metric_name = metric_name.lower()
 
