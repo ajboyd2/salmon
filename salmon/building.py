@@ -192,7 +192,7 @@ def stepwise(full_model, metric_name, forward=False, naive=False, data=None, ver
                     ex_term_list_expression = t
                 else:
                     ex_term_list_expression = ex_term_list_expression + t
-            leaves = set(term for term in ex_term_list if not term.contains(ex_term_list_expression)) # Find all terms that do not depend on other terms
+            leaves = set(term for term in ex_term_list if not term.contains(ex_term_list_expression - term)) # Find all terms that do not depend on other terms
     
         for i, term in enumerate(ex_term_list):
             try:
@@ -212,15 +212,16 @@ def stepwise(full_model, metric_name, forward=False, naive=False, data=None, ver
                 potential_model.fit(data)
                 potential_metric = metric_func(potential_model)
 
-                if verbose:
-                    print(potential_model)
-                    print(potential_metric)
-                    print()
-
                 if best_potential_metric.compare(potential_metric):
                     best_potential_metric = potential_metric
                     best_potential_model = potential_model
                     best_idx = i
+
+                if verbose:
+                    print(potential_model)
+                    print(potential_metric)
+                    print("Current best potential model" if best_idx == i else "Not current best potential")
+                    print()
 
             except np.linalg.linalg.LinAlgError:
                 continue
@@ -228,9 +229,19 @@ def stepwise(full_model, metric_name, forward=False, naive=False, data=None, ver
         if best_metric.compare(best_potential_metric):
             best_metric = best_potential_metric
             best_model = best_potential_model
+            if verbose:
+                print("!!! New model found. Now including", ex_term_list[best_idx])
+                print()
             del ex_term_list[best_idx]
         else:
+            if verbose:
+                print("!!! No potential models better than prior. Exiting search.")
+                print()
             break
+    else:
+        if verbose:
+            print("!!! Exhausted all potential terms. None left to consider.")
+
 
     return dict(
         forward=forward,
