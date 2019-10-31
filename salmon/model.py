@@ -9,7 +9,24 @@ import math
 from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination, Identity, Constant
 
 plt.style.use('ggplot')
-pd.set_option("display.float_format", lambda x: "{:.3f}".format(x) if 1e4 > abs(x) >= 1e-3 else "{:.3e}".format(x))
+
+def _float_format(x):
+    abs_x = abs(x)
+    if abs_x >= 1e4:
+        rep = "{:.3e}".format(x)
+    elif abs_x >= 1e0:
+        rep = ("{:." + str(3 - int(math.floor(math.log10(abs_x)))) + "f}").format(x)
+    elif abs_x >= 1e-3:
+        rep = "{:.4f}".format(x)
+    elif abs_x >= 1e-9:
+        rep = "{:.3e}".format(x)
+    elif abs_x >= 1e-99:
+        rep = "{:.1e}".format(x)
+    else:
+        rep = "{:.0e}".format(x)
+    return rep.replace("e-0", "e-").replace("e+0", "e+")
+
+pd.set_option("display.float_format", _float_format)
 
 class Model:
     ''' A general Model class that both Linear models and (in the future) General Linear models stem from. '''
