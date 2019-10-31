@@ -23,6 +23,9 @@ class Score(ABC):
     def compute(self):
         pass
 
+    def __str__(self):
+        return "{} | {}".format(type(self).__name__, self._score)
+
     def compare(self, other):
         ''' Return true if self is better than other based on 'higher_is_better' '''
         assert(type(self) is type(other))  # make sure we are not comparing different types of scores
@@ -41,6 +44,9 @@ class RSquared(Score):
             model=model,
             higher_is_better=True
         )
+
+    def __str__(self):
+        return "R^2 ({}adjusted) | {}".format("" if self.adjusted else "un", self._score)
 
     def compute(self):
         ''' Calculate the (adjusted) R^2 value of the model.
@@ -142,7 +148,7 @@ _metrics = dict(
 )
 
 
-def stepwise(full_model, metric_name, forward=False, naive=False, data=None):
+def stepwise(full_model, metric_name, forward=False, naive=False, data=None, verbose=False):
 
     if data is not None:
         full_model.fit(data)
@@ -180,7 +186,13 @@ def stepwise(full_model, metric_name, forward=False, naive=False, data=None):
         best_idx = None
     
         if forward and not naive:
-            leaves = set(term for term in ex_term_list if not term.contains(sum(ex_term_list))) # Find all terms that do not depend on other terms
+            ex_term_list_expression = None
+            for t in ex_term_list:
+                if ex_term_list_expression is None:
+                    ex_term_list_expression = t
+                else:
+                    ex_term_list_expression = ex_term_list_expression + t
+            leaves = set(term for term in ex_term_list if not term.contains(ex_term_list_expression)) # Find all terms that do not depend on other terms
     
         for i, term in enumerate(ex_term_list):
             try:
@@ -199,6 +211,11 @@ def stepwise(full_model, metric_name, forward=False, naive=False, data=None):
 
                 potential_model.fit(data)
                 potential_metric = metric_func(potential_model)
+
+                if verbose:
+                    print(potential_model)
+                    print(potential_metric)
+                    print()
 
                 if best_potential_metric.compare(potential_metric):
                     best_potential_metric = potential_metric

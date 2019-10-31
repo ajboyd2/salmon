@@ -138,7 +138,7 @@ class Expression(ABC):
                 return ret_exp
         elif isinstance(other, Combination):
             return other.__add__(self)
-        elif isinstance(other, Var) or isinstance(other, TransVar) or isinstance(other, Constant):
+        elif isinstance(other, (Var, TransVar, Constant, Interaction)):  # single term expressions
             return Combination((self, other))
         else:
             raise Exception("Expressions do not support addition with the given arguments.")
