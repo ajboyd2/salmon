@@ -1,5 +1,5 @@
 import pandas as pd
-from pandas.tools.plotting import scatter_matrix
+from pandas.plotting import scatter_matrix
 import numpy as np
 import scipy.stats as stats
 import matplotlib.pyplot as plt
