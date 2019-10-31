@@ -9,29 +9,7 @@ import math
 from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination, Identity, Constant
 
 plt.style.use('ggplot')
-
-
-def _round_data_by_col(df, sig_figs=4):
-    ''' Helper function to wrap every outputted dataframe to round to a specified number of significant figures.'''
-    num_digits = lambda x: -int(math.floor(math.log10(abs(x)))) + (sig_figs - 1)
-    # find max number of digits in each column
-    digits_per_col = df.applymap(num_digits).min(axis=0)
-    def multi_func(functions):
-        def f(col):
-           return functions[col.name](col)
-        return f
-    return df.apply(
-        multi_func({
-            col_name: lambda col: col.round(decimals=col_val) for col_name, col_val in digits_per_col.items()
-        })
-    )
-
-def _round_data_by_val(df, sig_figs=4):
-    ''' Helper function to wrap every outputted dataframe to round to a specified number of significant figures.'''
-    num_digits = lambda x: -int(math.floor(math.log10(abs(x)))) + (sig_figs - 1)
-    # find max number of digits in each column
-    return df.applymap(lambda x: round(x, num_digits(x)))
-
+pd.set_option("display.float_format", lambda x: "{:.3e}".format(x))
 
 class Model:
     ''' A general Model class that both Linear models and (in the future) General Linear models stem from. '''
@@ -161,6 +139,8 @@ class LinearModel(Model):
 
         n = X.shape[0]
         p = X.shape[1] - (1 if self.intercept else 0)
+        self.n, self.p = n, p
+
 
         # Y_Hat and Residuals
         self.fitted = pd.DataFrame({"Fitted": np.dot(X, self.bhat).sum(axis=1)})
@@ -187,7 +167,7 @@ class LinearModel(Model):
 
         ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals], axis=1)
 
-        return _round_data_by_val(ret_val)
+        return ret_val
         
     def _fit(self, data):
         ''' Helper function for fitting a model with given data. 
@@ -272,7 +252,7 @@ class LinearModel(Model):
 
         ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals, self.lower_conf, self.upper_conf], axis = 1)
         
-        return _round_data_by_val(ret_val) 
+        return ret_val 
 
     def likelihood(self, data=None):
         ''' Calculate likelihood for a fitted model on either original data or new data. '''
@@ -288,6 +268,21 @@ class LinearModel(Model):
         n = len(residuals)
 
         return (2 * math.pi * var) ** (-n / 2) * math.exp(-1 / (2 * var) * (residuals ** 2).sum())
+
+    def log_likelihood(self, data=None):
+        ''' Calculate a numerically stable log_likelihood for a fitted model on either original data or new data. '''
+
+        if data is None:
+            residuals = self.residuals.iloc[:, 0]
+        else:
+            y = self.re.evaluate(data)
+            y_hat = self.predict(data, for_plot=False, confidence_interval=False, prediction_interval=False)
+            residuals = y.iloc[:, 0] - y_hat.iloc[:, 0]
+
+        var = self.std_err_est ** 2 
+        n = len(residuals)
+
+        return (-n / 2) * (math.log(2 * math.pi) + 2 * math.log(self.std_err_est)) - (1 / (2 * var)) * (residuals ** 2).sum()
 
     def confidence_intervals(self, alpha = None, conf = None):
         ''' Calculate confidence intervals for fitted coefficients. Model must be fitted prior to execution.
@@ -314,8 +309,8 @@ class LinearModel(Model):
         width = crit_value * se_vals
         lower_bound = self.bhat["Coefficients"] - width
         upper_bound = self.bhat["Coefficients"] + width 
-        return _round_data_by_val(pd.DataFrame({str(round(1 - crit_prob, 5) * 100) + "%" : lower_bound, 
-                             str(round(crit_prob, 5) * 100) + "%" : upper_bound}))#, 
+        return pd.DataFrame({str(round(1 - crit_prob, 5) * 100) + "%" : lower_bound, 
+                             str(round(crit_prob, 5) * 100) + "%" : upper_bound})#, 
                              #index = self.bhat.index)
 
     def predict(self, data, for_plot = False, confidence_interval = False, prediction_interval = False):
@@ -357,7 +352,7 @@ class LinearModel(Model):
             predictions[str(round(crit_prob, 5) * 100) + "%"] = upper
 
         
-        return _round_data_by_val(predictions)
+        return predictions
     
     def get_sse(self):
         ''' Get the SSE of a fitted model. '''
