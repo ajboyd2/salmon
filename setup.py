@@ -2,7 +2,6 @@ from setuptools import setup, find_packages
 
 setup(
     name="salmon",
-    packages = ["salmon"],
     version="1.0.0",
 
     description="A symbolic algebra based linear regression tool.",
