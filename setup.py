@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="salmon",
+    name="salmon-linear-modeling",
     version="1.0.0",
 
     description="A symbolic algebra based linear regression tool.",
@@ -32,5 +32,5 @@ setup(
         "matplotlib",
         "scipy",
     ],
-    packages=find_packages()
+    packages=find_packages(exclude=("test",)),
 )
