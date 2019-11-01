@@ -2,19 +2,23 @@ from setuptools import setup, find_packages
 
 setup(
     name="salmon",
-    version="0.2.0",
+    packages = ["salmon"],
+    version="1.0.0",
 
-    description="A symbolic statistical modeling tool.",
+    description="A symbolic algebra based linear regression tool.",
 
     url="https://github.com/ajboyd2/salmon",
+    download_url="https://github.com/ajboyd/salmon/archive/v_100.tar.gz",
+
+
 
     author="Alex Boyd",
-    author_email="ajboyd@calpoly.edu",
+    author_email="alexjb@uci.edu",
 
     license="GPLv3",
 
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Education',
         'Topic :: Scientific/Engineering :: Mathematics',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
@@ -22,6 +26,12 @@ setup(
     ],
     
     keywords='modeling symbolic regression',
-
+    install_requires=[
+        "pandas",
+        "numpy",
+        "unittest",
+        "matplotlib",
+        "scipy",
+    ],
     packages=find_packages()
 )
