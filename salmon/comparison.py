@@ -43,7 +43,7 @@ def is_subset(model1, model2):
     terms2 = set(model2.ex.get_terms())
     return terms2.issubset(terms1)
 
-def _calc_stats(numer_ss, numer_df, denom_ms, denom_df):
+def _calc_stats(numer_ss, numer_df, denom_ss, denom_df):
     ''' Given the appropriate sum of squares for the numerator and the mean sum 
     of squares for the denominator (with respective degrees of freedom) this will 
     return the relevant statistics of an F-test.
@@ -61,9 +61,12 @@ def _calc_stats(numer_ss, numer_df, denom_ms, denom_df):
             Element 2 contains the associated p-value for the generated F statistic.
     '''
     numer_ms = numer_ss / numer_df
+    denom_ms = denom_ss / denom_df
     f_val = numer_ms / denom_ms
     p_val = 1 - f.cdf(f_val, numer_df, denom_df)
-    return (numer_ms, f_val, p_val)
+    if p_val < 1.12e-16:
+        p_val = 0.0  # 1.11e-16 is the limit of scipy's precision
+    return f_val, p_val
 
 def _process_term(orig_model, term):
     ''' Obtains needed sum of squared residuals of a model fitted without a specified term/coefficient.
@@ -77,7 +80,7 @@ def _process_term(orig_model, term):
     '''
     new_model = LinearModel(orig_model.given_ex - term, orig_model.given_re)
     new_model.fit(orig_model.training_data)
-    return new_model.get_sse()
+    return new_model.get_sse(), new_model.get_ssr()
 
 def _extract_dfs(model, dict_out=False):
     ''' Obtains the different degrees of freedom for a model in reference to an F-test.
@@ -114,52 +117,50 @@ def _anova_terms(model):
         A DataFrame object that contains the degrees of freedom, adjusted sum of squares, 
         adjusted mean sum of squares, F values, and p values for the associated tests performed.
     '''
-    reg_df, error_df, total_df = _extract_dfs(model)
+    full_reg_df, full_error_df, total_df = _extract_dfs(model)
   
     # Full model values
-    r_sse = model.get_sse()
-    r_ssr = model.get_ssr()
-    r_sst = model.get_sst()
+    full_sse = model.get_sse()  # sum of squared errors
+    full_ssr = model.get_ssr()  # sum of squares explained by model
+    full_sst = model.get_sst()  
     
-    r_mse = r_sse / error_df
-    r_msr, r_f_val, r_p_val = _calc_stats(r_ssr, reg_df, r_mse, error_df)
+    global_f_val, global_p_val = _calc_stats(full_ssr, full_reg_df, full_sse, full_error_df)
     
     # Calculate the general terms now
-    indices = ["Regression"]
-    adj_ss = [r_ssr]
-    adj_ms = [r_msr]
-    f_vals = [r_f_val]
-    p_vals = [r_p_val]
-    dfs = [reg_df]
+    indices = ["Global Test"]
+    sses = [full_ssr]
+    ssrs = [full_ssr]
+    f_vals = [global_f_val]
+    p_vals = [global_p_val]
+    dfs = [full_reg_df]
     
     terms = model.ex.get_terms()
     for term in terms:
         term_df = term.get_dof()
-        term_ss = r_ssr - _process_term(model, term)
-        term_ms, term_f, term_p = _calc_stats(term_ss, term_df, r_mse, error_df)
-        indices.append(">> " + str(term))
-        adj_ss.append(term_ss)
-        adj_ms.append(term_ms)
+        reduced_sse, reduced_ssr = _process_term(model, term)
+        reduced_f_val, reduced_p_val = _calc_stats(full_ssr - reduced_ssr, term_df, full_sse, full_error_df)
+        indices.append("- " + str(term))
+        sses.append(reduced_sse)
+        ssrs.append(reduced_ssr)
         dfs.append(term_df)
-        f_vals.append(term_f)
-        p_vals.append(term_p)
-    
-    
+        f_vals.append(reduced_f_val)
+        p_vals.append(reduced_p_val)
+        
     # Finish off the dataframe's values
-    indices += ["Error", "Total"]
-    adj_ss += [r_sse, r_sst]
-    adj_ms += [r_mse, ""]
-    dfs += [error_df, total_df]
-    f_vals += ["", ""]
-    p_vals += ["", ""]
+    indices.append("Error")
+    sses.append("")
+    ssrs.append("")
+    dfs.append(full_error_df)
+    f_vals.append("")
+    p_vals.append("")
     
     return pd.DataFrame({
             "DF" : dfs,
-            "Adj_SS": adj_ss,
-            "Adj_MS" : adj_ms,
-            "F_Value" : f_vals,
-            "P_Value" : p_vals
-        }, index = indices, columns = ["DF", "Adj_SS", "Adj_MS", "F_Value", "P_Value"])
+            "SS Err.": sses,
+            "SS Reg." : ssrs,
+            "F" : f_vals,
+            "p" : p_vals
+        }, index = indices, columns = ["DF", "SS Err.", "SS Reg.", "F", "p"])
 
 def _anova_models(full_model, reduced_model):
     ''' Performs a partial F-test to compare two models.
@@ -179,32 +180,25 @@ def _anova_models(full_model, reduced_model):
     f_reg_df, f_error_df, f_total_df = _extract_dfs(full_model)
     r_reg_df, r_error_df, r_total_df = _extract_dfs(reduced_model)
     
-    f_sse = full_model.get_sse()
-    r_sse = reduced_model.get_sse()
+    f_sse, f_ssr = full_model.get_sse(), full_model.get_ssr()
+    r_sse, r_ssr = reduced_model.get_sse(), reduced_model.get_ssr()
+  
+    f_val, p_val = _calc_stats(r_sse - f_sse, r_error_df - f_error_df, f_sse, f_error_df)
     
-    denom_df = f_reg_df
-    denom_ms = f_sse / denom_df
-    numer_df = f_reg_df - r_reg_df
-    numer_ss = r_sse - f_sse
-    # what next?    
-    _, f_val, p_val = _calc_stats(numer_ss, numer_df, denom_ms, denom_df)
-    
-    indices = ["Reduced Model", "Full Model"]#[reduced_label, full_label]
-    resid_df = [r_error_df, f_error_df]
-    ssr = [reduced_model.get_ssr(), full_model.get_ssr()] 
-    df = ["", resid_df[0] - resid_df[1]]
-    sse = ["", numer_ss]
-    f = ["", f_val]
-    p = ["", p_val]
+    indices = ["Full Model", "- Reduced Model", "Error"]#[reduced_label, full_label]
+    df = [f_reg_df, f_reg_df - r_reg_df, f_error_df]
+    ssrs = [f_ssr, r_ssr, ""] 
+    sses = [f_sse, r_sse, ""]
+    f = ["", f_val, ""]
+    p = ["", p_val, ""]
 
     return pd.DataFrame({
-        "Residual DF" : resid_df,
-        "Explained SS" : ssr, 
         "DF" : df,
-        "Residual SS" : sse,
-        "F_Value" : f,
-        "P_Value" : p},
-        index = indices, columns = ["Residual DF", "Explained SS", "DF", "Residual SS", "F_Value", "P_Value"])
+        "SS Err." : sses,
+        "SS Reg." : ssrs, 
+        "F" : f,
+        "p" : p},
+        index = indices, columns = ["DF", "SS Err.", "SS Reg.", "F", "p"])
     
     
     
