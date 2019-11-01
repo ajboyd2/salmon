@@ -8,7 +8,7 @@ setup(
     description="A symbolic algebra based linear regression tool.",
 
     url="https://github.com/ajboyd2/salmon",
-    download_url="https://github.com/ajboyd/salmon/archive/v_100.tar.gz",
+    download_url="https://github.com/ajboyd2/salmon/archive/v_100.tar.gz",
 
 
 
