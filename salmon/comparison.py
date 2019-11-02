@@ -63,9 +63,7 @@ def _calc_stats(numer_ss, numer_df, denom_ss, denom_df):
     numer_ms = numer_ss / numer_df
     denom_ms = denom_ss / denom_df
     f_val = numer_ms / denom_ms
-    p_val = 1 - f.cdf(f_val, numer_df, denom_df)
-    if p_val < 1.12e-16:
-        p_val = 0.0  # 1.11e-16 is the limit of scipy's precision
+    p_val = f.sf(f_val, numer_df, denom_df)
     return f_val, p_val
 
 def _process_term(orig_model, term):
