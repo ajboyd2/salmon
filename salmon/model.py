@@ -24,7 +24,9 @@ def _float_format(x):
         rep = "{:.1e}".format(x)
     else:
         rep = "{:.0e}".format(x)
-    return rep.replace("e-0", "e-").replace("e+0", "e+")
+    rep = rep.replace("e-0", "e-").replace("e+0", "e+")
+    rep = rep.replace("0e+0", "0.000")
+    return rep
 
 pd.set_option("display.float_format", _float_format)
 
