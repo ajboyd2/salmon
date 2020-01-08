@@ -224,6 +224,17 @@ class Expression(ABC):
             raise Exception("Can only raise to a constant power.")
         #elif isinstance(other, (float)): # Improper, will reduce upon evaluation
         #    return TransVar(self, _t.Power(other))
+
+    def __and__(self, other):
+        ''' Returns an interaction with main effects between two Expression objects. '''
+        return self + other + (self * other)
+
+    def __xor__(self, other):
+        ''' Returns an interaction with main effects up to a specified power.
+        
+        If the base object is not a Combination, then the default __pow__ logic is used.'''
+
+        return self ** other  # see Combination's __xor__ for other logic
         
     def descale(self):
         ''' Remove scaling on an Expression. Done in a functional manner so original object is unaffected. '''
@@ -879,6 +890,37 @@ class Combination(Expression):
             return base
         else:
             return "{}*({})".format(self.scale, base)
+
+    def __xor__(self, other):
+        if isinstance(other, int) and other >= 0:
+            power = min(other, len(self.terms))
+            new_terms = set()
+            base_terms = self.terms
+            last_added_terms = [frozenset()]
+
+            for _ in range(power):
+                newly_added_terms = set()
+                for new_term in base_terms:
+                    for last_added_term in last_added_terms:
+                        if new_term not in last_added_term:
+                            newly_added_terms.add(last_added_term.union(frozenset([new_term])))
+
+                new_terms = new_terms.union(newly_added_terms)
+                last_added_terms = newly_added_terms
+
+            processed_terms = set()
+            for term in new_terms:
+                if len(term) == 1:
+                    processed_terms.add(next(iter(term)))
+                else:
+                    processed_terms.add(reduce(lambda x,y: x * y, term))
+
+            if len(new_terms) == 0:
+                return Constant(1)
+            else:
+                return Combination(processed_terms)
+        else:
+            return self ** other
         
     def _add_term(self, other_term):
         if isinstance(other_term, (int, float)):
