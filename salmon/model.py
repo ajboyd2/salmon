@@ -799,7 +799,7 @@ class LinearModel(Model):
         ''' Helper function to create a column of ones for the intercept. '''
         return pd.DataFrame({"Intercept" : np.repeat(1, data.shape[0])})
 
-    def residual_diagnostic_plots(self, **kwargs):
+    def plot_residual_diagnostics(self, **kwargs):
         ''' Produce a matrix of four diagnostic plots: 
         the residual v. quantile plot, the residual v. fited values plot, the histogram of residuals, and the residual v. order plot.
 
