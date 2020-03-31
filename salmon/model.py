@@ -260,10 +260,11 @@ class LinearModel(Model):
         self.var = pd.DataFrame(self.var, columns=X.columns, index=X.columns)
         
         # Coefficient Inference
+        t = self.bhat["Coefficients"] / self.std_err_vars["SE"]
         ci_width = stats.t.ppf(q=0.975, df=n-p) * self.std_err_vars["SE"]
         output = pd.DataFrame({
-            "t": self.bhat["Coefficients"] / self.std_err_vars["SE"],
-            "p": 2 * stats.t.cdf(-abs(self.t_vals["t"]), n - p),
+            "t": t,
+            "p": 2 * stats.t.cdf(-np.abs(t), n - p),
             "2.5% CI": self.bhat["Coefficients"] - ci_width,
             "97.5% CI": self.bhat["Coefficients"] + ci_width
         }, index=self.bhat.index)
