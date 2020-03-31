@@ -229,8 +229,9 @@ class LinearModel(Model):
             y = y - y_mean
         
         # Solve equation
-        self.bhat = pd.DataFrame(np.linalg.lstsq(X, y), 
-                                 index=X.columns, columns=["Coefficients"])
+        bhat, resid, _, _ = np.linalg.lstsq(X, y)
+        self.bhat = pd.DataFrame(bhat, index=X.columns, columns=["Coefficients"])
+
         if self.intercept:
             self.bhat.loc["Intercept"] = [y_mean[0] - X_means.dot(self.bhat)[0]]
             X = X + X_means
@@ -243,11 +244,11 @@ class LinearModel(Model):
 
         # Y_Hat and Residuals
         self.fitted = pd.DataFrame({"Fitted" : np.dot(X, self.bhat).sum(axis = 1)})
-        self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - self.fitted.iloc[:,0]})
+        self.residuals = pd.DataFrame({"Residuals" : resid})
         
         # Sigma Hat
         var_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p))
-        self.std_err_est = self.var_est ** 0.5
+        self.std_err_est = var_est ** 0.5
 
         # Covariance Matrix
         self.var = var_est * np.linalg.inv(np.dot(X.T, X))
@@ -260,18 +261,14 @@ class LinearModel(Model):
         self.var = pd.DataFrame(self.var, columns=X.columns, index=X.columns)
         
         # Coefficient Inference
-        t = self.bhat["Coefficients"] / self.std_err_vars["SE"]
         ci_width = stats.t.ppf(q=0.975, df=n-p) * self.std_err_vars["SE"]
-        output = pd.DataFrame({
-            "t": t,
-            "p": 2 * stats.t.cdf(-np.abs(t), n - p),
-            "2.5% CI": self.bhat["Coefficients"] - ci_width,
-            "97.5% CI": self.bhat["Coefficients"] + ci_width
-        }, index=self.bhat.index)
+        output = self.bhat.copy()
+        output["t"] = self.bhat["Coefficients"] / self.std_err_vars["SE"]
+        output["p"] = 2 * stats.t.cdf(-np.abs(output["t"]), n - p)
+        output["2.5% CI"] = self.bhat["Coefficients"] - ci_width
+        output["97.5% CI"] = self.bhat["Coefficients"] + ci_width
 
-        ret_val = pd.concat([self.bhat, output], axis = 1)
-        
-        return ret_val 
+        return output
 
     def likelihood(self, data=None):
         ''' Calculate likelihood for a fitted model on either original data or new data. '''
