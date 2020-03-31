@@ -229,7 +229,7 @@ class LinearModel(Model):
             y = y - y_mean
         
         # Solve equation
-        self.bhat = pd.DataFrame(np.linalg.solve(np.dot(X.T, X), np.dot(X.T, y)), 
+        self.bhat = pd.DataFrame(np.linalg.lstsq(X, y), 
                                  index=X.columns, columns=["Coefficients"])
         if self.intercept:
             self.bhat.loc["Intercept"] = [y_mean[0] - X_means.dot(self.bhat)[0]]
@@ -237,8 +237,6 @@ class LinearModel(Model):
             X['Intercept'] = 1
             y = y + y_mean
             
-            
-    
         n = X.shape[0]
         p = X.shape[1]
         self.n, self.p = n, p
@@ -248,11 +246,11 @@ class LinearModel(Model):
         self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - self.fitted.iloc[:,0]})
         
         # Sigma Hat
-        self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p)) ** 0.5
+        var_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p))
+        self.std_err_est = self.var_est ** 0.5
 
-        # Covariance Matrix        
-        self.var = np.linalg.solve(np.dot(X.T, X), 
-                                   (self.std_err_est ** 2) * np.identity(X.shape[1]))
+        # Covariance Matrix
+        self.var = var_est * np.linalg.inv(np.dot(X.T, X))
 
         # Coefficient SE, Diagonal of Cov. Matrix
         self.std_err_vars = pd.DataFrame({"SE": (np.diagonal(self.var)) ** 0.5},
@@ -262,14 +260,15 @@ class LinearModel(Model):
         self.var = pd.DataFrame(self.var, columns=X.columns, index=X.columns)
         
         # Coefficient Inference
-        self.t_vals = pd.DataFrame({"t": self.bhat["Coefficients"] / self.std_err_vars["SE"]})
-        self.p_vals = pd.DataFrame({"p": pd.Series(2 * stats.t.cdf(-abs(self.t_vals["t"]), n - p),
-                                                    index=self.bhat.index)})
-        ci_width = stats.t.ppf(q=0.975, df=n-p)
-        self.lower_conf = pd.DataFrame({"2.5% CI": self.bhat["Coefficients"] - ci_width*self.std_err_vars["SE"]})
-        self.upper_conf = pd.DataFrame({"97.5% CI": self.bhat["Coefficients"] + ci_width*self.std_err_vars["SE"]})
+        ci_width = stats.t.ppf(q=0.975, df=n-p) * self.std_err_vars["SE"]
+        output = pd.DataFrame({
+            "t": self.bhat["Coefficients"] / self.std_err_vars["SE"],
+            "p": 2 * stats.t.cdf(-abs(self.t_vals["t"]), n - p),
+            "2.5% CI": self.bhat["Coefficients"] - ci_width,
+            "97.5% CI": self.bhat["Coefficients"] + ci_width
+        }, index=self.bhat.index)
 
-        ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals, self.lower_conf, self.upper_conf], axis = 1)
+        ret_val = pd.concat([self.bhat, output], axis = 1)
         
         return ret_val 
 
