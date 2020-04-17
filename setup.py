@@ -2,14 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name="salmon-linear-modeling",
-    version="1.0.0",
+    version="1.0.2",
 
     description="A symbolic algebra based linear regression tool.",
 
     url="https://github.com/ajboyd2/salmon",
     download_url="https://github.com/ajboyd2/salmon/archive/v_100.tar.gz",
-
-
 
     author="Alex Boyd",
     author_email="alexjb@uci.edu",
@@ -28,7 +26,6 @@ setup(
     install_requires=[
         "pandas",
         "numpy",
-        "unittest",
         "matplotlib",
         "scipy",
     ],
