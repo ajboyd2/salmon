@@ -4,7 +4,10 @@ from .model import *
 import pandas as pd
 
 def floatComparison(a, b, eps = 0.0001):
-    return(a - eps < b and b < a + eps)
+    if isinstance(a, (pd.Series, pd.DataFrame)) or isinstance(b, (pd.Series, pd.DataFrame)):
+        return (a - eps < b) & (b < a + eps)
+    else:
+        return (a - eps < b) and (b < a + eps)
 
 # Expressions
 class TestVarMethods(unittest.TestCase):
@@ -29,7 +32,7 @@ class TestVarMethods(unittest.TestCase):
             v *= 4
                 
     def test_flatten(self):
-        flattened = Var("Test").flatten()
+        flattened = Var("Test").get_terms()
         self.assertEqual(len(flattened), 1)
         self.assertEqual(str(flattened[0]), "Test")
                 
@@ -49,9 +52,9 @@ class TestVarMethods(unittest.TestCase):
 class TestQuantitativeMethods(unittest.TestCase):
     
     def test_str(self):
-        var = Quantitative("A", transformation = 2, coefficient = 4, shift = 3)
+        var = 4*(Quantitative("A")+3)**2
         self.assertEqual(str(var), "4*(A+3)^2")
-        var = Quantitative("A", transformation = "sin", coefficient = 4, shift = 3)
+        var = 4*Sin(Quantitative("A")+3)
         self.assertEqual(str(var), "4*sin(A+3)")
         
     def test_add(self):
@@ -138,28 +141,28 @@ class TestCategoricalMethods(unittest.TestCase):
 class TestInteractionMethods(unittest.TestCase):
     
     def test_str(self):
-        inter = Interaction(Quantitative("A"), Quantitative("B"))
+        inter = Interaction(terms=(Quantitative("A"), Quantitative("B")))
         self.assertEqual(str(inter), "{A}{B}")
         
     def test_pow(self):
-        inter = Interaction(Quantitative("A"), Quantitative("B"))
+        inter = Interaction(terms=(Quantitative("A"), Quantitative("B")))
         inter = inter ** 3
         self.assertEqual(str(inter), "{A}{B}")
         with self.assertRaises(Exception):
             inter ** "log"
         
     def test_flatten(self):
-        inter = Interaction(Quantitative("A"), Quantitative("B"))
-        ls1 = inter.flatten()
+        inter = Interaction(terms=(Quantitative("A"), Quantitative("B")))
+        ls1 = inter.get_terms()
         self.assertEqual(len(ls1), 1)
         self.assertEqual(ls1[0], inter)
-        ls2 = inter.flatten(True)
+        ls2 = list(inter.terms)
         self.assertEqual(len(ls2), 2)
         self.assertEqual(str(ls2[0]), "A")
         self.assertEqual(str(ls2[1]), "B")
                 
     def test_copy(self):
-        orig = Interaction(Var("A"), Var("B"))
+        orig = Interaction(terms=(Var("A"), Var("B")))
         copy = orig.copy()
         self.assertFalse(orig == copy)
         self.assertEqual(str(orig), str(copy))
@@ -168,8 +171,11 @@ class TestInteractionMethods(unittest.TestCase):
         old = Var("A") * Var("B")
         data = pd.DataFrame({"A" : [1], "B" : ["cat"]})
         old.interpret(data)
-        self.assertTrue(isinstance(old.e1, Quantitative))
-        self.assertTrue(isinstance(old.e2, Categorical))
+        for v in old.terms:
+            if v.name == "B":
+                self.assertTrue(isinstance(v, Categorical))
+            else:
+                self.assertTrue(isinstance(v, Quantitative))
                 
 class TestCombinationMethods(unittest.TestCase):
     
@@ -196,13 +202,13 @@ class TestCombinationMethods(unittest.TestCase):
                 
     def test_flatten(self):
         comb = Var("A") + Var("B")
-        ls = comb.flatten()
+        ls = list(comb.get_terms())
         self.assertEqual(len(ls), 2)
         self.assertEqual(str(ls[0]), "A")
         self.assertEqual(str(ls[1]), "B")
                 
     def test_copy(self):
-        orig = Interaction(Var("A"), Var("B"))
+        orig = Interaction(terms=(Var("A"), Var("B")))
         copy = orig.copy()
         self.assertFalse(orig == copy)
         self.assertEqual(str(orig), str(copy))
@@ -211,8 +217,11 @@ class TestCombinationMethods(unittest.TestCase):
         old = Var("A") + Var("B")
         data = pd.DataFrame({"A" : [1], "B" : ["cat"]})
         old.interpret(data)
-        self.assertTrue(isinstance(old.e1, Quantitative))
-        self.assertTrue(isinstance(old.e2, Categorical))
+        for v in old.get_terms():
+            if v.name == "B":
+                self.assertTrue(isinstance(v, Categorical))
+            else:
+                self.assertTrue(isinstance(v, Quantitative))
         
 iris = pd.read_csv("https://raw.githubusercontent.com/uiuc-cse/data-fa14/gh-pages/data/iris.csv")
 
@@ -251,13 +260,13 @@ class TestModelMethods(unittest.TestCase):
         self.assertTrue(all(diff))
         
     def test_plot(self):
-        model = LinearModel(Q("petal_wdith") + Q("petal_length"), Q("sepal_length"))
+        model = LinearModel(Q("petal_width") + Q("petal_length"), Q("sepal_length"))
         model.fit(iris)
         with self.assertRaises(Exception):
             model.plot()
                 
     def test_residual_plots(self):
-        model = LinearModel(Q("petal_wdith") + Q("petal_length"), Q("sepal_length"))
+        model = LinearModel(Q("petal_width") + Q("petal_length"), Q("sepal_length"))
         model.fit(iris)
         plots = model.residual_plots()
         self.assertEqual(len(plots), 2)
