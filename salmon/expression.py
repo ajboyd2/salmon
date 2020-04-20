@@ -751,6 +751,7 @@ class Interaction(Expression):
             return "{}*{}".format(self.scale, base)
         
     def _add_term(self, other_term):
+        other_term = other_term.copy()
         if isinstance(other_term, PowerVar):
             base_term = other_term.var
         else:
@@ -761,6 +762,8 @@ class Interaction(Expression):
                 similar_term = term
                 break
 
+        self.scale *= other_term.scale
+        other_term.scale = 1
         if similar_term is not None:
             self.terms.remove(similar_term)
             self.terms.add(similar_term * other_term)
