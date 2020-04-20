@@ -16,18 +16,18 @@ class TestVarMethods(unittest.TestCase):
         self.assertEqual(str(Var("Test Case")), "Test Case")
         
     def test_mul(self):
-        self.assertEqual(str(Var("Var1") * Var("Var2")), "{Var1}{Var2}")
-        self.assertEqual(str(Var("Test") * Poly("Single", 2)), "{Test}{Single} + {Test}{Single^2}")
+        self.assertEqual(str(Var("Var1") * Var("Var2")), "(Var1)(Var2)")
+        self.assertEqual(str(Var("Test") * Poly("Single", 2)), "(Test)(Single) + (Test)(Single^2)")
         with self.assertRaises(Exception):
             Var("Test2") * 4
         
     def test_imul(self):
         v = Var("Test")
         v *= Var("Other")
-        self.assertEqual(str(v), "{Test}{Other}")
+        self.assertEqual(str(v), "(Other)(Test)")
         v = Var("Test")
         v *= Poly("Single", 2)
-        self.assertEqual(str(v), "{Test}{Single} + {Test}{Single^2}")
+        self.assertEqual(str(v), "(Test)(Single) + (Test)(Single^2)")
         with self.assertRaises(Exception):
             v *= 4
                 
@@ -39,7 +39,7 @@ class TestVarMethods(unittest.TestCase):
     def test_copy(self):
         orig = Var("A")
         copy = orig.copy()
-        self.assertFalse(orig == copy)
+        self.assertFalse(orig is copy)
         self.assertEqual(str(orig), str(copy))
                 
     def test_interpret(self):
@@ -53,28 +53,28 @@ class TestQuantitativeMethods(unittest.TestCase):
     
     def test_str(self):
         var = 4*(Quantitative("A")+3)**2
-        self.assertEqual(str(var), "4*(A+3)^2")
+        self.assertEqual(str(var), "4*(6*A+9+A^2)")
         var = 4*Sin(Quantitative("A")+3)
-        self.assertEqual(str(var), "4*sin(A+3)")
+        self.assertEqual(str(var), "4*sin(3+A)")
         
     def test_add(self):
         var1 = Quantitative("A")
-        self.assertEqual(str(var1 + 3), "A+3")
-        self.assertEqual(str(var1 + var1), "A + A")
+        self.assertEqual(str(var1 + 3), "3+A")
+        self.assertEqual(str(var1 + var1), "2*A")
         
     def test_iadd(self):
         var = Quantitative("A")
         var += 3
-        self.assertEqual(str(var), "A+3")
+        self.assertEqual(str(var), "3+A")
         var += -3
         var += var
-        self.assertEqual(str(var), "A + A")
+        self.assertEqual(str(var), "2*A")
                 
     def test_mul(self):
         var = Quantitative("A")
         self.assertEqual(str(var * 3), "3*A")
         self.assertEqual(str(var * var), "A^2")
-        self.assertEqual(str(var * Quantitative("B")), "{A}{B}")
+        self.assertEqual(str(var * Quantitative("B")), "(A)(B)")
                 
     def test_imul(self):
         var1 = Quantitative("A")
@@ -85,16 +85,13 @@ class TestQuantitativeMethods(unittest.TestCase):
         self.assertEqual(str(var2), "A^2")
         var3 = Quantitative("A")
         var3 *= Quantitative("B")
-        self.assertEqual(str(var3), "{A}{B}")
+        self.assertEqual(str(var3), "(A)(B)")
         
     def test_pow(self):
         var = Quantitative("A")
         self.assertEqual(str(var ** 4), "A^4")
         with self.assertRaises(Exception):
             var ** "bad arg"
-        with self.assertRaises(Exception):
-            var = Log(var)
-            var ** 43
                 
     def test_ipow(self):
         var = Quantitative("A")
@@ -105,7 +102,7 @@ class TestQuantitativeMethods(unittest.TestCase):
                 
     def test_transform(self):
         var = Quantitative("A")
-        var.transform("sin")
+        var = var.transform("sin")
         self.assertEqual(str(var), "sin(A)")
         with self.assertRaises(Exception):
             var = Quantitative("A")
@@ -115,7 +112,7 @@ class TestQuantitativeMethods(unittest.TestCase):
     def test_copy(self):
         orig = Quantitative("A")
         copy = orig.copy()
-        self.assertFalse(orig == copy)
+        self.assertFalse(orig is copy)
         self.assertEqual(str(orig), str(copy))
 
     def test_interpret(self):
@@ -131,7 +128,7 @@ class TestCategoricalMethods(unittest.TestCase):
     def test_copy(self):
         orig = Categorical("A")
         copy = orig.copy()
-        self.assertFalse(orig == copy)
+        self.assertFalse(orig is copy)
         self.assertEqual(str(orig), str(copy))
 
     def test_interpret(self):
@@ -142,12 +139,12 @@ class TestInteractionMethods(unittest.TestCase):
     
     def test_str(self):
         inter = Interaction(terms=(Quantitative("A"), Quantitative("B")))
-        self.assertEqual(str(inter), "{A}{B}")
+        self.assertEqual(str(inter), "(A)(B)")
         
     def test_pow(self):
         inter = Interaction(terms=(Quantitative("A"), Quantitative("B")))
         inter = inter ** 3
-        self.assertEqual(str(inter), "{A}{B}")
+        self.assertEqual(str(inter), "(A^3)(B^3)")
         with self.assertRaises(Exception):
             inter ** "log"
         
@@ -158,13 +155,12 @@ class TestInteractionMethods(unittest.TestCase):
         self.assertEqual(ls1[0], inter)
         ls2 = list(inter.terms)
         self.assertEqual(len(ls2), 2)
-        self.assertEqual(str(ls2[0]), "A")
-        self.assertEqual(str(ls2[1]), "B")
+        self.assertTrue((str(ls2[0])=="A" and str(ls2[1])=="B") or (str(ls2[0])=="B" and str(ls2[1])=="A"))
                 
     def test_copy(self):
         orig = Interaction(terms=(Var("A"), Var("B")))
         copy = orig.copy()
-        self.assertFalse(orig == copy)
+        self.assertFalse(orig is copy)
         self.assertEqual(str(orig), str(copy))
         
     def test_interpret(self):
@@ -181,36 +177,36 @@ class TestCombinationMethods(unittest.TestCase):
     
     def test_str(self):
         comb = Var("A") + Var("B")
-        self.assertEqual(str(comb), "A + B")
+        self.assertEqual(str(comb), "A+B")
         
     def test_mul(self):
         comb = Var("A") + Var("B")
-        self.assertEqual(str(comb * Var("C")), "{A}{C} + {B}{C}")
+        self.assertEqual(str(comb * Var("C")), "(A)(C)+(B)(C)")
         with self.assertRaises(Exception):
             comb * "bad arg"
         
     def test_imul(self):
         comb = Var("A") + Var("B")
         comb *= Var("C")
-        self.assertEqual(str(comb), "{A}{C} + {B}{C}")
+        self.assertEqual(str(comb), "(A)(C)+(B)(C)")
         with self.assertRaises(Exception):
             comb *= "bad arg"
             
     def test_pow(self):
         comb = Var("A") + Var("B")
-        self.assertEqual(str(comb ** 2), "A^2 + {A}{B} + {B}{A} + B^2")
+        self.assertEqual(str(comb ** 2), "2*(A)(B)+A^2+B^2")
                 
     def test_flatten(self):
         comb = Var("A") + Var("B")
         ls = list(comb.get_terms())
         self.assertEqual(len(ls), 2)
-        self.assertEqual(str(ls[0]), "A")
-        self.assertEqual(str(ls[1]), "B")
+        self.assertTrue((str(ls[0])=="A" and str(ls[1])=="B") or (str(ls[0])=="B" and str(ls[1])=="A"))
+
                 
     def test_copy(self):
         orig = Interaction(terms=(Var("A"), Var("B")))
         copy = orig.copy()
-        self.assertFalse(orig == copy)
+        self.assertFalse(orig is copy)
         self.assertEqual(str(orig), str(copy))
         
     def test_interpret(self):
@@ -234,17 +230,18 @@ class TestModelMethods(unittest.TestCase):
         explanatory = Q("petal_width") + C("species", levels = levels)
         response = Q("sepal_width")
         model = LinearModel(explanatory, response)
-        results = model.fit(iris)
+        results = model.fit(iris)[["Coefficients", "SE", "t", "p"]].sort_index()
         expected = pd.DataFrame({"Coefficients" : [1.36214962108944, 0.795582615454372, 1.86172822073969, 0.35290783081806], 
-                                 "Standard Errors" : [0.248101683560026, 0.120657012161229, 0.223217037772943, 0.10358416791633], 
-                                 "t-statistics" : [5.49, 6.59, 8.34, 3.41], 
-                                 "p-values" : [0, 0, 0, 0.0008]}, 
-                                 index = ["Intercept", "petal_width", "species::setosa", "species::verginica"])
+                                 "SE" : [0.248101683560026, 0.120657012161229, 0.223217037772943, 0.10358416791633], 
+                                 "t" : [5.49, 6.59, 8.34, 3.41], 
+                                 "p" : [0, 0, 0, 0.0008]}, 
+                                 index = ["Intercept", "petal_width", "species{setosa}", "species{versicolor}"]).sort_index()
         diff = results - expected
         diff["Coefficients"] = floatComparison(0, diff["Coefficients"], 0.000001)
-        diff["Standard Errors"] = floatComparison(0, diff["Standard Errors"], 0.000001)
-        diff["t-statistics"] = floatComparison(0, diff["t-statistics"], 0.01)
-        diff["p-values"] = floatComparison(0, diff["p-values"], 0.0001)
+        diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
+        diff["t"] = floatComparison(0, diff["t"], 0.01)
+        diff["p"] = floatComparison(0, diff["p"], 0.0001)
+
         self.assertTrue(all(diff.apply(all, 1)))
         
     def test_predict(self):
