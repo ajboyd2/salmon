@@ -1,6 +1,6 @@
 import unittest
-from Expression import *
-from Model import *
+from .expression import *
+from .model import *
 import pandas as pd
 
 def floatComparison(a, b, eps = 0.0001):
@@ -168,8 +168,8 @@ class TestInteractionMethods(unittest.TestCase):
         old = Var("A") * Var("B")
         data = pd.DataFrame({"A" : [1], "B" : ["cat"]})
         old.interpret(data)
-        self.assertTrue(isinstance(old.e1, Quantitative)
-        self.assertTrue(isinstance(old.e2, Categorical)
+        self.assertTrue(isinstance(old.e1, Quantitative))
+        self.assertTrue(isinstance(old.e2, Categorical))
                 
 class TestCombinationMethods(unittest.TestCase):
     
@@ -211,8 +211,8 @@ class TestCombinationMethods(unittest.TestCase):
         old = Var("A") + Var("B")
         data = pd.DataFrame({"A" : [1], "B" : ["cat"]})
         old.interpret(data)
-        self.assertTrue(isinstance(old.e1, Quantitative)
-        self.assertTrue(isinstance(old.e2, Categorical)
+        self.assertTrue(isinstance(old.e1, Quantitative))
+        self.assertTrue(isinstance(old.e2, Categorical))
         
 iris = pd.read_csv("https://raw.githubusercontent.com/uiuc-cse/data-fa14/gh-pages/data/iris.csv")
 
@@ -251,13 +251,13 @@ class TestModelMethods(unittest.TestCase):
         self.assertTrue(all(diff))
         
     def test_plot(self):
-        model = LinearModel(Q("petal_wdith") + Q("petal_length"), Q("sepal_length")
+        model = LinearModel(Q("petal_wdith") + Q("petal_length"), Q("sepal_length"))
         model.fit(iris)
         with self.assertRaises(Exception):
             model.plot()
                 
     def test_residual_plots(self):
-        model = LinearModel(Q("petal_wdith") + Q("petal_length"), Q("sepal_length")
+        model = LinearModel(Q("petal_wdith") + Q("petal_length"), Q("sepal_length"))
         model.fit(iris)
         plots = model.residual_plots()
         self.assertEqual(len(plots), 2)
@@ -288,5 +288,5 @@ class TestModelMethods(unittest.TestCase):
     '''
     
 if __name__ == "__main__":
-    
+    unittest.main()
         
