@@ -173,11 +173,14 @@ class Expression(ABC):
             return ret_exp
         elif isinstance(other, Interaction):
             return other.__mul__(self)
+        elif isinstance(other, Combination):
+            self_copy = self.copy()
+            return Combination(terms=(self_copy*t for t in other.get_terms()))
         elif isinstance(other, Expression):
             if self.__sim__(other): # Consolidate
                 return self.copy() ** 2
             else: # Explicit interaction
-                return Interaction((self, other))
+                return Interaction(terms=(self, other))
         else:
             raise Exception("Expressions do not support multiplication with the given arguments.")
             
@@ -791,6 +794,9 @@ class Interaction(Expression):
             self_copy = self.copy()
             self_copy.scale *= other.scale
             return self_copy
+        elif isinstance(other, Combination):
+            self_copy = self.copy()
+            return Combination(terms=(self_copy*t for t in other.get_terms()))
         elif isinstance(other, Expression):
             self_copy = self.copy()
             self_copy._add_term(other)
