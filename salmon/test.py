@@ -17,9 +17,7 @@ class TestVarMethods(unittest.TestCase):
         
     def test_mul(self):
         self.assertEqual(str(Var("Var1") * Var("Var2")), "(Var1)(Var2)")
-        self.assertEqual(str(Var("Test") * Poly("Single", 2)), "(Test)(Single) + (Test)(Single^2)")
-        with self.assertRaises(Exception):
-            Var("Test2") * 4
+        self.assertEqual(str(Var("Test") * Poly("Single", 2)), "(Single)(Test)+(Single^2)(Test)")
         
     def test_imul(self):
         v = Var("Test")
@@ -27,9 +25,7 @@ class TestVarMethods(unittest.TestCase):
         self.assertEqual(str(v), "(Other)(Test)")
         v = Var("Test")
         v *= Poly("Single", 2)
-        self.assertEqual(str(v), "(Test)(Single) + (Test)(Single^2)")
-        with self.assertRaises(Exception):
-            v *= 4
+        self.assertEqual(str(v), "(Single)(Test)+(Single^2)(Test)")
                 
     def test_flatten(self):
         flattened = Var("Test").get_terms()
