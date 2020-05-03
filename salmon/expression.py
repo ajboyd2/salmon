@@ -10,6 +10,10 @@ from . import transformation as _t
 
 _supported_encodings = ['one-hot']
 
+# if set to True, has expression representation equivalent to __str__ representation
+# useful for debugging
+STR_AS_REPR = False
+
 
 # ABC is a parent object that allows for Abstract methods
 class Expression(ABC):
@@ -33,6 +37,13 @@ class Expression(ABC):
         ''' Represent an Expression object as a String utilizing standard algebraic notation.
         '''
         pass
+
+    def __repr__(self):
+        global STR_AS_REPR
+        if STR_AS_REPR:
+            return self.__str__()
+        else:
+            return object.__repr__(self)
         
     def __eq__(self, other):
         ''' Check if an Expression is equivalent to another object.
