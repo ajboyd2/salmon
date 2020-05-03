@@ -144,7 +144,7 @@ class Expression(ABC):
             ret_exp = self.copy()
             ret_exp.scale += other.scale
             if ret_exp.scale == 0:
-                return 0
+                return Constant(scale=0)
             else:
                 return ret_exp
         elif isinstance(other, Combination):
@@ -630,8 +630,11 @@ class Constant(Expression):
         return self.__mul__(other)
     
     def evaluate(self, data, fit = True):
-        transformed_data = pd.DataFrame(pd.Series(self.scale, data.index, name = str(self)))
-        return transformed_data
+        if self.scale == 0:
+            return pd.DataFrame(index=data.index)  # (n,0) DataFrame
+        else:
+            transformed_data = pd.DataFrame(pd.Series(self.scale, data.index, name = str(self)))
+            return transformed_data
         
     def _reduce(self, ret_dict):
         ret_dict['Constant'] = self.scale
@@ -641,7 +644,10 @@ class Constant(Expression):
         return list()
     
     def get_dof(self):
-        return 1
+        if self.scale == 0:
+            return 0
+        else:
+            return 1
 
     def contains(self, other):
         return False
