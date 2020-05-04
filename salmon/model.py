@@ -40,6 +40,22 @@ def _confint(estimates, standard_errors, df, crit_prob):
     ci_widths = crit_value * standard_errors
     return estimates - ci_widths, estimates + ci_widths
 
+def qr_solve(Q, R, y):
+    ''' Solve least squares X \ y, given QR decomposition of X '''
+    _, p = R.shape
+    if p:
+        return solve_triangular(R, Q.T @ y, check_finite=False)
+    else:
+        return np.empty(shape=0)
+
+def cho_inv(R):
+    ''' Calculate inverse of X.T @ X, given Cholesky decomposition R.T @ R '''
+    _, p = R.shape
+    if p:
+        return cho_solve((R, False), np.identity(p), check_finite=False)
+    else:
+        return np.empty(shape=(0, 0))
+
 class Model:
     ''' A general Model class that both Linear models and (in the future) General Linear models stem from. '''
 
@@ -178,7 +194,7 @@ class LinearModel(Model):
         self.y_train_ = y
 
         # Get dimensions
-        n, p = X.shape
+        self.n, self.p = X.shape
         
         # Center if there is an intercept
         if self.intercept:
@@ -192,7 +208,7 @@ class LinearModel(Model):
         
         # Get coefficients using QR decomposition
         q, r = np.linalg.qr(Xc)
-        coef_ = solve_triangular(r, q.T @ yc, check_finite=False)
+        coef_ = qr_solve(q, r, yc)
         cols = list(Xc) # column names
 
         # Get fitted values and residuals
@@ -200,18 +216,18 @@ class LinearModel(Model):
         self.residuals_ = y - self.fitted_
         
         # Get residual variance
-        self.rdf = n - p - (1 if self.intercept else 0)
+        self.rdf = self.n - self.p - (1 if self.intercept else 0)
         self.resid_var_ = (self.residuals_ ** 2).sum() / self.rdf
 
         # Get covariance matrix between coefficients
-        self.cov_ = self.resid_var_ * cho_solve((r, False), np.identity(p), check_finite=False)
+        self.cov_ = self.resid_var_ * cho_inv(r)
         
         # Update coefficients and covariance matrix with intercept (if applicable)
         if self.intercept:
             cols.append("Intercept")
             coef_ = np.append(coef_, y_offset - (X_offsets * coef_).sum())
             cov_coef_intercept = -np.dot(self.cov_, X_offsets)
-            var_intercept = self.resid_var_ / n - (X_offsets * cov_coef_intercept).sum()
+            var_intercept = self.resid_var_ / self.n - (X_offsets * cov_coef_intercept).sum()
             self.cov_ = np.block([
                 [self.cov_, cov_coef_intercept[:, np.newaxis]],
                 [cov_coef_intercept[np.newaxis, :], var_intercept]
