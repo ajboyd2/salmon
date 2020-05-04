@@ -98,6 +98,8 @@ class LinearModel(Model):
                 If this is a Combination, the terms will be added together and treated as a single variable.
             intercept - A boolean indicating whether an intercept should be included (True) or not (False).
         '''
+        if explanatory is None:
+            explanatory = 0
 
         if isinstance(explanatory, (int, float)):
             explanatory = Constant(explanatory)
@@ -105,6 +107,8 @@ class LinearModel(Model):
         if intercept:
             self.given_ex = explanatory + 1
         else:
+            if explanatory == Constant(0):
+                raise Exception("Must have at least one predictor in explanatory expression and/or intercept enabled for a valid model.")
             self.given_ex = explanatory    
         constant = self.given_ex.reduce()['Constant']
         self.intercept = constant is not None

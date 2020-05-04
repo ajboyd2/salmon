@@ -10,6 +10,10 @@ from . import transformation as _t
 
 _supported_encodings = ['one-hot']
 
+# if set to True, has expression representation equivalent to __str__ representation
+# useful for debugging
+STR_AS_REPR = False
+
 
 # ABC is a parent object that allows for Abstract methods
 class Expression(ABC):
@@ -33,6 +37,13 @@ class Expression(ABC):
         ''' Represent an Expression object as a String utilizing standard algebraic notation.
         '''
         pass
+
+    def __repr__(self):
+        global STR_AS_REPR
+        if STR_AS_REPR:
+            return self.__str__()
+        else:
+            return object.__repr__(self)
         
     def __eq__(self, other):
         ''' Check if an Expression is equivalent to another object.
@@ -133,7 +144,7 @@ class Expression(ABC):
             ret_exp = self.copy()
             ret_exp.scale += other.scale
             if ret_exp.scale == 0:
-                return 0
+                return Constant(scale=0)
             else:
                 return ret_exp
         elif isinstance(other, Combination):
@@ -619,8 +630,11 @@ class Constant(Expression):
         return self.__mul__(other)
     
     def evaluate(self, data, fit = True):
-        transformed_data = pd.DataFrame(pd.Series(self.scale, data.index, name = str(self)))
-        return transformed_data
+        if self.scale == 0:
+            return pd.DataFrame(index=data.index)  # (n,0) DataFrame
+        else:
+            transformed_data = pd.DataFrame(pd.Series(self.scale, data.index, name = str(self)))
+            return transformed_data
         
     def _reduce(self, ret_dict):
         ret_dict['Constant'] = self.scale
@@ -630,7 +644,10 @@ class Constant(Expression):
         return list()
     
     def get_dof(self):
-        return 1
+        if self.scale == 0:
+            return 0
+        else:
+            return 1
 
     def contains(self, other):
         return False
