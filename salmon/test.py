@@ -226,14 +226,14 @@ class TestModelMethods(unittest.TestCase):
         explanatory = Q("petal_width") + C("species", levels = levels)
         response = Q("sepal_width")
         model = LinearModel(explanatory, response)
-        results = model.fit(iris)[["Coefficients", "SE", "t", "p"]].sort_index()
-        expected = pd.DataFrame({"Coefficients" : [1.36214962108944, 0.795582615454372, 1.86172822073969, 0.35290783081806], 
+        results = model.fit(iris)[["Coefficient", "SE", "t", "p"]].sort_index()
+        expected = pd.DataFrame({"Coefficient" : [1.36214962108944, 0.795582615454372, 1.86172822073969, 0.35290783081806], 
                                  "SE" : [0.248101683560026, 0.120657012161229, 0.223217037772943, 0.10358416791633], 
                                  "t" : [5.49, 6.59, 8.34, 3.41], 
                                  "p" : [0, 0, 0, 0.0008]}, 
                                  index = ["Intercept", "petal_width", "species{setosa}", "species{versicolor}"]).sort_index()
         diff = results - expected
-        diff["Coefficients"] = floatComparison(0, diff["Coefficients"], 0.000001)
+        diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.000001)
         diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
         diff["t"] = floatComparison(0, diff["t"], 0.01)
         diff["p"] = floatComparison(0, diff["p"], 0.0001)
