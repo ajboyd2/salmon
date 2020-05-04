@@ -93,7 +93,7 @@ def _extract_dfs(model, dict_out=False):
             Element 2 contains the total degrees of freedom for the model.
     '''
     reg_df = model.ex.get_dof()
-    total_df = len(model.training_x) - 1
+    total_df = len(model.X_train_) - 1
     error_df = total_df - reg_df
 
     if dict_out:

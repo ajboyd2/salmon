@@ -71,7 +71,7 @@ class RSquared(Score):
             numerator = sse
             denominator = ssto
         else:
-            numerator = sse / (len(y) - len(self.model.training_x.columns) - 2)
+            numerator = sse / (len(y) - len(self.model.X_train_.columns) - 2)
             denominator = ssto / (len(y) - 1)
 
         return 1 - numerator / denominator

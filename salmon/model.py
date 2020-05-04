@@ -1,10 +1,15 @@
+import numpy as np
+
+import scipy.stats as stats
+from scipy.linalg import solve_triangular, cho_solve
+
 import pandas as pd
 from pandas.plotting import scatter_matrix
-import numpy as np
-import scipy.stats as stats
+
 import matplotlib.pyplot as plt
+
 from itertools import product
-import math
+from collections import OrderedDict
 
 from .expression import Expression, Var, Quantitative, Categorical, Interaction, Combination, Identity, Constant
 
@@ -15,7 +20,7 @@ def _float_format(x):
     if abs_x >= 1e4:
         rep = "{:.3e}".format(x)
     elif abs_x >= 1e0:
-        rep = ("{:." + str(3 - int(math.floor(math.log10(abs_x)))) + "f}").format(x)
+        rep = ("{:." + str(3 - int(np.floor(np.log10(abs_x)))) + "f}").format(x)
     elif abs_x >= 1e-3:
         rep = "{:.4f}".format(x)
     elif abs_x >= 1e-9:
@@ -29,6 +34,27 @@ def _float_format(x):
     return rep
 
 pd.set_option("display.float_format", _float_format)
+
+def _confint(estimates, standard_errors, df, crit_prob):
+    crit_value = stats.t.ppf(crit_prob, df)
+    ci_widths = crit_value * standard_errors
+    return estimates - ci_widths, estimates + ci_widths
+
+def qr_solve(Q, R, y):
+    ''' Solve least squares X \ y, given QR decomposition of X '''
+    _, p = R.shape
+    if p:
+        return solve_triangular(R, Q.T @ y, check_finite=False)
+    else:
+        return np.empty(shape=0)
+
+def cho_inv(R):
+    ''' Calculate inverse of X.T @ X, given Cholesky decomposition R.T @ R '''
+    _, p = R.shape
+    if p:
+        return cho_solve((R, False), np.identity(p), check_finite=False)
+    else:
+        return np.empty(shape=(0, 0))
 
 class Model:
     ''' A general Model class that both Linear models and (in the future) General Linear models stem from. '''
@@ -44,7 +70,7 @@ class Model:
             data - A DataFrame with column names matching specified terms within the Model's explanatory and response Expression objects.
 
         Returns:
-            A DataFrame object with relevant statistics of fitted Model (coefficients, t statistics, p-values, etc.).
+            A DataFrame with relevant statistics of fitted Model (coefficients, t statistics, p-values, etc.).
         '''
         raise NotImplementedError()
         
@@ -55,7 +81,7 @@ class Model:
             data - A DataFrame with column names matching specified terms within the Model's explanatory Expression object.
         
         Returns:    
-            A Series object of the predicted values.
+            A Series of the predicted values.
         '''
         raise NotImplementedError()
         
@@ -69,22 +95,24 @@ class Model:
         Returns:
             A matplotlib plot object containing the matrix of scatter plots. 
         '''         
-        df = pd.concat([self.training_x, self.training_y], axis = 1)
+        df = pd.concat([self.X_train_, self.y_train_], axis = 1)
         scatter_matrix(df, **kwargs)
     
     
 class LinearModel(Model):
-    ''' A specific kind of Model that assumes the response values are in a linearl relationship with the explantory variables. '''
+    '''A specific Model that assumes the response variable is linearly related to the explanatory variables. '''
 
-    def __init__(self, explanatory, response, intercept = True):
-        ''' Create a LinearModel object. 
-        If an intercept is not wanted, can either set intercept = False or subtract '1' from the explanatory Expression.
+    def __init__(self, explanatory, response, intercept=True):
+        '''Create a LinearModel object. 
+
+        An intercept is included in the model by default. To fit a model without an intercept term,
+        either set intercept=False or subtract '1' from the explanatory Expression.
 
         Arguments:
-            explanatory - An Expression object that is either a single term or a Combination of them. These are the X's.
-            response - An Expression object that represents the single term for the response variables. This is the Y. 
-                If this is a Combination, they will be added together and treated as a single variable.
-            intercept - A boolean that indicates if an intercept is wanted (True) or not (False).
+            explanatory - An Expression that is either a single term or a Combination of terms. These are the X's.
+            response - An Expression that represents the single term for the response variables. This is the y. 
+                If this is a Combination, the terms will be added together and treated as a single variable.
+            intercept - A boolean indicating whether an intercept should be included (True) or not (False).
         '''
         if explanatory is None:
             explanatory = 0
@@ -106,17 +134,9 @@ class LinearModel(Model):
         self.given_re = Identity(response) # This will collapse any combination of variables into a single column
         self.ex = None
         self.re = None
-        self.bhat = None
-        self.fitted = None
-        self.residuals = None
-        self.std_err_est = None
-        self.std_err_vars = None
-        self.var = None
-        self.t_vals = None
-        self.p_vals = None
+
         self.training_data = None
-        self.training_x = None
-        self.training_y = None
+
         self.categorical_levels = dict()
         
     def __str__(self):
@@ -126,90 +146,40 @@ class LinearModel(Model):
         else:
             return str(self.given_re) + " ~ " + str(self.given_ex)
 
-    def fit(self, X, Y = None):
-        ''' Exposed function for fitting a LinearModel. Can either give one DataFrame that contains both
-        response and explanatory variables or separate ones. This is done to interface into the sklearn ecosystem.
+    def fit(self, X, y=None):
+        '''Fit a LinearModel to data..
 
-        It is worth noting that it is fine to have extra columns that are not used by the model - they will just be ignored.
+        Data can either be provided as a single DataFrame X that contains both the explanatory 
+        and response variables, or in separate data structures, one containing the explanatory 
+        variables and the other containing the response variable. The latter is implemented 
+        so that LinearModel can be used as scikit-learn Estimator.
+
+        It is fine to have extra columns in the DataFrame that are not used by the model -- 
+        they will simply be ignored.
 
         Arugments:
-            X - A DataFrame object that contains either the response and explanatory data, or just the explanatory data. 
-            Y - An optional DataFrame object that contains the response data.
+            X - A DataFrame containing all of the explanatory variables in the model
+                and possibly the response variable too.
+            y - An optional Series that contains the response variable.
 
         Returns:
-            A DataFrame object with relevant statistics of fitted Model (coefficients, t statistics, p-values, etc.).
+            A DataFrame containing relevant statistics of fitted Model (e.g., coefficients, p-values).
         '''
-        if Y is None:
+        if y is None:
             data = X
         else:
-            data = pd.concat([X,Y], axis = 1)
+            data = pd.concat([X, y], axis = 1)
         return self._fit(data)
 
-    def _fit_intercept_only(self, data):
-        # Construct X matrix
-        self.ex = Constant(1)
-        X = self.ex.evaluate(data)
-        X.columns = ["Intercept"]
-        self.training_x = X
-        # Construct Y vector
-        y = self.re.evaluate(data)
-        y_mean = y.mean()
-        self.training_y = y
-
-        # Solve equation
-        self.bhat = pd.DataFrame(np.linalg.solve(np.dot(X.T, X), np.dot(X.T, y)),
-                                 index=X.columns, columns=["Coefficients"])
-
-        n = X.shape[0]
-        p = X.shape[1] - (1 if self.intercept else 0)
-        self.n, self.p = n, p
-
-
-        # Y_Hat and Residuals
-        self.fitted = pd.DataFrame({"Fitted": np.dot(X, self.bhat).sum(axis=1)})
-        self.residuals = pd.DataFrame({"Residuals": y.iloc[:, 0] - self.fitted.iloc[:, 0]})
-
-        # Sigma
-        self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p - 1)) ** 0.5
-
-        # Covariance Matrix
-        self.var = np.linalg.solve(np.dot(X.T, X),
-                                   (self.std_err_est ** 2) * np.identity(X.shape[1]))
-
-        # Coefficient SE, Diagonal of Cov. Matrix
-        self.std_err_vars = pd.DataFrame({"SE": (np.diagonal(self.var)) ** 0.5},
-                                         index=self.bhat.index)
-
-        # format the covariance matrix
-        self.var = pd.DataFrame(self.var, columns=X.columns, index=X.columns)
-
-        # Coefficient Inference
-        self.t_vals = pd.DataFrame({"t": self.bhat["Coefficients"] / self.std_err_vars["SE"]})
-        self.p_vals = pd.DataFrame({"p": pd.Series(2 * stats.t.cdf(-abs(self.t_vals["t"]), n - p - 1),
-                                                   index=self.bhat.index)})
-
-        ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals], axis=1)
-
-        return ret_val
-        
     def _fit(self, data):
-        ''' Helper function for fitting a model with given data. 
 
-        Arguments:
-            data - A DataFrame object containing the explanatory and response columns (amongst potentially extraneous columns as well).
-
-        Returns:
-            A DataFrame object with relevant statistics of fitted Model (coefficients, t statistics, p-values, etc.).
-        '''
         # Initialize the categorical levels
         self.categorical_levels = dict()
         self.training_data = data
         
         # Replace all Var's with either Q's or C's
         self.re = self.given_re.copy()
-        self.re = self.re.interpret(data)       
-        if self.given_ex == 0:
-            return self._fit_intercept_only(data)
+        self.re = self.re.interpret(data)
 
         self.ex = self.given_ex.copy()
         self.ex = self.ex.interpret(data)
@@ -218,106 +188,104 @@ class LinearModel(Model):
         
         # Construct X matrix
         X = self.ex.evaluate(data)
-        X_means = X.mean()
-        self.training_x = X
-        self.training_x_means = X_means
-        # Construct Y vector
-        y = self.re.evaluate(data)
-        y_mean = y.mean()
-        self.training_y = y
-        self.training_y_mean = y_mean
+        self.X_train_ = X
+        # Construct y vector
+        y = self.re.evaluate(data).iloc[:, 0]
+        self.y_train_ = y
 
+        # Get dimensions
+        self.n, self.p = X.shape
+        
         # Center if there is an intercept
         if self.intercept:
-            X = X - X_means
-            y = y - y_mean
+            X_offsets = X.mean()
+            y_offset = y.mean()
+        else:
+            X_offsets = 0
+            y_offset = 0
+        Xc = X - X_offsets
+        yc = y - y_offset
         
-        # Solve equation
-        self.bhat = pd.DataFrame(np.linalg.solve(np.dot(X.T, X), np.dot(X.T, y)), 
-                                 index=X.columns, columns=["Coefficients"])
+        # Get coefficients using QR decomposition
+        q, r = np.linalg.qr(Xc)
+        coef_ = qr_solve(q, r, yc)
+        cols = list(Xc) # column names
+
+        # Get fitted values and residuals
+        self.fitted_ = y_offset + np.dot(Xc, coef_)
+        self.residuals_ = y - self.fitted_
+        
+        # Get residual variance
+        self.rdf = self.n - self.p - (1 if self.intercept else 0)
+        self.resid_var_ = (self.residuals_ ** 2).sum() / self.rdf
+
+        # Get covariance matrix between coefficients
+        self.cov_ = self.resid_var_ * cho_inv(r)
+        
+        # Update coefficients and covariance matrix with intercept (if applicable)
         if self.intercept:
-            self.bhat.loc["Intercept"] = [y_mean[0] - X_means.dot(self.bhat)[0]]
-            X = X + X_means
-            X['Intercept'] = 1
-            y = y + y_mean
-            
-            
-    
-        n = X.shape[0]
-        p = X.shape[1]
-        self.n, self.p = n, p
+            cols.append("Intercept")
+            coef_ = np.append(coef_, y_offset - (X_offsets * coef_).sum())
+            cov_coef_intercept = -np.dot(self.cov_, X_offsets)
+            var_intercept = self.resid_var_ / self.n - (X_offsets * cov_coef_intercept).sum()
+            self.cov_ = np.block([
+                [self.cov_, cov_coef_intercept[:, np.newaxis]],
+                [cov_coef_intercept[np.newaxis, :], var_intercept]
+            ])
 
-        # Y_Hat and Residuals
-        self.fitted = pd.DataFrame({"Fitted" : np.dot(X, self.bhat).sum(axis = 1)})
-        self.residuals = pd.DataFrame({"Residuals" : y.iloc[:,0] - self.fitted.iloc[:,0]})
+        # Get standard errors (diagonal of the covariance matrix)
+        se_coef_ = np.sqrt(np.diagonal(self.cov_))
         
-        # Sigma Hat
-        self.std_err_est = ((self.residuals["Residuals"] ** 2).sum() / (n - p)) ** 0.5
-
-        # Covariance Matrix        
-        self.var = np.linalg.solve(np.dot(X.T, X), 
-                                   (self.std_err_est ** 2) * np.identity(X.shape[1]))
-
-        # Coefficient SE, Diagonal of Cov. Matrix
-        self.std_err_vars = pd.DataFrame({"SE": (np.diagonal(self.var)) ** 0.5},
-                                         index=self.bhat.index)
+        # Get inference for coefficients
+        self.t_ = coef_ / se_coef_
+        self.p_ = 2 * stats.t.cdf(-abs(self.t_), self.rdf)
+        lower_bound, upper_bound = _confint(coef_, se_coef_, self.rdf, .975)
         
-        # format the covariance matrix
-        self.var = pd.DataFrame(self.var, columns=X.columns, index=X.columns)
-        
-        # Coefficient Inference
-        self.t_vals = pd.DataFrame({"t": self.bhat["Coefficients"] / self.std_err_vars["SE"]})
-        self.p_vals = pd.DataFrame({"p": pd.Series(2 * stats.t.cdf(-abs(self.t_vals["t"]), n - p),
-                                                    index=self.bhat.index)})
-        ci_width = stats.t.ppf(q=0.975, df=n-p)
-        self.lower_conf = pd.DataFrame({"2.5% CI": self.bhat["Coefficients"] - ci_width*self.std_err_vars["SE"]})
-        self.upper_conf = pd.DataFrame({"97.5% CI": self.bhat["Coefficients"] + ci_width*self.std_err_vars["SE"]})
+        # Create output table
+        table = pd.DataFrame(OrderedDict((
+            ("Coefficient", coef_), ("SE", se_coef_),
+            ("t", self.t_), ("p", self.p_),
+            ("2.5%", lower_bound), ("97.5%", upper_bound)
+        )), index=cols)
 
-        ret_val = pd.concat([self.bhat, self.std_err_vars, self.t_vals, self.p_vals, self.lower_conf, self.upper_conf], axis = 1)
-        
-        return ret_val 
+        self.coef_ = table["Coefficient"]
+        self.se_coef_ = table["SE"]
 
+        return table
+        
     def likelihood(self, data=None):
         ''' Calculate likelihood for a fitted model on either original data or new data. '''
-
-        if data is None:
-            residuals = self.residuals.iloc[:, 0]
-        else:
-            y = self.re.evaluate(data)
-            y_hat = self.predict(data, for_plot=False, confidence_interval=False, prediction_interval=False)
-            residuals = y.iloc[:, 0] - y_hat.iloc[:, 0]
-
-        var = self.std_err_est ** 2 
-        n = len(residuals)
-
-        return (2 * math.pi * var) ** (-n / 2) * math.exp(-1 / (2 * var) * (residuals ** 2).sum())
+        return np.exp(self.log_likelihood(data))
 
     def log_likelihood(self, data=None):
         ''' Calculate a numerically stable log_likelihood for a fitted model on either original data or new data. '''
 
         if data is None:
-            residuals = self.residuals.iloc[:, 0]
+            residuals = self.residuals_
         else:
             y = self.re.evaluate(data)
             y_hat = self.predict(data, for_plot=False, confidence_interval=False, prediction_interval=False)
             residuals = y.iloc[:, 0] - y_hat.iloc[:, 0]
 
-        var = self.std_err_est ** 2 
         n = len(residuals)
 
-        return (-n / 2) * (math.log(2 * math.pi) + 2 * math.log(self.std_err_est)) - (1 / (2 * var)) * (residuals ** 2).sum()
+        return (-n / 2 * (np.log(2 * np.pi) + np.log(self.resid_var_)) -
+                (1 / (2 * self.resid_var_)) * (residuals ** 2).sum())
+    
+    def confidence_intervals(self, alpha=None, conf=None):
+        ''' Calculate confidence intervals for the coefficients.
 
-    def confidence_intervals(self, alpha = None, conf = None):
-        ''' Calculate confidence intervals for fitted coefficients. Model must be fitted prior to execution.
+        This function assumes that Model.fit() has already been called.
 
         Arguments:
-            alpha - A real value denoting the alpha of the confidence interval. CI Width = 1 - alpha / 2.
-            conf - A real value denoting the confidecne interval width.
-                Only one or the other of alpha or conf needs to be specified. 
-                If neither are, a default value of conf = 0.95 will be used.
+            alpha - A float between 0.0 and 1.0 representing the non-coverage probability 
+                    of the confidence interval. In other words, the confidence level is 1 - alpha / 2.
+            conf - A float between 0.0 and 1.0 representing the confidence level.
+                Only one of alpha or conf needs to be specified. 
+                If neither are specified, a default value of conf=0.95 will be used.
         
         Returns:    
-            A DataFrame object containing the appropriate confidence intervals for all the coefficients.
+            A DataFrame containing the appropriate confidence intervals for all the coefficients.
         '''
         if alpha is None:
             if conf is None:
@@ -325,37 +293,36 @@ class LinearModel(Model):
             alpha = 1 - conf
 
         crit_prob = 1 - (alpha / 2)
-        df = self.training_x.shape[0] - self.bhat.shape[0] # n - p
-        crit_value = stats.t.ppf(crit_prob, df)
+            
+        lower_bound, upper_bound = _confint(self.coef_, self.se_coef_,
+                                            self.rdf, crit_prob)
         
-        se_vals = self.std_err_vars["SE"]
-        width = crit_value * se_vals
-        lower_bound = self.bhat["Coefficients"] - width
-        upper_bound = self.bhat["Coefficients"] + width 
-        return pd.DataFrame({str(round(1 - crit_prob, 5) * 100) + "%" : lower_bound, 
-                             str(round(crit_prob, 5) * 100) + "%" : upper_bound})#, 
-                             #index = self.bhat.index)
+        return pd.DataFrame({
+            "%.1f%%" % (100 * (1 - crit_prob)): lower_bound,
+            "%.1f%%" % (100 * crit_prob): upper_bound
+        }, index=self.coef_.index)
 
-    def predict(self, data, for_plot = False, confidence_interval = False, prediction_interval = False):
-        ''' Predict response values given some data for a fitted model.
+    def predict(self, data, for_plot=False, confidence_interval=False, prediction_interval=False):
+        ''' Predict response values from a fitted Model.
 
         Arguments:
-            data - A DataFrame object containing the explanatory values to base predictions off of.
-            for_plot - A boolean flag to indicate if these predictions are computed for the purposes of plotting.
-            confidence_interval - A real value indicating the width of confidence intervals for the prediction. 
-                If not intervals are wanted, parameter is set to False.
-            prediction_interval - A real value indicating the width of prediction intervals for the prediction. 
-                If not intervals are wanted, parameter is set to False. 
+            data - A DataFrame containing the values of the explanatory variables, for which
+                predictions are desired.
+            for_plot - A boolean indicating if these predictions are computed for the purposes of plotting.
+            confidence_interval - If a confidence interval for the mean response is desired, this is 
+                a float between 0.0 and 1.0 indicating the confidence level to use.
+            prediction_interval - If a prediction interval is desired, this is 
+                a float between 0.0 and 1.0 indicating the confidence level to use.
 
         Returns:
-            A DataFrame object containing the appropriate predictions and intervals.
+            A DataFrame containing the predictions and/or intervals.
         '''
         # Construct the X matrix
-        X = self.ex.evaluate(data, fit = False)
+        X = self.ex.evaluate(data, fit=False)
         if self.intercept:
             X['Intercept'] = 1
 
-        y_vals = X.dot(self.bhat).sum(axis = 1)
+        y_vals = np.dot(X, self.coef_)
         predictions = pd.DataFrame({"Predicted " + str(self.re) : y_vals})
             
         if confidence_interval or prediction_interval:
@@ -374,12 +341,11 @@ class LinearModel(Model):
             predictions[str(round(1 - crit_prob, 5) * 100) + "%"] = lower
             predictions[str(round(crit_prob, 5) * 100) + "%"] = upper
 
-        
         return predictions
     
     def get_sse(self):
         ''' Get the SSE of a fitted model. '''
-        sse = ((self.training_y.iloc[:,0] - self.fitted.iloc[:,0]) ** 2).sum()
+        sse = ((self.y_train_ - self.fitted_) ** 2).sum()
         return sse
         
     def get_ssr(self):
@@ -389,7 +355,7 @@ class LinearModel(Model):
     
     def get_sst(self):
         ''' Get the SST of a fitted model. '''
-        sst = ((self.training_y.iloc[:,0] - self.training_y.iloc[:,0].mean()) ** 2).sum()
+        sst = ((self.y_train_ - self.y_train_.mean()) ** 2).sum()
         return sst
     
     def r_squared(self, X = None, y = None, adjusted = False, **kwargs):
@@ -398,7 +364,7 @@ class LinearModel(Model):
 
         Arguments:
             X - An optional DataFrame of the explanatory data to be used for calculating R^2. Default is the training data.
-            Y - An optional DataFrame of the response data to be used for calculating R^2. Default is the training data.  
+            y - An optional DataFrame of the response data to be used for calculating R^2. Default is the training data.  
             adjusted - A boolean indicating if the R^2 value is adjusted (True) or not (False).
 
         Returns:
@@ -409,17 +375,17 @@ class LinearModel(Model):
         if X is None:
             X = self.training_data
         if y is None:
-            y = self.training_y
+            y = self.y_train_
 
         pred = self.predict(X)
-        sse = ((y.iloc[:,0] - pred.iloc[:,0]) ** 2).sum()
-        ssto = ((y.iloc[:,0] - y.iloc[:,0].mean()) ** 2).sum()
+        sse = ((y - pred.iloc[:,0]) ** 2).sum()
+        ssto = ((y - y.mean()) ** 2).sum()
 
         if adjusted:
             numerator = sse
             denominator = ssto
         else:
-            numerator = sse / (len(y) - len(self.training_x.columns) - 2)
+            numerator = sse / (len(y) - len(self.X_train_.columns) - 2)
             denominator = ssto / (len(y) - 1)
             
         return 1 - numerator / denominator 
@@ -430,23 +396,20 @@ class LinearModel(Model):
 
     def _prediction_interval_width(self, X_new, alpha = 0.05):
         ''' Helper function for calculating prediction interval widths. '''
-        n = self.training_x.shape[0]
-        p = X_new.shape[1]
-        mse = self.get_sse() / (n - p)
-        s_yhat_squared = (X_new.dot(self.var) * X_new).sum(axis = 1) # X_new_vect * var * X_new_vect^T (equivalent to np.diag(X_new.dot(self.var).dot(X_new.T)))
+        mse = self.get_sse() / self.rdf
+        s_yhat_squared = (X_new.dot(self.cov_) * X_new).sum(axis = 1)
         s_pred_squared = mse + s_yhat_squared
 
-        t_crit = stats.t.ppf(1 - (alpha / 2), n-p)
+        t_crit = stats.t.ppf(1 - (alpha / 2), self.rdf)
 
         return t_crit * (s_pred_squared ** 0.5)
 
     def _confidence_interval_width(self, X_new, alpha = 0.05):
         ''' Helper function for calculating confidence interval widths. '''
-        n = self.training_x.shape[0]
-        p = X_new.shape[1]
-        s_yhat_squared = (X_new.dot(self.var) * X_new).sum(axis = 1) # X_new_vect * var * X_new_vect^T (equivalent to np.diag(X_new.dot(self.var).dot(X_new.T)))
+        _, p = X_new.shape
+        s_yhat_squared = (X_new.dot(self.cov_) * X_new).sum(axis = 1)
         #t_crit = stats.t.ppf(1 - (alpha / 2), n-p)
-        W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, n-p)
+        W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, self.rdf)
         return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
         
     def plot(
@@ -476,7 +439,7 @@ class LinearModel(Model):
             A matplotlib plot appropriate visualization of the model.
         '''
         if confidence_band and prediction_band:
-            raise Exception("One one of {confidence_band, prediction_band} may be set to True at a time.")
+            raise Exception("Only one of {confidence_band, prediction_band} may be set to True at a time.")
 
         terms = self.ex.reduce()
                         
@@ -493,14 +456,15 @@ class LinearModel(Model):
             y_spaces = ['o']
             axs = [ax_o]
         else:
-            raise AssertionError("At least one of either 'original_y_space' or 'transformed_y_space' should be True in model.plot(...) call.")
+            raise AssertionError("At least one of either 'original_y_space' or 'transformed_y_space' "
+                                 "should be True in model.plot(...) call.")
 
         for y_space_type, ax in zip(y_spaces, axs):
             original_y_space = y_space_type == "o"
 
             # Redundant, we untransform in later function calls
             # TODO: Fix later
-            y_vals = self.training_y[str(self.re)]
+            y_vals = self.y_train_
             if original_y_space:
                 y_vals = self.re.untransform(y_vals)
             # Plotting Details:
@@ -659,11 +623,11 @@ class LinearModel(Model):
         elif prediction_band:
             self._plot_band(line_x, y_vals, line_fit.get_color(), original_y_space, plot_objs, False, prediction_band)
 
-        training_y_vals = self.training_y[plot_objs['y']['name']]
+        y_train_vals = self.y_train_
         if original_y_space:
-            training_y_vals = self.re.untransform(training_y_vals)
+            y_train_vals = self.re.untransform(y_train_vals)
 
-        ax.scatter(x, training_y_vals, c = "black", alpha = alpha)
+        ax.scatter(x, y_train_vals, c = "black", alpha = alpha)
 
     def _plot_band(self, line_x, y_vals, color, original_y_space, plot_objs, use_confidence = False, alpha = 0.05): # By default will plot prediction bands
         ''' A helper function to plot the confidence or prediction bands for a model. '''
@@ -706,9 +670,9 @@ class LinearModel(Model):
         
         dummy_data = line_x.copy() # rest of columns set in next few lines
        
-        training_y_vals = self.training_y[y_name]
+        y_train_vals = self.y_train_
         if original_y_space:
-            training_y_vals = self.re.untransform(training_y_vals)
+            y_train_vals = self.re.untransform(y_train_vals)
 
         for level_set in level_combinations:
             label = [] # To be used in legend
@@ -734,7 +698,7 @@ class LinearModel(Model):
                 indices_to_use = pd.Series([True] * len(x)) # gradually gets filtered out
                 for (cat,level) in zip(cats,level_set):
                     indices_to_use = indices_to_use & (self.training_data[str(cat)] == level)
-                ax.scatter(x[indices_to_use], training_y_vals[indices_to_use], c = plot.get_color(), alpha = alpha)
+                ax.scatter(x[indices_to_use], y_train_vals[indices_to_use], c = plot.get_color(), alpha = alpha)
             
             if confidence_band:
                 self._plot_band(dummy_data, y_vals, plot.get_color(), original_y_space, plot_objs, True, confidence_band)
@@ -747,7 +711,7 @@ class LinearModel(Model):
         ax.legend(plots, labels, title = ", ".join(cat_names), loc = "center left", bbox_to_anchor = (1, 0.5))
         
         if not categorize_residuals:
-            resids = ax.scatter(x, training_y_vals, c = "black", alpha = alpha)
+            resids = ax.scatter(x, y_train_vals, c = "black", alpha = alpha)
 
     def residual_plots(self, **kwargs):
         ''' Plot the residual plots of the model.
@@ -758,10 +722,10 @@ class LinearModel(Model):
         Returns:
             A tuple containing the matplotlib (figure, list of axes) for the residual plots.
         ''' 
-        terms = list(self.training_x)
+        terms = list(self.X_train_)
         fig, axs = plt.subplots(1, len(terms), **kwargs)
         for term, ax in zip(terms, axs):
-            ax.scatter(self.training_x[str(term)], self.residuals['Residuals'])
+            ax.scatter(self.X_train_[str(term)], self.residuals_)
             ax.set_xlabel(str(term))
             ax.set_ylabel("Residuals")
             ax.set_title(str(term) + " v. Residuals")
@@ -793,7 +757,7 @@ class LinearModel(Model):
             yaxis.fit(self.training_data)
             xaxis.fit(self.training_data)
             
-            ax.scatter(xaxis.residuals["Residuals"], yaxis.residuals["Residuals"], alpha = alpha)
+            ax.scatter(xaxis.residuals_, yaxis.residuals_, alpha = alpha)
             ax.set_title("Leverage Plot for " + str(xi))
 
         return fig, axs
@@ -836,7 +800,7 @@ class LinearModel(Model):
         if ax is None:
             f, ax = plt.subplots(1,1)
 
-        stats.probplot(self.residuals["Residuals"], dist = "norm", plot = ax)
+        stats.probplot(self.residuals_, dist = "norm", plot = ax)
         ax.set_title("Residual Q-Q Plot")
         return ax
 
@@ -852,7 +816,7 @@ class LinearModel(Model):
         if ax is None:
             f, ax = plt.subplots(1,1)
 
-        ax.scatter(self.fitted["Fitted"], self.residuals["Residuals"])
+        ax.scatter(self.fitted_, self.residuals_)
         ax.set_title("Fitted Values v. Residuals")
         ax.set_xlabel("Fitted Value")
         ax.set_ylabel("Residual")
@@ -871,7 +835,7 @@ class LinearModel(Model):
         if ax is None:
             f, ax = plt.subplots(1,1)
         
-        ax.hist(self.residuals["Residuals"])
+        ax.hist(self.residuals_)
         ax.set_title("Histogram of Residuals")
         ax.set_xlabel("Residual")
         ax.set_ylabel("Frequency")
@@ -890,7 +854,7 @@ class LinearModel(Model):
         if ax is None:
             f, ax = plt.subplots(1,1)
 
-        ax.plot(self.residuals.index, self.residuals["Residuals"], "o-")
+        ax.plot(self.residuals_.index, self.residuals_, "o-")
         ax.set_title("Order v. Residuals")
         ax.set_xlabel("Row Index")
         ax.set_ylabel("Residual")
