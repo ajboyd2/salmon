@@ -15,6 +15,29 @@ _supported_encodings = ['one-hot']
 STR_AS_REPR = False
 
 
+class LightDataFrame(np.ndarray):
+
+    def __new__(cls, input_array, columns=None):
+        # Input array is an already formed ndarray instance
+        # We first cast to be our class type
+        obj = np.asarray(input_array, dtype=np.float64).view(cls)
+        # add the new attribute to the created instance
+        obj.columns = columns
+        # Finally, we must return the newly created object:
+        return obj
+
+    def __array_finalize__(self, obj):
+        # see InfoArray.__array_finalize__ for comments
+        if obj is None: return
+        self.columns = getattr(obj, 'columns', None)
+    
+    def get_column(self, colname):
+        for i, column in enumerate(self.columns):
+            if column == colname: 
+                return self[:, i]
+        raise KeyError("Column %s not in LightDataFrame." % colname)
+
+
 # ABC is a parent object that allows for Abstract methods
 class Expression(ABC):
     ''' The parent abstract class that all subsequent representations of coefficients stem from and Model objects utilize. 
@@ -433,11 +456,9 @@ class TransVar(Expression):
         self.var._descale()
         
     def evaluate(self, data, fit = True):
-        base_data = self.var.evaluate(data, fit)
-        base_data = base_data.sum(axis = 1)
-        transformed_data = self.scale * self.transformation.transform(values = base_data, training = fit)
-        transformed_data.name = str(self)
-        return pd.DataFrame(transformed_data)
+        base_data = self.var.evaluate(data, fit).sum(axis=1)
+        transformed_data = self.scale * self.transformation.transform(values=base_data, training=fit)
+        return LightDataFrame(transformed_data[:, np.newaxis], columns=[str(self)])
     
     def _reduce(self, ret_dict):
         return self.var._reduce(ret_dict)
@@ -570,9 +591,8 @@ class Quantitative(Var):
         return self
     
     def evaluate(self, data, fit = True):
-        transformed_data = self.scale * data[self.name]
-        transformed_data.name = str(self)
-        return pd.DataFrame(transformed_data)
+        transformed_data = self.scale * data[self.name].values
+        return LightDataFrame(transformed_data[:, np.newaxis], columns=[self.name])
     
     def _reduce(self, ret_dict):
         ret_dict["Q"].add(self)
@@ -630,11 +650,11 @@ class Constant(Expression):
         return self.__mul__(other)
     
     def evaluate(self, data, fit = True):
+        n = len(data)
         if self.scale == 0:
-            return pd.DataFrame(index=data.index)  # (n,0) DataFrame
+            return LightDataFrame(np.empty(shape=(n, 0)), columns=[])
         else:
-            transformed_data = pd.DataFrame(pd.Series(self.scale, data.index, name = str(self)))
-            return transformed_data
+            return LightDataFrame(np.full((n, 1), self.scale), columns=[str(self)])
         
     def _reduce(self, ret_dict):
         ret_dict['Constant'] = self.scale
@@ -712,7 +732,10 @@ class Categorical(Var):
         
         
     def _one_hot_encode(self, data):
-        return pd.DataFrame({self.name + "{" + str(level) + "}" : (data[self.name] == level) * 1 for level in self.levels if level not in self.baseline})
+        data = pd.get_dummies(data[self.name], prefix=self.name, prefix_sep="{")
+        data.drop([self.name + "{" + baseline for baseline in self.baseline],
+                  axis=1, inplace=True)
+        return LightDataFrame(data.values, columns=[col + "}" for col in data.columns])
         
     def evaluate(self, data, fit = True):
         if self.levels is None or self.baseline is None:
@@ -834,20 +857,22 @@ class Interaction(Expression):
         for term in self.terms:
             term._descale()
             
-    def evaluate(self, data, fit = True):
-        transformed_data_sets = [var.evaluate(data, fit) for var in self.terms]
+    def evaluate(self, data, fit=True):
+        transformed_data_sets = [term.evaluate(data, fit) for term in self.terms]
         # rename columns in sets
         for data_set in transformed_data_sets:
             data_set.columns = ["({})".format(col) for col in data_set.columns]
-            
+
         base_set = transformed_data_sets[0]
-        for data_set in transformed_data_sets[1:]:
-            new_set = pd.DataFrame()
-            for base_column in base_set:
-                for new_column in data_set:
-                    new_set[base_column + new_column] = base_set[base_column] * data_set[new_column]
+        for other_set in transformed_data_sets[1:]:
+            new_data = []
+            new_columns = []
+            for base_col in base_set.columns:
+                for other_col in other_set.columns:
+                    new_data.append(base_set.get_column(base_col) * data_set.get_column(other_col))
+                    new_columns.append(base_col + other_col)
             
-            base_set = new_set
+            base_set = LightDataFrame(np.column_stack(new_data), columns=new_columns)
             
         return base_set
     
@@ -1019,7 +1044,14 @@ class Combination(Expression):
             term._descale()
             
     def evaluate(self, data, fit = True):
-        return pd.concat([term.evaluate(data, fit) for term in self.terms], axis = 1)
+        dataframes = []
+        columns = []
+        for term in self.terms:
+            df = term.evaluate(data, fit)
+            dataframes.append(df)
+            columns.extend(df.columns)
+        
+        return LightDataFrame(np.hstack(dataframes), columns=columns)
     
     def _reduce(self, ret_dict):
         for term in self.terms:
