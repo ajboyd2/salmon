@@ -723,10 +723,10 @@ class LinearModel(Model):
         Returns:
             A tuple containing the matplotlib (figure, list of axes) for the residual plots.
         ''' 
-        terms = list(self.X_train_)
+        terms = self.X_train_.columns
         fig, axs = plt.subplots(1, len(terms), **kwargs)
         for term, ax in zip(terms, axs):
-            ax.scatter(self.X_train_[str(term)], self.residuals_)
+            ax.scatter(self.X_train_.get_column(term), self.residuals_)
             ax.set_xlabel(str(term))
             ax.set_ylabel("Residuals")
             ax.set_title(str(term) + " v. Residuals")
@@ -855,7 +855,7 @@ class LinearModel(Model):
         if ax is None:
             f, ax = plt.subplots(1,1)
 
-        ax.plot(self.residuals_.index, self.residuals_, "o-")
+        ax.plot(self.training_data.index, self.residuals_, "o-")
         ax.set_title("Order v. Residuals")
         ax.set_xlabel("Row Index")
         ax.set_ylabel("Residual")

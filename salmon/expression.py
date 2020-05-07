@@ -1,5 +1,4 @@
 import collections
-import pandas as pd
 import numpy as np
 from functools import reduce
 from itertools import product
@@ -732,10 +731,23 @@ class Categorical(Var):
         
         
     def _one_hot_encode(self, data):
-        data = pd.get_dummies(data[self.name], prefix=self.name, prefix_sep="{")
-        data.drop([self.name + "{" + baseline for baseline in self.baseline],
-                  axis=1, inplace=True)
-        return LightDataFrame(data.values, columns=[col + "}" for col in data.columns])
+        # keep track of the levels, including which ones are not in the baseline
+        mapping = {}
+        keep = []
+        columns = []
+        for i, level in enumerate(self.levels):
+            mapping[level] = i
+            if level not in self.baseline:
+                keep.append(i)
+                columns.append("%s{%s}" % (self.name, level))
+        
+        # define mapping of levels to integer codes
+        codes = data[self.name].map(mapping)
+
+        # create dummy matrix by taking the appropriate rows from an identity matrix
+        dummy_mat = np.eye(len(self.levels))[:, keep].take(codes, axis=0)
+        
+        return LightDataFrame(dummy_mat, columns=columns)
         
     def evaluate(self, data, fit = True):
         if self.levels is None or self.baseline is None:
@@ -862,14 +874,14 @@ class Interaction(Expression):
         # rename columns in sets
         for data_set in transformed_data_sets:
             data_set.columns = ["({})".format(col) for col in data_set.columns]
-
+            
         base_set = transformed_data_sets[0]
         for other_set in transformed_data_sets[1:]:
             new_data = []
             new_columns = []
             for base_col in base_set.columns:
                 for other_col in other_set.columns:
-                    new_data.append(base_set.get_column(base_col) * data_set.get_column(other_col))
+                    new_data.append(base_set.get_column(base_col) * other_set.get_column(other_col))
                     new_columns.append(base_col + other_col)
             
             base_set = LightDataFrame(np.column_stack(new_data), columns=new_columns)
