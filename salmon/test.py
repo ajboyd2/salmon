@@ -216,7 +216,9 @@ class TestCombinationMethods(unittest.TestCase):
                 self.assertTrue(isinstance(v, Quantitative))
         
 iris = pd.read_csv("https://raw.githubusercontent.com/uiuc-cse/data-fa14/gh-pages/data/iris.csv")
-
+commprop = pd.read_csv("https://raw.githubusercontent.com/uiuc-cse/data-fa14/gh-pages/data/CommProp.csv")
+plastic = pd.read_csv("https://raw.githubusercontent.com/uiuc-cse/data-fa14/gh-pages/data/Plastic.csv")
+realestate = pd.read_csv("https://raw.githubusercontent.com/uiuc-cse/data-fa14/gh-pages/data/Real Estate5.csv")
 
 # Model        
 class TestModelMethods(unittest.TestCase):
@@ -268,6 +270,146 @@ class TestModelMethods(unittest.TestCase):
         ones = LinearModel.ones_column(iris)
         self.assertEqual(len(ones), 150)
         self.assertTrue(all(ones["Intercept"] == 1))
+
+    def test_fit2(self):
+            explanatory = Q("Age") + Q("Expenses") + Q("Vacancy") + Q("Sqft")
+            response = Q("Rental")
+            model = LinearModel(explanatory, response)
+            results = model.fit(commprop)[["Coefficient", "SE", "t", "p"]].sort_index()
+            expected = pd.DataFrame({"Coefficient" : [12.20, -1.420336e-01, 2.820165e-01, 6.193435e-03, 7.924302e-06 ], 
+                                     "SE" : [5.779562e-01, 2.134261e-02, 6.317235e-02, 1.086813e-02, 1.384775e-06], 
+                                     "t" : [21.1098807, -6.6549332, 4.4642400, 0.5698714, 5.7224457], 
+                                     "p" : [1.601720e-33, 3.894322e-09, 2.747396e-05, 5.704457e-01, 1.975990e-07]}, 
+                                     index = ["Intercept", "Age", "Expenses", "Vacancy", "Sqft"]).sort_index()
+            diff = results - expected
+            diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.000001)
+            diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
+            diff["t"] = floatComparison(0, diff["t"], 0.01)
+            diff["p"] = floatComparison(0, diff["p"], 0.0001)
+
+            self.assertTrue(all(diff.apply(all, 1)))
+            
+    def test_predict2(self):
+        explanatory = Q("Age") + Q("Expenses") + Q("Vacancy") + Q("Sqft")
+        response = Q("Rental")
+        model = LinearModel(explanatory, response)
+        model.fit(commprop)
+        newData = pd.DataFrame({"Age" : [8,9], "Expenses" : [7.50, 5.75], 
+                                "Vacancy" : [10,18], "Sqft" : [140000,127500]})
+        pred = model.predict(newData, prediction_interval=.05)
+        expected = pd.DataFrame({"Predicted" : [14.35078, 13.66571], 
+                                 "2.5%" : [12.05951, 11.3438],
+                                 "97.5%": [16.64205, 15.98762]})
+        diff = floatComparison(0, pred - expected, 0.00001)
+        self.assertTrue(all(diff))
+        
+    def test_fit3(self):
+        exp = Q("Time")
+        resp = Q("Hardness")
+        model = LinearModel(exp, resp)
+        results = model.fit(plastic)[["Coefficient", "SE", "t", "p"]].sort_index()
+        expected = pd.DataFrame({"Coefficient" : [168.600000, 2.034375], 
+                                 "SE" : [2.65702405, 0.09039379], 
+                                 "t" : [63.45445, 22.50569], 
+                                 "p" : [1.257946e-18, 2.158814e-12]}, 
+                                 index = ["Intercept", "Time"]).sort_index()
+        diff = results - expected
+        diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.000001)
+        diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
+        diff["t"] = floatComparison(0, diff["t"], 0.01)
+        diff["p"] = floatComparison(0, diff["p"], 0.0001)
+
+        self.assertTrue(all(diff.apply(all, 1)))
+            
+    def test_predict3(self):
+        exp = Q("Time")
+        resp = Q("Hardness")
+        model = LinearModel(exp, resp)
+        model.fit(plastic)
+        newData = pd.DataFrame({"Time" : [18,20,30,33,37]})
+        pred = model.predict(newData, prediction_interval=.02)
+        expected = pd.DataFrame({"Predicted" : [205.2187, 209.2875, 229.6312, 235.7344, 243.8719], 
+                                 "1%" : [196.1539, 200.3351, 220.8695, 226.9054, 234.8662],
+                                 "99%": [214.2836, 218.2399, 238.393, 244.5633, 252.8775]})
+        diff = floatComparison(0, pred - expected, 0.00001)
+    
+    def test_fit4(self):
+        exp = Q("Log2Sqft") + Q("Bed") + Q("Bath") + Q("Age") + C("Quality", levels =["Medium", "High", "Low"])
+        resp = Q("Log2Price")
+        model = LinearModel(exp, resp)
+        results = model.fit(realestate)[["Coefficient", "SE", "t", "p"]].sort_index()
+        expected = pd.DataFrame({"Coefficient" : [9.623520955, 0.747909265, 0.005029163, 0.060444837,
+                                                 -0.004838176, 0.480246914, -0.125872691], 
+                                 "SE" : [0.5118051486, 0.0492714657, 0.0145788831, 0.0190479692, 
+                                        0.0008426408, 0.0434530465, 0.0349050618], 
+                                 "t" : [18.8030952, 15.1793590, 0.3449622, 3.1732956,
+                                        -5.7416826, 11.0520885, -3.6061443], 
+                                 "p" : [1.948280e-60, 2.799404e-43, 7.302636e-01, 1.597210e-03,
+                                       1.603338e-08, 1.257162e-25, 3.410388e-04 ]}, 
+                                 index = ["Intercept", "Log2Sqft", "Bed", "Bath", "Age",
+                                          "Quality{High}", "Quality{Low}"]).sort_index()
+        diff = results - expected
+        diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.000001)
+        diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
+        diff["t"] = floatComparison(0, diff["t"], 0.01)
+        diff["p"] = floatComparison(0, diff["p"], 0.0001)
+
+        self.assertTrue(all(diff.apply(all, 1)))
+        
+    def test_predict4(self):
+        exp = Q("Log2Sqft") + Q("Bed") + Q("Bath") + Q("Age") + C("Quality", levels =["Medium", "High", "Low"])
+        resp = Q("Log2Price")
+        model = LinearModel(exp, resp)
+        model.fit(realestate)
+        newData = pd.DataFrame({"Log2Sqft" : [12,11,10], "Bed": [3,2,4], "Bath": [2,3,5],
+                                "Age": [25,12,9], "Quality":["Medium", "High", "Low"]})
+        pred = model.predict(newData, prediction_interval=.01)
+        expected = pd.DataFrame({"Predicted" : [18.61345, 18.4641, 17.25554], 
+                                 "0.5%" : [17.91869, 17.7756, 16.53876],
+                                 "99.5%": [19.30822, 19.15261, 17.97231]})
+        diff = floatComparison(0, pred - expected, 0.00001)
+        
+    def test_fit5(self):
+        exp = Poly("Age",2) + C("Quality", levels =["Medium", "High", "Low"])
+        resp = Q("Log2Price")
+        model = LinearModel(exp, resp)
+        results = model.fit(realestate)[["Coefficient", "SE", "t", "p"]].sort_index()
+        expected = pd.DataFrame({"Coefficient" : [18.4292586578, -0.0196314047, 0.0001579584, 
+                                                  0.8384196551, -0.4893179786], 
+                                 "SE" : [6.682494e-02, 3.154817e-03, 3.370501e-05, 
+                                         5.451302e-02, 4.049609e-02], 
+                                 "t" : [275.784124, -6.222675, 4.686496,
+                                        15.380171, -12.083092], 
+                                 "p" : [ 0.000000e+00, 1.010611e-09, 3.558999e-06,  
+                                        3.152482e-44, 8.841368e-30]}, 
+                                 index = ["Intercept", "Age", "Age^2", "Quality{High}", "Quality{Low}"]).sort_index()
+        diff = results - expected
+        diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.000001)
+        diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
+        diff["t"] = floatComparison(0, diff["t"], 0.01)
+        diff["p"] = floatComparison(0, diff["p"], 0.0001)
+        
+    def test_fit6(self):
+        level = ["Medium", "High", "Low"]
+        exp = Q("Age") + C("Quality", levels=level) + Q("Age") * C("Quality", levels=level)
+        resp = Q("Log2Price")
+        model = LinearModel(exp, resp)
+        results = model.fit(realestate)[["Coefficient", "SE", "t", "p"]].sort_index()
+        expected = pd.DataFrame({"Coefficient" : [18.2242342193, -0.0071330947, 0.8977071766, 
+                                                  -0.6794336205, 0.0004980208, 0.0039311280], 
+                                 "SE" : [0.051956912, 0.001502665, 0.091080634,
+                                         0.116414599, 0.004068962, 0.002526017], 
+                                 "t" : [350.756683, -4.746961, 9.856181, 
+                                        -5.836327, 0.122395, 1.556255],
+                                 "p" : [0.000000e+00, 2.678341e-06, 4.107532e-21,
+                                        9.437550e-09, 9.026338e-01, 1.202605e-01]}, 
+                                 index = ["Intercept", "Age", "Quality{High}", "Quality{Low}", 
+                                          "(Age)(Quality{High})", "(Age)(Quality{Low})  "]).sort_index()
+        diff = results - expected
+        diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.000001)
+        diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
+        diff["t"] = floatComparison(0, diff["t"], 0.01)
+        diff["p"] = floatComparison(0, diff["p"], 0.0001)
         
     '''        
     def test_extract_columns(self):
