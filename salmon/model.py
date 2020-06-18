@@ -381,13 +381,13 @@ class LinearModel(Model):
         sse = ((y - pred.iloc[:,0]) ** 2).sum()
         ssto = ((y - y.mean()) ** 2).sum()
 
-        if adjusted:
+        if not adjusted:
             numerator = sse
             denominator = ssto
         else:
-            numerator = sse / (len(y) - len(self.X_train_.columns) - 2)
-            denominator = ssto / (len(y) - 1)
-            
+            numerator = sse / (len(y) - len(self.X_train_.columns) - 1)
+            denominator = ssto / (len(y) - 1) 
+           
         return 1 - numerator / denominator 
 
     def score(self, X = None, y = None, adjusted = False, **kwargs):
@@ -397,20 +397,22 @@ class LinearModel(Model):
     def _prediction_interval_width(self, X_new, alpha = 0.05):
         ''' Helper function for calculating prediction interval widths. '''
         mse = self.get_sse() / self.rdf
-        s_yhat_squared = (X_new.dot(self.cov_) * X_new).sum(axis = 1)
+        s_yhat_squared = (np.multiply(X_new.dot(self.cov_), X_new)).sum(axis = 1)
         s_pred_squared = mse + s_yhat_squared
 
         t_crit = stats.t.ppf(1 - (alpha / 2), self.rdf)
-
         return t_crit * (s_pred_squared ** 0.5)
 
     def _confidence_interval_width(self, X_new, alpha = 0.05):
         ''' Helper function for calculating confidence interval widths. '''
         _, p = X_new.shape
-        s_yhat_squared = (X_new.dot(self.cov_) * X_new).sum(axis = 1)
-        #t_crit = stats.t.ppf(1 - (alpha / 2), n-p)
-        W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, self.rdf)
-        return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
+        s_yhat_squared = (np.multiply(X_new.dot(self.cov_), X_new)).sum(axis = 1)
+        t_crit = stats.t.ppf(1 - (alpha / 2), self.rdf)
+        #W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, self.rdf)
+        # print(W_crit_squared)
+        # print(p)
+        #return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
+        return t_crit * (s_yhat_squared ** 0.5)
         
     def plot(
         self,
