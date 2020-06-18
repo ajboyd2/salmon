@@ -289,7 +289,7 @@ class TestModelMethods(unittest.TestCase):
 
             self.assertTrue(all(diff.apply(all, 1)))
             
-    def test_predict2(self):
+    def test_predict_prediction2(self):
         explanatory = Q("Age") + Q("Expenses") + Q("Vacancy") + Q("Sqft")
         response = Q("Rental")
         model = LinearModel(explanatory, response)
@@ -301,7 +301,47 @@ class TestModelMethods(unittest.TestCase):
                                  "2.5%" : [12.05951, 11.3438],
                                  "97.5%": [16.64205, 15.98762]})
         diff = floatComparison(0, pred - expected, 0.00001)
+        
         self.assertTrue(all(diff))
+            
+    def test_predict_confidence2(self):
+        explanatory = Q("Age") + Q("Expenses") + Q("Vacancy") + Q("Sqft")
+        response = Q("Rental")
+        model = LinearModel(explanatory, response)
+        model.fit(commprop)
+        newData = pd.DataFrame({"Age" : [8,9], "Expenses" : [7.50, 5.75], 
+                                "Vacancy" : [10,18], "Sqft" : [140000,127500]})
+        pred = model.predict(newData, confidence_interval=.05)
+        expected = pd.DataFrame({"Predicted" : [14.35078, 13.66571], 
+                                 "2.5%" : [14.00029, 14.70126],
+                                 "97.5%": [13.15169, 14.17972]})
+        diff = floatComparison(0, pred - expected, 0.00001)
+        
+        self.assertTrue(all(diff))
+        
+    def test_confidence2(self):
+        explanatory = Q("Age") + Q("Expenses") + Q("Vacancy") + Q("Sqft")
+        response = Q("Rental")
+        model = LinearModel(explanatory, response)
+        model.fit(commprop)
+        confidence = model.confidence_intervals()
+        expected = pd.DataFrame({"2.5%" : [1.104949e+01, -1.845411e-01, 1.561979e-01, -1.545232e-02, 5.166283e-06],
+                                 "97.5%": [1.335169e+01, -9.952615e-02, 4.078352e-01, 2.783919e-02, 1.068232e-05]},
+                                 index = ["Intercept", "Age", "Expenses", "Vacancy", "Sqft"]).sort_index()
+        diff = floatComparison(0, confidence - expected, 0.00001)
+        
+        self.assertTrue(all(diff))
+        
+    def test_funcs2(self):
+        explanatory = Q("Age") + Q("Expenses") + Q("Vacancy") + Q("Sqft")
+        response = Q("Rental")
+        model = LinearModel(explanatory, response)
+        model.fit(commprop)
+        self.assertAlmostEqual(model.get_ssr(), 138.3269, 4)
+        self.assertAlmostEqual(model.get_sse(), 98.23059, 4)
+        self.assertAlmostEqual(model.get_sst(), 236.5575, 4)
+        self.assertAlmostEqual(model.r_squared(), 0.5847496, 6)
+        self.assertAlmostEqual(model.r_squared(adjusted=True), 0.5628943, 6)
         
     def test_fit3(self):
         exp = Q("Time")
@@ -321,7 +361,7 @@ class TestModelMethods(unittest.TestCase):
 
         self.assertTrue(all(diff.apply(all, 1)))
             
-    def test_predict3(self):
+    def test_predict_prediction3(self):
         exp = Q("Time")
         resp = Q("Hardness")
         model = LinearModel(exp, resp)
@@ -332,7 +372,47 @@ class TestModelMethods(unittest.TestCase):
                                  "1%" : [196.1539, 200.3351, 220.8695, 226.9054, 234.8662],
                                  "99%": [214.2836, 218.2399, 238.393, 244.5633, 252.8775]})
         diff = floatComparison(0, pred - expected, 0.00001)
-    
+        
+        self.assertTrue(all(diff))
+        
+    def test_predict_confidence3(self):
+        exp = Q("Time")
+        resp = Q("Hardness")
+        model = LinearModel(exp, resp)
+        model.fit(plastic)
+        newData = pd.DataFrame({"Time" : [18,20,30,33,37]})
+        pred = model.predict(newData, confidence_interval=.02)
+        expected = pd.DataFrame({"Predicted" : [205.2187, 209.2875, 229.6312, 235.7344, 243.8719], 
+                                 "1%" : [202.0359, 206.4406, 227.4569, 233.3034, 240.8617],
+                                 "99%": [208.4016, 212.1344, 231.8056, 238.1653, 246.8821]})
+        diff = floatComparison(0, pred - expected, 0.00001)
+        
+        self.assertTrue(all(diff))    
+        
+    def test_confidence3(self):
+        exp = Q("Time")
+        resp = Q("Hardness")
+        model = LinearModel(exp, resp)
+        model.fit(plastic)
+        confidence = model.confidence_intervals(alpha=0.02)
+        expected = pd.DataFrame({"1%" : [161.626656, 1.797137],
+                                 "99%": [175.573344, 2.271613]},
+                                 index = ["Intercept", "Time"]).sort_index()
+        diff = floatComparison(0, confidence - expected, 0.00001)
+        
+        self.assertTrue(all(diff))
+                
+    def test_funcs3(self):
+        exp = Q("Time")
+        resp = Q("Hardness")
+        model = LinearModel(exp, resp)
+        model.fit(plastic)
+        self.assertAlmostEqual(model.get_ssr(), 5297.512, 2)
+        self.assertAlmostEqual(model.get_sse(), 146.425, 2)
+        self.assertAlmostEqual(model.get_sst(), 5443.937, 2)
+        self.assertAlmostEqual(model.r_squared(), 0.9731031, 6)
+        self.assertAlmostEqual(model.r_squared(adjusted=True), 0.9711819, 6)
+
     def test_fit4(self):
         exp = Q("Log2Sqft") + Q("Bed") + Q("Bath") + Q("Age") + C("Quality", levels =["Medium", "High", "Low"])
         resp = Q("Log2Price")
@@ -356,7 +436,7 @@ class TestModelMethods(unittest.TestCase):
 
         self.assertTrue(all(diff.apply(all, 1)))
         
-    def test_predict4(self):
+    def test_predict_prediction4(self):
         exp = Q("Log2Sqft") + Q("Bed") + Q("Bath") + Q("Age") + C("Quality", levels =["Medium", "High", "Low"])
         resp = Q("Log2Price")
         model = LinearModel(exp, resp)
@@ -368,6 +448,51 @@ class TestModelMethods(unittest.TestCase):
                                  "0.5%" : [17.91869, 17.7756, 16.53876],
                                  "99.5%": [19.30822, 19.15261, 17.97231]})
         diff = floatComparison(0, pred - expected, 0.00001)
+        
+        self.assertTrue(all(diff))
+        
+    def test_predict_confidence4(self):
+        exp = Q("Log2Sqft") + Q("Bed") + Q("Bath") + Q("Age") + C("Quality", levels =["Medium", "High", "Low"])
+        resp = Q("Log2Price")
+        model = LinearModel(exp, resp)
+        model.fit(realestate)
+        newData = pd.DataFrame({"Log2Sqft" : [12,11,10], "Bed": [3,2,4], "Bath": [2,3,5],
+                                "Age": [25,12,9], "Quality":["Medium", "High", "Low"]})
+        pred = model.predict(newData, confidence_interval=.01)
+        expected = pd.DataFrame({"Predicted" : [18.61345, 18.4641, 17.25554], 
+                                 "0.5%" : [18.46566, 18.34925, 17.02551],
+                                 "99.5%": [18.76125, 18.57896, 17.48556]})
+        diff = floatComparison(0, pred - expected, 0.00001)
+        
+        self.assertTrue(all(diff))
+
+    def test_confidence4(self):
+        exp = Q("Log2Sqft") + Q("Bed") + Q("Bath") + Q("Age") + C("Quality", levels =["Medium", "High", "Low"])
+        resp = Q("Log2Price")
+        model = LinearModel(exp, resp)
+        model.fit(realestate)
+        confidence = model.confidence_intervals()
+        expected = pd.DataFrame({"2.5%" : [8.618038286, 0.651111480, -0.023612233, 0.023023559, 
+                                           -0.006493612, 0.394879885, -0.194446512],
+                                 "97.5%": [10.62900362, 0.84470705, 0.03367056, 0.09786612, 
+                                           -0.00318274, 0.56561394, -0.05729887]},
+                                 index = ["Intercept", "Log2Sqft", "Bed", "Bath", "Age",
+                                          "Quality{High}", "Quality{Low}"]).sort_index()
+        diff = floatComparison(0, confidence - expected, 0.00001)
+        
+        self.assertTrue(all(diff))
+        
+        
+    def test_funcs4(self):
+        exp = Q("Log2Sqft") + Q("Bed") + Q("Bath") + Q("Age") + C("Quality", levels =["Medium", "High", "Low"])
+        resp = Q("Log2Price")
+        model = LinearModel(exp, resp)
+        model.fit(realestate)
+        self.assertAlmostEqual(model.get_ssr(), 166.5586, 3)
+        self.assertAlmostEqual(model.get_sse(),  35.50675, 4)
+        self.assertAlmostEqual(model.get_sst(), 202.0654, 3)
+        self.assertAlmostEqual(model.r_squared(), 0.8242809, 6)
+        self.assertAlmostEqual(model.r_squared(adjusted=True), 0.8222337, 6)
         
     def test_fit5(self):
         exp = Poly("Age",2) + C("Quality", levels =["Medium", "High", "Low"])
@@ -389,6 +514,33 @@ class TestModelMethods(unittest.TestCase):
         diff["t"] = floatComparison(0, diff["t"], 0.01)
         diff["p"] = floatComparison(0, diff["p"], 0.0001)
         
+        self.assertTrue(all(diff.apply(all, 1)))
+       
+    def test_funcs5(self):
+        exp = Poly("Age",2) + C("Quality", levels =["Medium", "High", "Low"])
+        resp = Q("Log2Price")
+        model = LinearModel(exp, resp)
+        model.fit(realestate)
+        self.assertAlmostEqual(model.get_ssr(), 136.1445, 3)
+        self.assertAlmostEqual(model.get_sse(), 65.9209, 4)
+        self.assertAlmostEqual(model.get_sst(), 202.0654, 3)
+        self.assertAlmostEqual(model.r_squared(), 0.6737645, 6)
+        self.assertAlmostEqual(model.r_squared(adjusted=True), 0.6712404, 6)
+        
+    def test_confidence5(self):
+        exp = Poly("Age",2) + C("Quality", levels =["Medium", "High", "Low"])
+        resp = Q("Log2Price")
+        model = LinearModel(exp, resp)
+        model.fit(realestate)
+        confidence = model.confidence_intervals(alpha=0.1)
+        expected = pd.DataFrame({"5%" : [18.3191440957, -0.0248299327, 0.0001024191, 0.7485927516, -0.5560476897],
+                                 "95%": [18.5393732198, -0.0144328766, 0.0002134977, 0.9282465586, -0.4225882675]},
+                                 index = ["Intercept", "Age", "Age^2", "Quality{High}", "Quality{Low}"]).sort_index()
+        diff = floatComparison(0, confidence - expected, 0.00001)
+        
+        self.assertTrue(all(diff))    
+    
+    
     def test_fit6(self):
         level = ["Medium", "High", "Low"]
         exp = Q("Age") + C("Quality", levels=level) + Q("Age") * C("Quality", levels=level)
@@ -404,12 +556,42 @@ class TestModelMethods(unittest.TestCase):
                                  "p" : [0.000000e+00, 2.678341e-06, 4.107532e-21,
                                         9.437550e-09, 9.026338e-01, 1.202605e-01]}, 
                                  index = ["Intercept", "Age", "Quality{High}", "Quality{Low}", 
-                                          "(Age)(Quality{High})", "(Age)(Quality{Low})  "]).sort_index()
+                                          "(Age)(Quality{High})", "(Age)(Quality{Low})"]).sort_index()
         diff = results - expected
         diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.000001)
         diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
         diff["t"] = floatComparison(0, diff["t"], 0.01)
         diff["p"] = floatComparison(0, diff["p"], 0.0001)
+       
+        self.assertTrue(all(diff.apply(all, 1)))
+
+    def test_confidence6(self):
+        exp = Poly("Age",2) + C("Quality", levels =["Medium", "High", "Low"])
+        resp = Q("Log2Price")
+        model = LinearModel(exp, resp)
+        model.fit(realestate)
+        confidence = model.confidence_intervals(alpha=0.1)
+        expected = pd.DataFrame({"2.5%" : [18.122161123, -0.010085189, 0.718772710,
+                                         -0.908138486, -0.007495749, -0.001031415],
+                                 "97.5%": [18.326307316, -0.004181000, 1.076641643,
+                                         -0.450728755, 0.008491790, 0.008893671]},
+                                 index = ["Intercept", "Age", "Quality{High}", "Quality{Low}", 
+                                          "(Age)(Quality{High})", "(Age)(Quality{Low})"]).sort_index()
+        diff = floatComparison(0, confidence - expected, 0.00001)
+        
+        self.assertTrue(all(diff)) 
+        
+    def test_funcs6(self):
+        level = ["Medium", "High", "Low"]
+        exp = Q("Age") + C("Quality", levels=level) + Q("Age") * C("Quality", levels=level)
+        resp = Q("Log2Price")
+        model = LinearModel(exp, resp)
+        model.fit(realestate)
+        self.assertAlmostEqual(model.get_ssr(), 133.6717, 3)
+        self.assertAlmostEqual(model.get_sse(), 68.39363, 4)
+        self.assertAlmostEqual(model.get_sst(), 202.0653, 3)
+        self.assertAlmostEqual(model.r_squared(), 0.6615272, 6)
+        self.assertAlmostEqual(model.r_squared(adjusted=True), 0.6582474, 6)
         
     '''        
     def test_extract_columns(self):
