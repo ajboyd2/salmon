@@ -65,10 +65,8 @@ class Model:
         
     def fit(self, data):
         ''' Fit a model to given data.
-
         Arguments:
             data - A DataFrame with column names matching specified terms within the Model's explanatory and response Expression objects.
-
         Returns:
             A DataFrame with relevant statistics of fitted Model (coefficients, t statistics, p-values, etc.).
         '''
@@ -76,7 +74,6 @@ class Model:
         
     def predict(self, data):
         ''' Predict response values for a given set of data.
-
         Arguments:
             data - A DataFrame with column names matching specified terms within the Model's explanatory Expression object.
         
@@ -88,7 +85,6 @@ class Model:
     def plot_matrix(self, **kwargs):
         ''' Produce a matrix of pairwise scatter plots of the data it was fit on. The diagonal of the matrix will feature
         histograms instead of scatter plots.
-
         Arguments:
             kwargs - One or more named parameters that will be ingested by Pandas' scatter_matrix plotting function.
         
@@ -104,10 +100,8 @@ class LinearModel(Model):
 
     def __init__(self, explanatory, response, intercept=True):
         '''Create a LinearModel object. 
-
         An intercept is included in the model by default. To fit a model without an intercept term,
         either set intercept=False or subtract '1' from the explanatory Expression.
-
         Arguments:
             explanatory - An Expression that is either a single term or a Combination of terms. These are the X's.
             response - An Expression that represents the single term for the response variables. This is the y. 
@@ -148,20 +142,16 @@ class LinearModel(Model):
 
     def fit(self, X, y=None):
         '''Fit a LinearModel to data..
-
         Data can either be provided as a single DataFrame X that contains both the explanatory 
         and response variables, or in separate data structures, one containing the explanatory 
         variables and the other containing the response variable. The latter is implemented 
         so that LinearModel can be used as scikit-learn Estimator.
-
         It is fine to have extra columns in the DataFrame that are not used by the model -- 
         they will simply be ignored.
-
         Arugments:
             X - A DataFrame containing all of the explanatory variables in the model
                 and possibly the response variable too.
             y - An optional Series that contains the response variable.
-
         Returns:
             A DataFrame containing relevant statistics of fitted Model (e.g., coefficients, p-values).
         '''
@@ -274,9 +264,7 @@ class LinearModel(Model):
     
     def confidence_intervals(self, alpha=None, conf=None):
         ''' Calculate confidence intervals for the coefficients.
-
         This function assumes that Model.fit() has already been called.
-
         Arguments:
             alpha - A float between 0.0 and 1.0 representing the non-coverage probability 
                     of the confidence interval. In other words, the confidence level is 1 - alpha / 2.
@@ -304,7 +292,6 @@ class LinearModel(Model):
 
     def predict(self, data, for_plot=False, confidence_interval=False, prediction_interval=False):
         ''' Predict response values from a fitted Model.
-
         Arguments:
             data - A DataFrame containing the values of the explanatory variables, for which
                 predictions are desired.
@@ -313,7 +300,6 @@ class LinearModel(Model):
                 a float between 0.0 and 1.0 indicating the confidence level to use.
             prediction_interval - If a prediction interval is desired, this is 
                 a float between 0.0 and 1.0 indicating the confidence level to use.
-
         Returns:
             A DataFrame containing the predictions and/or intervals.
         '''
@@ -361,12 +347,10 @@ class LinearModel(Model):
     def r_squared(self, X = None, y = None, adjusted = False, **kwargs):
         ''' Calculate the (adjusted) R^2 value of the model.
         This can be used as a metric within the sklearn ecosystem.
-
         Arguments:
             X - An optional DataFrame of the explanatory data to be used for calculating R^2. Default is the training data.
             y - An optional DataFrame of the response data to be used for calculating R^2. Default is the training data.  
             adjusted - A boolean indicating if the R^2 value is adjusted (True) or not (False).
-
         Returns:
             A real value of the computed R^2 value.
         '''
@@ -381,13 +365,13 @@ class LinearModel(Model):
         sse = ((y - pred.iloc[:,0]) ** 2).sum()
         ssto = ((y - y.mean()) ** 2).sum()
 
-        if adjusted:
+        if not adjusted:
             numerator = sse
             denominator = ssto
         else:
-            numerator = sse / (len(y) - len(self.X_train_.columns) - 2)
-            denominator = ssto / (len(y) - 1)
-            
+            numerator = sse / (len(y) - len(self.X_train_.columns) - 1)
+            denominator = ssto / (len(y) - 1) 
+           
         return 1 - numerator / denominator 
 
     def score(self, X = None, y = None, adjusted = False, **kwargs):
@@ -397,20 +381,22 @@ class LinearModel(Model):
     def _prediction_interval_width(self, X_new, alpha = 0.05):
         ''' Helper function for calculating prediction interval widths. '''
         mse = self.get_sse() / self.rdf
-        s_yhat_squared = (X_new.dot(self.cov_) * X_new).sum(axis = 1)
+        s_yhat_squared = (np.multiply(X_new.dot(self.cov_), X_new)).sum(axis = 1)
         s_pred_squared = mse + s_yhat_squared
 
         t_crit = stats.t.ppf(1 - (alpha / 2), self.rdf)
-
         return t_crit * (s_pred_squared ** 0.5)
 
     def _confidence_interval_width(self, X_new, alpha = 0.05):
         ''' Helper function for calculating confidence interval widths. '''
         _, p = X_new.shape
-        s_yhat_squared = (X_new.dot(self.cov_) * X_new).sum(axis = 1)
-        #t_crit = stats.t.ppf(1 - (alpha / 2), n-p)
-        W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, self.rdf)
-        return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
+        s_yhat_squared = (np.multiply(X_new.dot(self.cov_), X_new)).sum(axis = 1)
+        t_crit = stats.t.ppf(1 - (alpha / 2), self.rdf)
+        #W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, self.rdf)
+        # print(W_crit_squared)
+        # print(p)
+        #return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
+        return t_crit * (s_yhat_squared ** 0.5)
         
     def plot(
         self,
@@ -424,7 +410,6 @@ class LinearModel(Model):
         **kwargs
     ):
         ''' Visualizes the fitted LinearModel and its line of best fit.
-
         Arguments:
             categorize_residuals - A boolean that indicates if the residual points should be colored by categories (True) or not (False).
             jitter - A boolean that indicates if residuals should be jittered in factor plots (True) or not (False).
@@ -434,7 +419,6 @@ class LinearModel(Model):
                 If set to 'o', the original or untransformed space will be plotted. If set to 'b', both will be plotted side-by-side.
             alpha - A real value that indicates the transparency of the residuals. Default is 0.5.
             kwargs - Additional named parameters that will be passed onto lower level matplotlib plotting functions.
-
         Returns:    
             A matplotlib plot appropriate visualization of the model.
         '''
@@ -715,10 +699,8 @@ class LinearModel(Model):
 
     def residual_plots(self, **kwargs):
         ''' Plot the residual plots of the model.
-
         Arguments:
             kwargs - Named parameters that will be passed onto lower level matplotlib plotting functions.
-
         Returns:
             A tuple containing the matplotlib (figure, list of axes) for the residual plots.
         ''' 
@@ -734,11 +716,9 @@ class LinearModel(Model):
         
     def partial_plots(self, alpha = 0.5, **kwargs):
         ''' Plot the partial regression plots for the model
-
         Arguments:
             alpha - A real value indicating the transparency of the residuals. Default is 0.5.
             kwargs - Named parameters that will be passed onto lower level matplotlib plotting functions.
-
         Returns:
             A tuple containing the matplotlib (figure, list of axes) for the partial plots.
         '''
@@ -770,10 +750,8 @@ class LinearModel(Model):
     def plot_residual_diagnostics(self, **kwargs):
         ''' Produce a matrix of four diagnostic plots: 
         the residual v. quantile plot, the residual v. fited values plot, the histogram of residuals, and the residual v. order plot.
-
         Arguments:
             kwargs - Named parameters that will be passed onto lower level matplotlib plotting functions.
-
         Returns:
             A tuple containing the matplotlib (figure, list of axes) for the partial plots.
         '''
@@ -790,7 +768,6 @@ class LinearModel(Model):
 
     def residual_quantile_plot(self, ax = None):
         ''' Produces the residual v. quantile plot of the model.
-
         Arguments:
             ax - An optional parameter that is a pregenerated Axis object.
         
@@ -806,7 +783,6 @@ class LinearModel(Model):
 
     def residual_fitted_plot(self, ax = None):
         ''' Produces the residual v. fitted values plot of the model.
-
         Arguments:
             ax - An optional parameter that is a pregenerated Axis object.
         
@@ -825,7 +801,6 @@ class LinearModel(Model):
 
     def residual_histogram(self, ax = None):
         ''' Produces the residual histogram of the model.
-
         Arguments:
             ax - An optional parameter that is a pregenerated Axis object.
         
@@ -844,7 +819,6 @@ class LinearModel(Model):
 
     def residual_order_plot(self, ax = None):
         ''' Produces the residual v. order plot of the model.
-
         Arguments:
             ax - An optional parameter that is a pregenerated Axis object.
         
@@ -860,4 +834,3 @@ class LinearModel(Model):
         ax.set_ylabel("Residual")
 
         return ax
-
