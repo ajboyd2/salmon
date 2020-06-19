@@ -2,4 +2,4 @@ language: python
 python:
   - "2.7"
 script:
-  - python salmon/tests.py
+  - cd salmon python tests.py
