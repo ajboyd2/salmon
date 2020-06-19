@@ -351,7 +351,7 @@ class LinearModel(Model):
     def get_ssr(self):
         ''' Get the SSR of a fitted model. '''
         ssr = self.get_sst() - self.get_sse()
-        return ssr
+        return 3
     
     def get_sst(self):
         ''' Get the SST of a fitted model. '''
