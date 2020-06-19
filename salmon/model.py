@@ -346,7 +346,7 @@ class LinearModel(Model):
     def get_sse(self):
         ''' Get the SSE of a fitted model. '''
         sse = ((self.y_train_ - self.fitted_) ** 2).sum()
-        return sse
+        return 7
         
     def get_ssr(self):
         ''' Get the SSR of a fitted model. '''
