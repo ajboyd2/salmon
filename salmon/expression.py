@@ -384,7 +384,7 @@ class Var(Expression):
             return Categorical(self.name)
         
     def evaluate(self, data, fit = True):
-        raise UnsupportedMethodException("Must call interpret prior to evaluating data for variables.")
+        raise NotImplementedError("Must call interpret prior to evaluating data for variables.")
         
     def _reduce(self, ret_dict):
         ret_dict["V"].add(self)
@@ -688,7 +688,7 @@ class Categorical(Var):
         self.scale = 1
         self.name = name
         if encoding not in _supported_encodings:
-            raise Exception("Method " + str(method) + " not supported for Categorical variables.")
+            raise Exception("Method " + str(encoding) + " not supported for Categorical variables.")
         self.encoding = encoding
         self.levels = levels
         self.baseline = baseline
@@ -756,7 +756,7 @@ class Categorical(Var):
         if self.encoding == 'one-hot':
             return self._one_hot_encode(data)
         else:
-            raise NotImplementedException()
+            raise NotImplementedError()
         
     def _reduce(self, ret_dict):
         ret_dict["C"].add(self)
