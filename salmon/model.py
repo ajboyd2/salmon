@@ -369,7 +369,7 @@ class LinearModel(Model):
             numerator = sse
             denominator = ssto
         else:
-            numerator = sse / (len(y) - len(self.X_train_.columns) - 1)
+            numerator = sse / (len(y) - len(self.coef_))
             denominator = ssto / (len(y) - 1) 
            
         return 1 - numerator / denominator 
@@ -392,10 +392,6 @@ class LinearModel(Model):
         _, p = X_new.shape
         s_yhat_squared = (np.multiply(X_new.dot(self.cov_), X_new)).sum(axis = 1)
         t_crit = stats.t.ppf(1 - (alpha / 2), self.rdf)
-        #W_crit_squared = p * stats.f.ppf(1 - (alpha / 2), p, self.rdf)
-        # print(W_crit_squared)
-        # print(p)
-        #return (W_crit_squared ** 0.5) * (s_yhat_squared ** 0.5)
         return t_crit * (s_yhat_squared ** 0.5)
         
     def plot(
