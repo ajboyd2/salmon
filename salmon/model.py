@@ -178,11 +178,8 @@ class LinearModel(Model):
         self.training_data = data
         
         # Replace all Var's with either Q's or C's
-        self.re = self.given_re.copy()
-        self.re = self.re.interpret(data)
-
-        self.ex = self.given_ex.copy()
-        self.ex = self.ex.interpret(data)
+        self.re = self.given_re.copy().interpret(data)
+        self.ex = self.given_ex.copy().interpret(data)
 
         terms = self.ex.reduce()
         
@@ -190,7 +187,7 @@ class LinearModel(Model):
         X = self.ex.evaluate(data)
         self.X_train_ = X
         # Construct y vector
-        y = self.re.evaluate(data).iloc[:, 0]
+        y = self.re.evaluate(data)[:, 0]
         self.y_train_ = y
 
         # Get dimensions
@@ -198,21 +195,20 @@ class LinearModel(Model):
         
         # Center if there is an intercept
         if self.intercept:
-            X_offsets = X.mean()
+            X_offsets = X.mean(axis=0)
             y_offset = y.mean()
+            X -= X_offsets[np.newaxis, :]
         else:
             X_offsets = 0
             y_offset = 0
-        Xc = X - X_offsets
-        yc = y - y_offset
         
         # Get coefficients using QR decomposition
-        q, r = np.linalg.qr(Xc)
-        coef_ = qr_solve(q, r, yc)
-        cols = list(Xc) # column names
+        q, r = np.linalg.qr(X)
+        coef_ = qr_solve(q, r, y)
+        cols = X.columns.copy() # column names
 
         # Get fitted values and residuals
-        self.fitted_ = y_offset + np.dot(Xc, coef_)
+        self.fitted_ = y_offset + np.dot(X, coef_)
         self.residuals_ = y - self.fitted_
         
         # Get residual variance
@@ -265,7 +261,7 @@ class LinearModel(Model):
         else:
             y = self.re.evaluate(data)
             y_hat = self.predict(data, for_plot=False, confidence_interval=False, prediction_interval=False)
-            residuals = y.iloc[:, 0] - y_hat.iloc[:, 0]
+            residuals = y[:, 0] - y_hat.iloc[:, 0]
 
         n = len(residuals)
 
@@ -320,10 +316,14 @@ class LinearModel(Model):
         # Construct the X matrix
         X = self.ex.evaluate(data, fit=False)
         if self.intercept:
-            X['Intercept'] = 1
-
+            n, _ = X.shape
+            X = np.hstack((X, np.ones((n, 1))))
         y_vals = np.dot(X, self.coef_)
-        predictions = pd.DataFrame({"Predicted " + str(self.re) : y_vals})
+
+        predictions = pd.DataFrame(
+            {"Predicted " + str(self.re) : y_vals},
+            index=data.index
+        )
             
         if confidence_interval or prediction_interval:
             if confidence_interval:
@@ -378,7 +378,7 @@ class LinearModel(Model):
             y = self.y_train_
 
         pred = self.predict(X)
-        sse = ((y - pred.iloc[:,0]) ** 2).sum()
+        sse = ((y - pred.iloc[:, 0]) ** 2).sum()
         ssto = ((y - y.mean()) ** 2).sum()
 
         if adjusted:
@@ -634,7 +634,8 @@ class LinearModel(Model):
         x_name = plot_objs['x']['name']
         X_new = self.ex.evaluate(line_x, fit = False)
         if self.intercept:
-            X_new['Intercept'] = 1
+            n, _ = X_new.shape
+            X_new = np.hstack((X_new, np.ones((n, 1))))
 
         if use_confidence:
             widths = self._confidence_interval_width(X_new, alpha)
@@ -722,10 +723,10 @@ class LinearModel(Model):
         Returns:
             A tuple containing the matplotlib (figure, list of axes) for the residual plots.
         ''' 
-        terms = list(self.X_train_)
+        terms = self.X_train_.columns
         fig, axs = plt.subplots(1, len(terms), **kwargs)
         for term, ax in zip(terms, axs):
-            ax.scatter(self.X_train_[str(term)], self.residuals_)
+            ax.scatter(self.X_train_.get_column(term), self.residuals_)
             ax.set_xlabel(str(term))
             ax.set_ylabel("Residuals")
             ax.set_title(str(term) + " v. Residuals")
@@ -854,7 +855,7 @@ class LinearModel(Model):
         if ax is None:
             f, ax = plt.subplots(1,1)
 
-        ax.plot(self.residuals_.index, self.residuals_, "o-")
+        ax.plot(self.training_data.index, self.residuals_, "o-")
         ax.set_title("Order v. Residuals")
         ax.set_xlabel("Row Index")
         ax.set_ylabel("Residual")
