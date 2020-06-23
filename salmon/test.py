@@ -217,8 +217,8 @@ class TestCombinationMethods(unittest.TestCase):
         
 iris = pd.read_csv("data/iris.csv")
 commprop = pd.read_csv("CommProp.csv")
-plastic = pd.read_csv("data/Plastic.csv")
 realestate = pd.read_csv("data/Real Estate5.csv")
+plastic = pd.read_csv("data/Plastic.csv")
 
 # Model        
 class TestModelMethods(unittest.TestCase):
