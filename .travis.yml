@@ -4,4 +4,4 @@ python:
 install: 
   - pip install -r requirements.txt
 script:
-  - cd salmon && python3 test.py
+  - python -m salmon.test
