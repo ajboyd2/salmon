@@ -220,7 +220,6 @@ commprop = pd.read_csv("data/CommProp.csv")
 realestate = pd.read_csv("data/Real Estate5.csv")
 plastic = pd.read_csv("data/Plastic.csv")
 
-
 # Model        
 class TestModelMethods(unittest.TestCase):
     
