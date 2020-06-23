@@ -4,5 +4,7 @@ python:
 install: 
   - pip install -r requirements.txt
   - pip install pandas
+  - pip install numpy
+  - pip install scipy
 script:
   - python -m salmon.test
