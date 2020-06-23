@@ -6,5 +6,6 @@ install:
   - pip install pandas
   - pip install numpy
   - pip install scipy
+  - pip install matplotlib
 script:
   - python -m salmon.test
