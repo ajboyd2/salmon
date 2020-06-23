@@ -215,7 +215,10 @@ class TestCombinationMethods(unittest.TestCase):
             else:
                 self.assertTrue(isinstance(v, Quantitative))
         
-iris = pd.read_csv("https://raw.githubusercontent.com/uiuc-cse/data-fa14/gh-pages/data/iris.csv")
+iris = pd.read_csv("data/iris.csv")
+commprop = pd.read_csv("data/CommProp.csv")
+realestate = pd.read_csv("data/Real Estate5.csv")
+plastic = pd.read_csv("data/Plastic.csv")
 
 
 # Model        
