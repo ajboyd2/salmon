@@ -282,7 +282,7 @@ class TestModelMethods(unittest.TestCase):
                                      "p" : [1.601720e-33, 3.894322e-09, 2.747396e-05, 5.704457e-01, 1.975990e-07]}, 
                                      index = ["Intercept", "Age", "Expenses", "Vacancy", "Sqft"]).sort_index()
             diff = results - expected
-            diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.000001)
+            diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.001)
             diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
             diff["t"] = floatComparison(0, diff["t"], 0.01)
             diff["p"] = floatComparison(0, diff["p"], 0.0001)
