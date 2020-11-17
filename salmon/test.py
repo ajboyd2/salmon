@@ -571,7 +571,7 @@ class TestModelMethods(unittest.TestCase):
         model = LinearModel(exp, resp)
         model.fit(realestate)
         confidence = model.confidence_intervals(alpha=0.1)
-        expected = pd.DataFrame({"2.5%" : [18.122161123, -0.010085189, 0.718772710,
+        expected = pd.DataFrame({"2.5%" : [48.122161123, -0.010085189, 0.718772710,
                                          -0.908138486, -0.007495749, -0.001031415],
                                  "97.5%": [18.326307316, -0.004181000, 1.076641643,
                                          -0.450728755, 0.008491790, 0.008893671]},
