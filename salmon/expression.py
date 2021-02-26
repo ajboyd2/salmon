@@ -501,10 +501,10 @@ class TransVar(Expression):
         
     def evaluate(self, data, fit = True):
         base_data = self.var.evaluate(data, fit).sum(axis=1)
-        transformed_data = self.transformation.transform(
+        transformed_data = self.scale * self.transformation.transform(
             values=base_data,
             training=fit,
-        ) * self.scale
+        )
         return LightDataFrame(
             transformed_data[:, np.newaxis],
             columns=[str(self)],
@@ -829,7 +829,7 @@ class Categorical(Var):
         return LightDataFrame(dummy_mat, columns=columns)
         
     def evaluate(self, data, fit=True):
-        if self.levels is None or self.baseline is None:
+        if self.levels is None or self.baseline is None or fit:
             self._set_levels(data)
         
         if self.encoding == 'one-hot':
@@ -1088,7 +1088,7 @@ class Combination(Expression):
         if similar_term is not None:
             self.terms.remove(similar_term)
             addition_result = similar_term + other_term
-            if addition_result != 0:
+            if addition_result != Constant(0):
                 self.terms.add(addition_result)
         else:
             self.terms.add(other_term)       
