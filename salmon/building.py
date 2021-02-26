@@ -1,5 +1,6 @@
 import numpy as np
 import math
+"""Contains the logic for automatic model building (i.e. stepwise regression)."""
 
 from abc import ABC, abstractmethod
 
@@ -9,6 +10,7 @@ from .expression import Constant
 
 
 class Score(ABC):
+    """Generic metric object for model evaluation."""
 
     def __init__(self, model, higher_is_better):
         self.higher_is_better = higher_is_better
@@ -27,8 +29,10 @@ class Score(ABC):
         return "{} | {}".format(type(self).__name__, self._score)
 
     def compare(self, other):
-        ''' Return true if self is better than other based on 'higher_is_better' '''
-        assert(type(self) is type(other))  # make sure we are not comparing different types of scores
+        """Return true if self is better than other based on 'higher_is_better'."""
+        assert(type(self) is type(other))  
+        # make sure we are not comparing different types of scores
+        
         if self.higher_is_better:
             return self._score < other._score
         else:
@@ -46,19 +50,25 @@ class RSquared(Score):
         )
 
     def __str__(self):
-        return "R^2 ({}adjusted) | {}".format("" if self.adjusted else "un", self._score)
+        return "R^2 ({}adjusted) | {}".format(
+            "" if self.adjusted else "un", 
+            self._score,
+        )
 
     def compute(self):
-        ''' Calculate the (adjusted) R^2 value of the model.
+        """ Calculate the (adjusted) R^2 value of the model.
 
         Arguments:
-            X - An optional DataFrame of the explanatory data to be used for calculating R^2. Default is the training data.
-            Y - An optional DataFrame of the response data to be used for calculating R^2. Default is the training data.
-            adjusted - A boolean indicating if the R^2 value is adjusted (True) or not (False).
+            X - An optional DataFrame of the explanatory data to be used for
+                calculating R^2. Default is the training data.
+            Y - An optional DataFrame of the response data to be used for
+                calculating R^2. Default is the training data.
+            adjusted - A boolean indicating if the R^2 value is adjusted (True)
+                or not (False).
 
         Returns:
             A real value of the computed R^2 value.
-        '''
+        """
 
         X = self.model.training_data
         y = self.model.training_y
@@ -148,7 +158,14 @@ _metrics = dict(
 )
 
 
-def stepwise(full_model, metric_name, forward=False, naive=False, data=None, verbose=False):
+def stepwise(
+    full_model,
+    metric_name,
+    forward=False,
+    naive=False,
+    data=None,
+    verbose=False,
+):
 
     if data is not None:
         full_model.fit(data)
@@ -192,7 +209,9 @@ def stepwise(full_model, metric_name, forward=False, naive=False, data=None, ver
                     ex_term_list_expression = t
                 else:
                     ex_term_list_expression = ex_term_list_expression + t
-            leaves = set(term for term in ex_term_list if not term.contains(ex_term_list_expression - term)) # Find all terms that do not depend on other terms
+            # Find all terms that do not depend on other terms
+            leaves = set(term for term in ex_term_list if not \
+                term.contains(ex_term_list_expression - term))
     
         for i, term in enumerate(ex_term_list):
             try:
@@ -201,13 +220,19 @@ def stepwise(full_model, metric_name, forward=False, naive=False, data=None, ver
                     if not naive:
                         if term not in leaves:
                             continue
-                    potential_model = LinearModel(best_model.given_ex + term, re_term)
+                    potential_model = LinearModel(
+                        best_model.given_ex + term, 
+                        re_term,
+                    )
                 else:
                     # validate if removing term is valid
                     if not naive:
                         if (best_model.given_ex - term).contains(term):
                             continue
-                    potential_model = LinearModel(best_model.given_ex - term, re_term)
+                    potential_model = LinearModel(
+                        best_model.given_ex - term,
+                        re_term,
+                    )
 
                 potential_model.fit(data)
                 potential_metric = metric_func(potential_model)
