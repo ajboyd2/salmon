@@ -147,7 +147,7 @@ class BIC(Score):
 
         return math.log(n) * p - 2 * log_likelihood
 
-
+"""All metrics that are supported by default.""" 
 _metrics = dict(
     r_squared=RSquared,
     r_squared_adjusted=lambda model: RSquared(model=model, adjusted=True),
@@ -166,6 +166,29 @@ def stepwise(
     data=None,
     verbose=False,
 ):
+    """Perform forward or backward stepwise regression.
+    
+    Arguments:
+        full_model - A model object that contains all of the terms to be 
+            considered for the procedure.
+        metric_name - A string containing the name of the metric to use in
+            the procedure. Options include: "r_squared", "r_squared_adjusted",
+            "mse", "cp", "aic", and "bic".
+        forward - If True, specifies forwards stepwise regression. If False,
+            specifies backwards stepwise regression. Default is False.
+        naive - If True, allows for the removal or addition of terms in a
+            model that depend on others being present (e.g. removing variable
+            'X' while an interaction between 'X' and 'Y' are still present).
+            Defaults to False.
+        data - A dataframe that, if specified, will be used for the stepwise
+            regression. If not specified, it is assumed the full_model has
+            already been trained using some other data.
+        verbose - If True, will print to console periodic updates.
+            Default is False.
+
+    Returns:
+         
+    """
 
     if data is not None:
         full_model.fit(data)
