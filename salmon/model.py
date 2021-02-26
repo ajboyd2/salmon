@@ -234,7 +234,7 @@ class LinearModel(Model):
 
         # Get coefficients using QR decomposition
         q, r = np.linalg.qr(X)
-        coef_ = qr_solve(q, r, y)
+        coef_ = qr_solve(q, r, y - y_offset)
         cols = X.columns.copy()  # column names
 
         # Get fitted values and residuals

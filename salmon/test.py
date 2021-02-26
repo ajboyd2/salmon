@@ -242,11 +242,11 @@ class TestModelMethods(unittest.TestCase):
         
     def test_predict(self):
         levels = ["virginica", "setosa", "versicolor"]
-        explanatory = Q("petal_width") + C("species", levels = levels)
+        explanatory = Q("petal_width") + C("species", levels=levels)
         response = Q("sepal_width")
         model = LinearModel(explanatory, response)
         model.fit(iris)
-        newData = pd.DataFrame({"petal_width" : [1,2], "species" : ["setosa", "verginica"]})
+        newData = pd.DataFrame({"petal_width" : [1,2], "species" : ["setosa", "virginica"]})
         pred = model.predict(newData)
         expected = pd.DataFrame({"Predicted" : [4.019461, 3.306224]})
         diff = floatComparison(0, pred - expected, 0.00001)
