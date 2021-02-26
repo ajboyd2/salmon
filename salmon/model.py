@@ -1,3 +1,5 @@
+"""Describes various linear models supported by SALMON."""
+
 import numpy as np
 
 import scipy.stats as stats
@@ -48,7 +50,7 @@ def _confint(estimates, standard_errors, df, crit_prob):
 
 
 def qr_solve(Q, R, y):
-    ''' Solve least squares X / y, given QR decomposition of X '''
+    """Solve least squares X / y, given QR decomposition of X"""
     _, p = R.shape
     if p:
         return solve_triangular(R, Q.T @ y, check_finite=False)
@@ -57,7 +59,7 @@ def qr_solve(Q, R, y):
 
 
 def cho_inv(R):
-    ''' Calculate inverse of X.T @ X, given Cholesky decomposition R.T @ R '''
+    """Calculate inverse of X.T @ X, given Cholesky decomposition R.T @ R"""
     _, p = R.shape
     if p:
         return cho_solve((R, False), np.identity(p), check_finite=False)
@@ -66,15 +68,15 @@ def cho_inv(R):
 
 
 class Model:
-    ''' A general Model class that both Linear models and (in the future)
-    General Linear models stem from. '''
+    """A general Model class that both Linear models and (in the future)
+    General Linear models stem from."""
 
     def __init__(self):
-        ''' Create a Model object (only possible through inheritance). '''
+        """Create a Model object (only possible through inheritance)."""
         raise NotImplementedError()
 
     def fit(self, data):
-        ''' Fit a model to given data.
+        """Fit a model to given data.
 
         Arguments:
             data - A DataFrame with column names matching specified terms
@@ -84,11 +86,11 @@ class Model:
         Returns:
             A DataFrame with relevant statistics of fitted Model (coefficients,
             t statistics, p-values, etc.).
-        '''
+        """
         raise NotImplementedError()
 
     def predict(self, data):
-        ''' Predict response values for a given set of data.
+        """Predict response values for a given set of data.
 
         Arguments:
             data - A DataFrame with column names matching specified terms
@@ -96,11 +98,11 @@ class Model:
 
         Returns:
             A Series of the predicted values.
-        '''
+        """
         raise NotImplementedError()
 
     def plot_matrix(self, **kwargs):
-        ''' Produce a matrix of pairwise scatter plots of the data it was fit
+        """Produce a matrix of pairwise scatter plots of the data it was fit
         on. The diagonal of the matrix will feature histograms instead of
         scatter plots.
 
@@ -110,17 +112,17 @@ class Model:
 
         Returns:
             A matplotlib plot object containing the matrix of scatter plots.
-        '''
+        """
         df = pd.concat([self.X_train_, self.y_train_], axis=1)
         scatter_matrix(df, **kwargs)
 
 
 class LinearModel(Model):
-    '''A specific Model that assumes the response variable is linearly related
-    to the explanatory variables. '''
+    """A specific Model that assumes the response variable is linearly related
+    to the explanatory variables."""
 
     def __init__(self, explanatory, response, intercept=True):
-        '''Create a LinearModel object.
+        """Create a LinearModel object.
 
         An intercept is included in the model by default. To fit a model
         without an intercept term, either set intercept=False or subtract '1'
@@ -135,7 +137,7 @@ class LinearModel(Model):
                 variable.
             intercept - A boolean indicating whether an intercept should be
                 included (True) or not (False).
-        '''
+        """
         if explanatory is None:
             explanatory = 0
 
@@ -168,14 +170,14 @@ class LinearModel(Model):
         self.categorical_levels = dict()
 
     def __str__(self):
-        ''' Convert a LinearModel to a str format for printing. '''
+        """Convert a LinearModel to a str format for printing."""
         if self.intercept:
             return str(self.given_re) + " ~ " + str(1 + self.given_ex)
         else:
             return str(self.given_re) + " ~ " + str(self.given_ex)
 
     def fit(self, X, y=None):
-        '''Fit a LinearModel to data..
+        """Fit a LinearModel to data..
 
         Data can either be provided as a single DataFrame X that contains both
         the explanatory and response variables, or in separate data
@@ -194,7 +196,7 @@ class LinearModel(Model):
         Returns:
             A DataFrame containing relevant statistics of fitted Model (e.g.,
             coefficients, p-values).
-        '''
+        """
         if y is None:
             data = X
         else:
@@ -251,7 +253,7 @@ class LinearModel(Model):
         if self.intercept:
             cols.append("Intercept")
             coef_ = np.append(coef_, y_offset - (X_offsets * coef_).sum())
-            cov_coef_intercept = -np.dot(self.cov_, X_offsets)
+            cov_coef_intercept = -1*np.dot(self.cov_, X_offsets)
 
             var_intercept = self.resid_var_ / self.n
             var_intercept -= (X_offsets * cov_coef_intercept).sum()
@@ -282,13 +284,13 @@ class LinearModel(Model):
         return table
 
     def likelihood(self, data=None):
-        ''' Calculate likelihood for a fitted model on either original data or
-        new data. '''
+        """Calculate likelihood for a fitted model on either original data or
+        new data."""
         return np.exp(self.log_likelihood(data))
 
     def log_likelihood(self, data=None):
-        ''' Calculate a numerically stable log_likelihood for a fitted model
-        on either original data or new data. '''
+        """Calculate a numerically stable log_likelihood for a fitted model
+        on either original data or new data."""
 
         if data is None:
             residuals = self.residuals_
@@ -308,7 +310,7 @@ class LinearModel(Model):
                 (1 / (2 * self.resid_var_)) * (residuals ** 2).sum())
 
     def confidence_intervals(self, alpha=None, conf=None):
-        ''' Calculate confidence intervals for the coefficients.
+        """Calculate confidence intervals for the coefficients.
 
         This function assumes that Model.fit() has already been called.
 
@@ -324,7 +326,7 @@ class LinearModel(Model):
         Returns:
             A DataFrame containing the appropriate confidence intervals for
             all the coefficients.
-        '''
+        """
         if alpha is None:
             if conf is None:
                 conf = 0.95
@@ -347,7 +349,7 @@ class LinearModel(Model):
         confidence_interval=False,
         prediction_interval=False,
     ):
-        ''' Predict response values from a fitted Model.
+        """Predict response values from a fitted Model.
 
         Arguments:
             data - A DataFrame containing the values of the explanatory
@@ -363,7 +365,7 @@ class LinearModel(Model):
 
         Returns:
             A DataFrame containing the predictions and/or intervals.
-        '''
+        """
         # Construct the X matrix
         X = self.ex.evaluate(data, fit=False)
         if self.intercept:
@@ -401,22 +403,22 @@ class LinearModel(Model):
         return predictions
 
     def get_sse(self):
-        ''' Get the SSE of a fitted model. '''
+        """Get the SSE of a fitted model."""
         sse = ((self.y_train_ - self.fitted_) ** 2).sum()
         return sse
 
     def get_ssr(self):
-        ''' Get the SSR of a fitted model. '''
+        """Get the SSR of a fitted model."""
         ssr = self.get_sst() - self.get_sse()
         return ssr
 
     def get_sst(self):
-        ''' Get the SST of a fitted model. '''
+        """Get the SST of a fitted model."""
         sst = ((self.y_train_ - self.y_train_.mean()) ** 2).sum()
         return sst
 
     def r_squared(self, X=None, y=None, adjusted=False, **kwargs):
-        ''' Calculate the (adjusted) R^2 value of the model.
+        """Calculate the (adjusted) R^2 value of the model.
         This can be used as a metric within the sklearn ecosystem.
 
         Arguments:
@@ -429,7 +431,7 @@ class LinearModel(Model):
 
         Returns:
             A real value of the computed R^2 value.
-        '''
+        """
         # Allow interfacing with sklearn's cross fold validation
         # self.fit(X, y)
         if X is None:
@@ -451,12 +453,14 @@ class LinearModel(Model):
         return 1 - numerator / denominator
 
     def score(self, X=None, y=None, adjusted=False, **kwargs):
-        ''' Wrapper for sklearn api for cross fold validation. See
-        LinearModel.r_squared. '''
+        """Wrapper for sklearn api for cross fold validation.
+        
+        See LinearModel.r_squared.
+        """
         return self.r_squared(X, y, adjusted, **kwargs)
 
     def _prediction_interval_width(self, X_new, alpha=0.05):
-        ''' Helper function for calculating prediction interval widths. '''
+        """Helper function for calculating prediction interval widths."""
         mse = self.get_sse() / self.rdf
         s_yhat_squared = (X_new.dot(self.cov_) * X_new).sum(axis=1)
         s_pred_squared = mse + s_yhat_squared
@@ -466,7 +470,7 @@ class LinearModel(Model):
         return t_crit * (s_pred_squared ** 0.5)
 
     def _confidence_interval_width(self, X_new, alpha=0.05):
-        ''' Helper function for calculating confidence interval widths. '''
+        """Helper function for calculating confidence interval widths."""
         _, p = X_new.shape
         s_yhat_squared = (X_new.dot(self.cov_) * X_new).sum(axis=1)
         # t_crit = stats.t.ppf(1 - (alpha / 2), n-p)
@@ -484,7 +488,7 @@ class LinearModel(Model):
         alpha=0.5,
         **kwargs
     ):
-        ''' Visualizes the fitted LinearModel and its line of best fit.
+        """Visualizes the fitted LinearModel and its line of best fit.
 
         Arguments:
             categorize_residuals - A boolean that indicates if the residual
@@ -508,7 +512,7 @@ class LinearModel(Model):
 
         Returns:
             A matplotlib plot appropriate visualization of the model.
-        '''
+        """
         if confidence_band and prediction_band:
             raise Exception(
                 "Only one of {confidence_band, prediction_band} may "
@@ -593,8 +597,9 @@ class LinearModel(Model):
         alpha,
         plot_objs,
     ):
-        ''' A helper function for plotting models in the case no quantitiative
-        variables are present. '''
+        """A helper function for plotting models in the case no quantitiative
+        variables are present.
+        """
 
         ax = plot_objs['ax']
         unique_cats = list(terms['C'])
@@ -725,9 +730,9 @@ class LinearModel(Model):
         alpha,
         plot_objs,
     ):
-        ''' A helper function for plotting models in the case only one
+        """A helper function for plotting models in the case only one
         quantitiative variable is present. Also support zero or more
-        categorical variables.'''
+        categorical variables."""
         # Get the "first" and only element in the set
         x_term = next(iter(terms['Q']))
 
@@ -793,8 +798,8 @@ class LinearModel(Model):
         alpha,
         plot_objs,
     ):
-        ''' A helper function for plotting models in the case only one
-        quantitiative variable and no categorical variables are present.'''
+        """A helper function for plotting models in the case only one
+        quantitiative variable and no categorical variables are present."""
 
         x_name = plot_objs['x']['name']
         ax = plot_objs['ax']
@@ -833,8 +838,18 @@ class LinearModel(Model):
 
         ax.scatter(x, y_train_vals, c = "black", alpha = alpha)
 
-    def _plot_band(self, line_x, y_vals, color, original_y_space, plot_objs, use_confidence = False, alpha = 0.05): # By default will plot prediction bands
-        ''' A helper function to plot the confidence or prediction bands for a model. '''
+    def _plot_band(
+        self,
+        line_x,
+        y_vals,
+        color,
+        original_y_space,
+        plot_objs,
+        use_confidence=False,
+        alpha=0.05,
+    ):
+        """A helper function to plot the confidence or prediction bands for
+        a model. By default will plot prediction bands."""
         x_name = plot_objs['x']['name']
         X_new = self.ex.evaluate(line_x, fit = False)
         if self.intercept:
@@ -853,11 +868,31 @@ class LinearModel(Model):
             lower = self.re.untransform(lower)
             upper = self.re.untransform(upper)
 
-        plot_objs['ax'].fill_between(x = line_x[x_name], y1 = lower, y2 = upper, color = color, alpha = 0.3)
+        plot_objs['ax'].fill_between(
+            x=line_x[x_name],
+            y1=lower,
+            y2=upper,
+            color=color,
+            alpha=0.3,
+        )
 
 
-    def _plot_one_quant_some_cats(self, x, line_x, categorize_residuals, jitter, terms, confidence_band, prediction_band, original_y_space, alpha, plot_objs):
-        ''' A helper function for plotting models in the case only one quantitiative variable and one or more categorical variables are present.'''
+    def _plot_one_quant_some_cats(
+        self,
+        x,
+        line_x,
+        categorize_residuals,
+        jitter,
+        terms,
+        confidence_band,
+        prediction_band,
+        original_y_space,
+        alpha,
+        plot_objs,
+    ):
+        """A helper function for plotting models in the case only one
+        quantitiative variable and one or more categorical variables are
+        present."""
 
         ax = plot_objs['ax']
         x_name = plot_objs['x']['name']
@@ -871,7 +906,8 @@ class LinearModel(Model):
         cats = list(terms['C'])
         cat_names = [str(cat) for cat in cats]
         levels = [cat.levels for cat in cats]
-        level_combinations = product(*levels) #cartesian product of all combinations
+        # cartesian product of all combinations
+        level_combinations = product(*levels)
 
         dummy_data = line_x.copy() # rest of columns set in next few lines
 
@@ -888,13 +924,13 @@ class LinearModel(Model):
             line_type = linestyles.pop() # rotate through line styles
             linestyles.insert(0, line_type)
 
-            line_y = self.predict(dummy_data, for_plot = True)
+            line_y = self.predict(dummy_data, for_plot=True)
             y_vals = line_y["Predicted " + y_name]
             if original_y_space:
                 y_vals_to_plot = self.re.untransform(y_vals)
             else:
                 y_vals_to_plot = y_vals
-            plot, = ax.plot(dummy_data[x_name], y_vals_to_plot, linestyle = line_type)
+            plot, = ax.plot(dummy_data[x_name], y_vals_to_plot, linestyle=line_type)
             plots.append(plot)
             labels.append(", ".join(label))
 
@@ -903,30 +939,59 @@ class LinearModel(Model):
                 indices_to_use = pd.Series([True] * len(x)) # gradually gets filtered out
                 for (cat,level) in zip(cats,level_set):
                     indices_to_use = indices_to_use & (self.training_data[str(cat)] == level)
-                ax.scatter(x[indices_to_use], y_train_vals[indices_to_use], c = plot.get_color(), alpha = alpha)
+                ax.scatter(
+                    x[indices_to_use],
+                    y_train_vals[indices_to_use],
+                    c=plot.get_color(),
+                    alpha=alpha,
+                )
 
             if confidence_band:
-                self._plot_band(dummy_data, y_vals, plot.get_color(), original_y_space, plot_objs, True, confidence_band)
+                self._plot_band(
+                    dummy_data,
+                    y_vals,
+                    plot.get_color(),
+                    original_y_space,
+                    plot_objs,
+                    True,
+                    confidence_band,
+                )
             elif prediction_band:
-                self._plot_band(dummy_data, y_vals, plot.get_color(), original_y_space, plot_objs, False, prediction_band)
+                self._plot_band(
+                    dummy_data,
+                    y_vals,
+                    plot.get_color(),
+                    original_y_space,
+                    plot_objs,
+                    False,
+                    prediction_band,
+                )
 
         # Legend
         box = ax.get_position()
         ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-        ax.legend(plots, labels, title = ", ".join(cat_names), loc = "center left", bbox_to_anchor = (1, 0.5))
+        ax.legend(
+            plots,
+            labels,
+            title=", ".join(cat_names),
+            loc="center left",
+            bbox_to_anchor=(1, 0.5),
+        )
 
         if not categorize_residuals:
-            resids = ax.scatter(x, y_train_vals, c = "black", alpha = alpha)
+            ax.scatter(x, y_train_vals, c="black", alpha=alpha)
 
     def residual_plots(self, **kwargs):
-        ''' Plot the residual plots of the model.
+        """Plot the residual plots of the model.
 
         Arguments:
-            kwargs - Named parameters that will be passed onto lower level matplotlib plotting functions.
+            kwargs - Named parameters that will be passed onto lower level
+                matplotlib plotting functions.
 
         Returns:
-            A tuple containing the matplotlib (figure, list of axes) for the residual plots.
-        '''
+            A tuple containing the matplotlib (figure, list of axes) for the
+            residual plots.
+        """
         terms = self.X_train_.columns
         fig, axs = plt.subplots(1, len(terms), **kwargs)
         for term, ax in zip(terms, axs):
@@ -937,16 +1002,19 @@ class LinearModel(Model):
             ax.grid()
         return fig, axs
 
-    def partial_plots(self, alpha = 0.5, **kwargs):
-        ''' Plot the partial regression plots for the model
+    def partial_plots(self, alpha=0.5, **kwargs):
+        """Plot the partial regression plots for the model
 
         Arguments:
-            alpha - A real value indicating the transparency of the residuals. Default is 0.5.
-            kwargs - Named parameters that will be passed onto lower level matplotlib plotting functions.
+            alpha - A real value indicating the transparency of the residuals.
+                Default is 0.5.
+            kwargs - Named parameters that will be passed onto lower level
+                matplotlib plotting functions.
 
         Returns:
-            A tuple containing the matplotlib (figure, list of axes) for the partial plots.
-        '''
+            A tuple containing the matplotlib (figure, list of axes) for the
+            partial plots.
+        """
         #terms = self.ex.flatten(separate_interactions = False)
         terms = self.ex.get_terms()
         fig, axs = plt.subplots(1, len(terms), **kwargs)
@@ -962,64 +1030,67 @@ class LinearModel(Model):
             yaxis.fit(self.training_data)
             xaxis.fit(self.training_data)
 
-            ax.scatter(xaxis.residuals_, yaxis.residuals_, alpha = alpha)
+            ax.scatter(xaxis.residuals_, yaxis.residuals_, alpha=alpha)
             ax.set_title("Leverage Plot for " + str(xi))
 
         return fig, axs
 
-    # static method
+    @staticmethod
     def ones_column(data):
-        ''' Helper function to create a column of ones for the intercept. '''
+        """Helper function to create a column of ones for the intercept."""
         return pd.DataFrame({"Intercept" : np.repeat(1, data.shape[0])})
 
     def plot_residual_diagnostics(self, **kwargs):
-        ''' Produce a matrix of four diagnostic plots:
-        the residual v. quantile plot, the residual v. fited values plot, the histogram of residuals, and the residual v. order plot.
+        """Produce a matrix of four diagnostic plots:
+        the residual v. quantile plot, the residual v. fited values plot,
+        the histogram of residuals, and the residual v. order plot.
 
         Arguments:
-            kwargs - Named parameters that will be passed onto lower level matplotlib plotting functions.
+            kwargs - Named parameters that will be passed onto lower level
+                matplotlib plotting functions.
 
         Returns:
-            A tuple containing the matplotlib (figure, list of axes) for the partial plots.
-        '''
+            A tuple containing the matplotlib (figure, list of axes) for the
+            partial plots.
+        """
 
         f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, **kwargs)
-        self.residual_quantile_plot(ax = ax1)
-        self.residual_fitted_plot(ax = ax2)
-        self.residual_histogram(ax = ax3)
-        self.residual_order_plot(ax = ax4)
+        self.residual_quantile_plot(ax=ax1)
+        self.residual_fitted_plot(ax=ax2)
+        self.residual_histogram(ax=ax3)
+        self.residual_order_plot(ax=ax4)
 
         f.suptitle("Residal Diagnostic Plots for " + str(self))
 
         return f, (ax1, ax2, ax3, ax4)
 
-    def residual_quantile_plot(self, ax = None):
-        ''' Produces the residual v. quantile plot of the model.
+    def residual_quantile_plot(self, ax=None):
+        """Produces the residual v. quantile plot of the model.
 
         Arguments:
             ax - An optional parameter that is a pregenerated Axis object.
 
         Returns:
             A rendered matplotlib axis object.
-        '''
+        """
         if ax is None:
-            f, ax = plt.subplots(1,1)
+            _, ax = plt.subplots(1,1)
 
-        stats.probplot(self.residuals_, dist = "norm", plot = ax)
+        stats.probplot(self.residuals_, dist="norm", plot=ax)
         ax.set_title("Residual Q-Q Plot")
         return ax
 
-    def residual_fitted_plot(self, ax = None):
-        ''' Produces the residual v. fitted values plot of the model.
+    def residual_fitted_plot(self, ax=None):
+        """Produces the residual v. fitted values plot of the model.
 
         Arguments:
             ax - An optional parameter that is a pregenerated Axis object.
 
         Returns:
             A rendered matplotlib axis object.
-        '''
+        """
         if ax is None:
-            f, ax = plt.subplots(1,1)
+            _, ax = plt.subplots(1,1)
 
         ax.scatter(self.fitted_, self.residuals_)
         ax.set_title("Fitted Values v. Residuals")
@@ -1028,17 +1099,17 @@ class LinearModel(Model):
 
         return ax
 
-    def residual_histogram(self, ax = None):
-        ''' Produces the residual histogram of the model.
+    def residual_histogram(self, ax=None):
+        """Produces the residual histogram of the model.
 
         Arguments:
             ax - An optional parameter that is a pregenerated Axis object.
 
         Returns:
             A rendered matplotlib axis object.
-        '''
+        """
         if ax is None:
-            f, ax = plt.subplots(1,1)
+            _, ax = plt.subplots(1,1)
 
         ax.hist(self.residuals_)
         ax.set_title("Histogram of Residuals")
@@ -1047,17 +1118,17 @@ class LinearModel(Model):
 
         return ax
 
-    def residual_order_plot(self, ax = None):
-        ''' Produces the residual v. order plot of the model.
+    def residual_order_plot(self, ax=None):
+        """Produces the residual v. order plot of the model.
 
         Arguments:
             ax - An optional parameter that is a pregenerated Axis object.
 
         Returns:
             A rendered matplotlib axis object.
-        '''
+        """
         if ax is None:
-            f, ax = plt.subplots(1,1)
+            _, ax = plt.subplots(1,1)
 
         ax.plot(self.training_data.index, self.residuals_, "o-")
         ax.set_title("Order v. Residuals")
