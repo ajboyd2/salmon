@@ -240,6 +240,22 @@ class TestModelMethods(unittest.TestCase):
 
         self.assertTrue(all(diff.apply(all, 1)))
         
+    def test_fit2(self):
+        explanatory = Q("Age") + Q("Expenses") + Q("Vacancy") + Q("Sqft")
+        response = Q("Rental")
+        model = LinearModel(explanatory, response)
+        results = model.fit(commprop)[["Coefficient", "SE", "t", "p"]].sort_index()
+        expected = pd.DataFrame({"Coefficient" : [12.20, -1.420336e-01, 2.820165e-01, 6.193435e-03, 7.924302e-06 ], 
+                                 "SE" : [5.779562e-01, 2.134261e-02, 6.317235e-02, 1.086813e-02, 1.384775e-06], 
+                                 "t" : [21.1098807, -6.6549332, 4.4642400, 0.5698714, 5.7224457], 
+                                 "p" : [1.601720e-33, 3.894322e-09, 2.747396e-05, 5.704457e-01, 1.975990e-07]}, 
+                                 index = ["Intercept", "Age", "Expenses", "Vacancy", "Sqft"]).sort_index()
+        diff = results - expected
+        diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.001)
+        diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
+        diff["t"] = floatComparison(0, diff["t"], 0.01)
+        diff["p"] = floatComparison(0, diff["p"], 0.0001)
+        
     def test_predict(self):
         levels = ["virginica", "setosa", "versicolor"]
         explanatory = Q("petal_width") + C("species", levels=levels)
