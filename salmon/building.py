@@ -38,7 +38,7 @@ class Score(ABC):
 class RSquared(Score):
 
     def __init__(self, model, adjusted=False):
-        self.adjusted=adjusted
+        self.adjusted = adjusted
 
         super(RSquared, self).__init__(
             model=model,
@@ -178,13 +178,12 @@ def stepwise(full_model, metric_name, forward=False, naive=False, data=None, ver
         best_model = full_model
 
     best_metric = metric_func(best_model)
-      
 
     while len(ex_term_list) > 0:
         best_potential_metric = metric_func(None)
         best_potential_model = None
         best_idx = None
-    
+
         if forward and not naive:
             ex_term_list_expression = None
             for t in ex_term_list:
@@ -192,8 +191,8 @@ def stepwise(full_model, metric_name, forward=False, naive=False, data=None, ver
                     ex_term_list_expression = t
                 else:
                     ex_term_list_expression = ex_term_list_expression + t
-            leaves = set(term for term in ex_term_list if not term.contains(ex_term_list_expression - term)) # Find all terms that do not depend on other terms
-    
+            leaves = set(term for term in ex_term_list if not term.contains(ex_term_list_expression - term))  # Find all terms that do not depend on other terms
+
         for i, term in enumerate(ex_term_list):
             try:
                 if forward:
@@ -241,7 +240,6 @@ def stepwise(full_model, metric_name, forward=False, naive=False, data=None, ver
     else:
         if verbose:
             print("!!! Exhausted all potential terms. None left to consider.")
-
 
     return dict(
         forward=forward,
