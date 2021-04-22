@@ -6,11 +6,11 @@ import numpy as np
 # with how to display / print the transformation
 
 class Transformation():
-    ''' A Trasformation object holds the actual function to calculate transformations 
-    on data as well as some helper information for printing and visualizing. 
+    ''' A Trasformation object holds the actual function to calculate transformations
+    on data as well as some helper information for printing and visualizing.
     '''
-    
-    def __init__(self, func, pattern, name, inverse = None):
+
+    def __init__(self, func, pattern, name, inverse=None):
         ''' Creates a Transformation object.
 
         Arguments:
@@ -23,13 +23,13 @@ class Transformation():
         self.pattern = pattern
         self.inverse = inverse
         self.name = name
-        
+
     def __str__(self):
         ''' Returns the given pattern for debugging. '''
         return self.pattern
 
     def __eq__(self, other):
-        ''' Check if two objects are equivalent. 
+        ''' Check if two objects are equivalent.
 
         Arguments:
             other - An object.
@@ -50,19 +50,19 @@ class Transformation():
         '''
 
         return hash((self.pattern, self.name))
-        
+
     def compose(self, inner):
-        ''' Applies specific data to the pattern for printing. 
-        
+        ''' Applies specific data to the pattern for printing.
+
         Arguments:
             inner - An object to be injested by str.format()
-        
+
         Returns:
             A processed and evaluated str representing the Trasnformation.
         '''
         return self.pattern.format(inner)
-        
-    def transform(self, values, training = True):
+
+    def transform(self, values, training=True):
         ''' Apply the function to the data.
 
         Arguments:
@@ -70,10 +70,10 @@ class Transformation():
             training - A flag to indicate is this transformation is during training or not. Default is True.
 
         Returns:
-            A trasnformed Series. 
+            A trasnformed Series.
         '''
         return self.func(values)
-    
+
     def copy(self):
         ''' Returns a deep copy of the Transformation. '''
         return Transformation(self.func, self.pattern, self.name, self.inverse)
@@ -88,9 +88,13 @@ class Transformation():
             A Series object that has the inverted data.
         '''
         if self.inverse is None:
-            raise Exception("Inverse not defined for " + self.name + " transformation.")
+            raise Exception(
+                "Inverse not defined for " +
+                self.name +
+                " transformation.")
 
         return self.inverse(data)
+
 
 class Center(Transformation):
     ''' A specific type of Trasnformation for centering data so that it has a mean of 0. '''
@@ -100,13 +104,13 @@ class Center(Transformation):
         self.pattern = "{0}-E({0})"
         self.past_mean = 0
         self.name = "Center"
-        
-    def transform(self, values, training = True):
+
+    def transform(self, values, training=True):
         if training:
             self.past_mean = values.mean()
-        
+
         return values - self.past_mean
-    
+
     def copy(self):
         ret_val = Center()
         ret_val.past_mean = self.past_mean
@@ -115,22 +119,24 @@ class Center(Transformation):
     def invert(self, data):
         return data + self.past_mean
 
+
 class Standardize(Transformation):
     ''' A specific type of Transformation that standardizes the data so that it has a mean of 0 and standard deviation of 1. '''
+
     def __init__(self):
         ''' Create a Standardize object. '''
         self.pattern = "({0}-E({0}))/Std({0})"
         self.past_mean = 0
         self.past_std = 1
         self.name = "Standardize"
-        
-    def transform(self, values, training = True):
+
+    def transform(self, values, training=True):
         if training:
             self.past_mean = values.mean()
             self.past_std = values.std()
-            
-        return (values - self.past_mean) / self.past_std    
-    
+
+        return (values - self.past_mean) / self.past_std
+
     def copy(self):
         ret_val = Standardize()
         ret_val.past_mean, ret_val.past_std = self.past_mean, self.past_std
@@ -138,27 +144,49 @@ class Standardize(Transformation):
 
     def invert(self, data):
         return (data * self.past_std) + self.past_mean
-    
+
+
 # Aliases for common Transformations
-Sin = lambda i: Transformation(np.sin, "sin({})", "Sine")
-Cos = lambda i: Transformation(np.cos, "cos({})", "Cosine")
-Log = lambda i: Transformation(np.log, "log({})", "Natural Log", np.exp)
-Log10 = lambda i: Transformation(np.log10, "log({})", "Log Base 10", lambda x: 10 * x)
-Exp = lambda i: Transformation(np.exp, "exp({})", "Exponential", np.log)
-Std = lambda i: Standardize()
-Cen = lambda i: Center()
-Identity = lambda i: Transformation(lambda x: x, "{}", "Identity", lambda x: x)
-Increment = lambda i: Transformation(lambda x: x + i, "{}+"+str(i) if i >= 0 else "{}-"+str(-i), "Increment", lambda x: x - i)
-Multiply = lambda i: Transformation(lambda x: x * i, str(i) + "*{}", "Multiply", lambda x: x * (1/i))
-Power = lambda i: Transformation(lambda x: x ** i, "{}^" + str(i), "Power", lambda x: x ** (1/i) if i % 2 == 1 else x.clip(0, None) ** (1/i))
+def Sin(i): return Transformation(np.sin, "sin({})", "Sine")
+def Cos(i): return Transformation(np.cos, "cos({})", "Cosine")
+def Log(i): return Transformation(np.log, "log({})", "Natural Log", np.exp)
+
+
+def Log10(i): return Transformation(
+    np.log10,
+    "log({})",
+    "Log Base 10",
+    lambda x: 10 * x)
+
+
+def Exp(i): return Transformation(np.exp, "exp({})", "Exponential", np.log)
+def Std(i): return Standardize()
+def Cen(i): return Center()
+
+
+def Identity(i): return Transformation(
+    lambda x: x, "{}", "Identity", lambda x: x)
+
+
+def Increment(i): return Transformation(lambda x: x + i, "{}+" + str(i)
+                                        if i >= 0 else "{}-" + str(-i), "Increment", lambda x: x - i)
+
+
+def Multiply(i): return Transformation(lambda x: x * i,
+                                       str(i) + "*{}", "Multiply", lambda x: x * (1 / i))
+
+
+def Power(i): return Transformation(lambda x: x ** i, "{}^" + str(i), "Power",
+                                    lambda x: x ** (1 / i) if i % 2 == 1 else x.clip(0, None) ** (1 / i))
+
 
 _default_transformations = {
-    "sin" : Sin,
-    "cos" : Cos,
-    "log" : Log,
-    "log10" : Log10,
-    "exp" : Exp,
-    "standardize" : Std,
+    "sin": Sin,
+    "cos": Cos,
+    "log": Log,
+    "log10": Log10,
+    "exp": Exp,
+    "standardize": Std,
     "center": Cen,
     "identity": Identity
 }

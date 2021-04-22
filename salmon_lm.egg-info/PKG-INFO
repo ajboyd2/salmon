@@ -1,0 +1,17 @@
+Metadata-Version: 1.1
+Name: salmon-lm
+Version: 1.0.1
+Summary: A symbolic algebra based linear regression tool.
+Home-page: https://github.com/ajboyd2/salmon
+Author: Alex Boyd
+Author-email: alexjb@uci.edu
+License: GPLv3
+Download-URL: https://github.com/ajboyd2/salmon/archive/v_100.tar.gz
+Description: UNKNOWN
+Keywords: modeling symbolic regression
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Education
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Programming Language :: Python :: 3
