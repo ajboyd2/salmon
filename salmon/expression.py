@@ -39,6 +39,7 @@ class LightDataFrame(np.ndarray):
         raise KeyError("Column %s not in LightDataFrame." % colname)
 
 
+
 # ABC is a parent object that allows for Abstract methods
 class Expression(ABC):
     """The parent abstract class that all subsequent representations of
@@ -650,7 +651,11 @@ class Quantitative(Var):
         return self
     
     def evaluate(self, data, fit = True):
-        transformed_data = self.scale * data[self.name].values
+        if isinstance(data, LightDataFrame):
+            transformed_data = self.scale * data.get_column(self.name)
+        else:
+            transformed_data = self.scale * data[self.name].values
+
         return LightDataFrame(
             transformed_data[:, np.newaxis], 
             columns=[self.name],
@@ -820,7 +825,10 @@ class Categorical(Var):
                 columns.append("%s{%s}" % (self.name, level))
         
         # define mapping of levels to integer codes
-        codes = data[self.name].map(mapping)
+        if isinstance(data, LightDataFrame):
+            codes = data.get_column(self.name).map(mapping)
+        else:
+            codes = data[self.name].map(mapping)
 
         # create dummy matrix by taking the appropriate rows from an 
         # identity matrix
