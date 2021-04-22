@@ -1,6 +1,6 @@
 import unittest
-#from .expression import *
-#from .model import *
+from .expression import *
+from .model import *
 import pandas as pd
 
 
