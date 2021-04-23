@@ -6,8 +6,9 @@ import numpy as np
 # with how to display / print the transformation
 
 class Transformation():
-    ''' A Trasformation object holds the actual function to calculate transformations
-    on data as well as some helper information for printing and visualizing.
+    ''' A Trasformation object holds the actual function
+    to calculate transformations on data as well as some helper
+    information for printing and visualizing.
     '''
 
     def __init__(self, func, pattern, name, inverse=None):
@@ -35,7 +36,8 @@ class Transformation():
             other - An object.
 
         Returns:
-            A boolean, True if other is a Transformation and equivalent, False if else.
+            A boolean, True if other is a Transformation and
+            equivalent, False if else.
         '''
         if isinstance(other, Transformation):
             return self.pattern == other.pattern and self.name == other.name
@@ -43,7 +45,8 @@ class Transformation():
             return False
 
     def __hash__(self):
-        ''' Hash the transformation for the purposes of storing in sets and dictionaries.
+        ''' Hash the transformation for the purposes of storing
+            in sets and dictionaries.
 
         Returns:
             A real value representing the hash of the Transformation.
@@ -67,7 +70,8 @@ class Transformation():
 
         Arguments:
             values - A Series object that is the data to trasnform.
-            training - A flag to indicate is this transformation is during training or not. Default is True.
+            training - A flag to indicate is this transformation is
+                       during training or not. Default is True.
 
         Returns:
             A trasnformed Series.
@@ -97,7 +101,8 @@ class Transformation():
 
 
 class Center(Transformation):
-    ''' A specific type of Trasnformation for centering data so that it has a mean of 0. '''
+    ''' A specific type of Trasnformation for centering data
+    so that it has a mean of 0. '''
 
     def __init__(self):
         ''' Create a Center object. '''
@@ -121,7 +126,8 @@ class Center(Transformation):
 
 
 class Standardize(Transformation):
-    ''' A specific type of Transformation that standardizes the data so that it has a mean of 0 and standard deviation of 1. '''
+    ''' A specific type of Transformation that standardizes the
+    data so that it has a mean of 0 and standard deviation of 1. '''
 
     def __init__(self):
         ''' Create a Standardize object. '''

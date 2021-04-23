@@ -27,7 +27,8 @@ class Score(ABC):
         return "{} | {}".format(type(self).__name__, self._score)
 
     def compare(self, other):
-        ''' Return true if self is better than other based on 'higher_is_better' '''
+        ''' Return true if self is better than other
+            based on 'higher_is_better' '''
         assert(isinstance(self, type(other))
                )  # make sure we are not comparing different types of scores
         if self.higher_is_better:
@@ -54,9 +55,12 @@ class RSquared(Score):
         ''' Calculate the (adjusted) R^2 value of the model.
 
         Arguments:
-            X - An optional DataFrame of the explanatory data to be used for calculating R^2. Default is the training data.
-            Y - An optional DataFrame of the response data to be used for calculating R^2. Default is the training data.
-            adjusted - A boolean indicating if the R^2 value is adjusted (True) or not (False).
+            X - An optional DataFrame of the explanatory data to
+                be used for calculating R^2. Default is the training data.
+            Y - An optional DataFrame of the response data to be used f
+                or calculating R^2. Default is the training data.
+            adjusted - A boolean indicating if the R^2 value is
+                       adjusted (True) or not (False).
 
         Returns:
             A real value of the computed R^2 value.
@@ -246,7 +250,8 @@ def stepwise(full_model, metric_name, forward=False,
             del ex_term_list[best_idx]
         else:
             if verbose:
-                print("!!! No potential models better than prior. Exiting search.")
+                print("!!! No potential models better than"
+                      "prior. Exiting search.")
                 print()
             break
     else:

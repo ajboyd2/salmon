@@ -6,9 +6,12 @@ import pandas as pd
 
 
 def anova(model1, model2=None):
-    ''' User-facing function to execute an Analysis of Variance for one or two models.
-    Should only model be given, then a general F-test will be executed on all of the coefficients.
-    Should two models be given, then a partial F-test will be executed. Note that one model needs to be a subset of the other for this to properly evaluate.
+    ''' User-facing function to execute an Analysis of
+    Variance for one or two models. Should only model be given,
+    then a general F-test will be executed on all of the coefficients.
+    Should two models be given, then a partial F-test will
+    be executed. Note that one model needs to be a subset of
+    the other for this to properly evaluate.
 
     Arguments:
         model1 - A Model object that has been fit on some data
@@ -29,14 +32,16 @@ def anova(model1, model2=None):
 
 
 def is_subset(model1, model2):
-    ''' Checks if model1 contains all the terms of model2. In other words, checks if model2 is a subset of model1.
+    ''' Checks if model1 contains all the terms of model2.
+    In other words, checks if model2 is a subset of model1.
 
     Arguments:
         model1 - A Model object that has been fit on some data.
         model2 - A Model object that has been fit on some data.
 
     Returns:
-        A boolean value that is True if model2 is a subset of model1, False if model2 is not a subset of model1.
+        A boolean value that is True if model2 is a subset of model1,
+        False if model2 is not a subset of model1.
     '''
     if not model1.given_re.__sim__(model2.given_re):
         # Models should both have the same response variable
@@ -49,8 +54,8 @@ def is_subset(model1, model2):
 
 def _calc_stats(numer_ss, numer_df, denom_ss, denom_df):
     ''' Given the appropriate sum of squares for the numerator and the mean sum
-    of squares for the denominator (with respective degrees of freedom) this will
-    return the relevant statistics of an F-test.
+    of squares for the denominator (with respective degrees of freedom)
+    this will return the relevant statistics of an F-test.
 
     Arguments:
         numer_ss - Sum of squares for the numerator.
@@ -72,11 +77,13 @@ def _calc_stats(numer_ss, numer_df, denom_ss, denom_df):
 
 
 def _process_term(orig_model, term):
-    ''' Obtains needed sum of squared residuals of a model fitted without a specified term/coefficient.
+    ''' Obtains needed sum of squared residuals of a
+    model fitted without a specified term/coefficient.
 
     Arguments:
         orig_model - A fitted Model object.
-        term - A Variable object to be left out of the original model when fitting.
+        term - A Variable object to be left out of
+               the original model when fitting.
 
     Returns:
         A real value indicated the sum of squared residuals.
@@ -87,7 +94,8 @@ def _process_term(orig_model, term):
 
 
 def _extract_dfs(model, dict_out=False):
-    ''' Obtains the different degrees of freedom for a model in reference to an F-test.
+    ''' Obtains the different degrees of freedom for a
+    model in reference to an F-test.
 
     Arguments:
         model - A fitted Model object
@@ -113,14 +121,16 @@ def _extract_dfs(model, dict_out=False):
 
 
 def _anova_terms(model):
-    ''' Perform a global F-test by analyzing all possible models when you leave one coefficient out while fitting.
+    ''' Perform a global F-test by analyzing all possible models
+    when you leave one coefficient out while fitting.
 
     Arguments:
         model - A fitted model object.
 
     Returns:
-        A DataFrame object that contains the degrees of freedom, adjusted sum of squares,
-        adjusted mean sum of squares, F values, and p values for the associated tests performed.
+        A DataFrame object that contains the degrees of
+        freedom, adjusted sum of squares, adjusted mean sum of squares,
+        F values, and p values for the associated tests performed.
     '''
     full_reg_df, full_error_df, total_df = _extract_dfs(model)
 
@@ -175,11 +185,14 @@ def _anova_models(full_model, reduced_model):
 
     Arguments:
         full_model - A fitted Model object.
-        reduced_model - A fitted Model object that is a subset of the full_model.
+        reduced_model - A fitted Model object that
+                        is a subset of the full_model.
 
     Returns:
-        A DataFrame object that contains the resdiuals' degrees of freedom, sum of squares of the regression,
-        degrees of freedom for the model, sum of squared residuals, the F value, and the p value for the associated test performed.
+        A DataFrame object that contains the resdiuals' degrees of
+        freedom, sum of squares of the regression, degrees of freedom
+        for the model, sum of squared residuals, the F value,
+        and the p value for the associated test performed.
 
     '''
     full_label = str(full_model)
