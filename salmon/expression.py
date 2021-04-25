@@ -413,11 +413,18 @@ class Var(Expression):
         return Var(self.name, self.scale)
         
     def interpret(self, data):
-        if ('float' in data[self.name].dtype.name or \
-                'int' in data[self.name].dtype.name):
-            return Quantitative(self.name, self.scale)
-        else:
-            return Categorical(self.name)
+        if isinstance(data, LightDataFrame):
+            if ('float' in data.get_column(self.name).dtype.name or \
+                    'int' in data.get_column(self.name).dtype.name):
+                return Quantitative(self.name, self.scale)
+            else:
+                return Categorical(self.name)
+        else:  # isinstance(data, pd.DataFrame)
+            if ('float' in data[self.name].dtype.name or \
+                    'int' in data[self.name].dtype.name):
+                return Quantitative(self.name, self.scale)
+            else:
+                return Categorical(self.name)
         
     def evaluate(self, data, fit=True):
         raise NotImplementedError("Must call interpret prior to evaluating data for variables.")

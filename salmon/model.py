@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from itertools import product
 from collections import OrderedDict
 
-from .expression import Combination, Identity, Constant
+from .expression import Expression, Combination, Identity, Constant, LightDataFrame, Quantitative
 
 plt.style.use('ggplot')
 
@@ -129,20 +129,66 @@ class LinearModel(Model):
         from the explanatory Expression.
 
         Arguments:
-            explanatory - An Expression that is either a single term or a
-                Combination of terms. These are the X's.
-            response - An Expression that represents the single term for the
-                response variables. This is the y. If this is a Combination,
-                the terms will be added together and treated as a single
-                variable.
+            explanatory - Explanatory variables used to condition the model on.
+                Represented either by an `Expression` that is either a single 
+                term or a `Combination` of terms, or data in the form of a 
+                pandas `DataFrame` or numpy 1-D / 2-D `ndarray`. 
+            response - Response variables used as the target for modeling. 
+                Represented either by an `Expression` object, or data in the
+                form of a pandas `Series` or numpy 1-D `ndarray` object.
             intercept - A boolean indicating whether an intercept should be
                 included (True) or not (False).
         """
+        # may be overwritten if `explanatory` and `response` are given as 
+        # data structures rather than expressions
+        self.training_data = None  
+        
         if explanatory is None:
             explanatory = 0
 
         if isinstance(explanatory, (int, float)):
             explanatory = Constant(explanatory)
+        
+        if (isinstance(explanatory, (pd.DataFrame, np.ndarray)) or 
+                isinstance(response, (pd.Series, np.ndarray))):
+
+            assert(isinstance(explanatory, (pd.DataFrame, np.ndarray)) and 
+                isinstance(response, (pd.Series, np.ndarray)))
+
+            if isinstance(explanatory, np.ndarray):
+                if len(explanatory.shape) == 1:
+                    explanatory = explanatory.reshape((len(explanatory), 1))
+                else:
+                    assert(len(explanatory.shape) == 2)
+
+                expl_data = explanatory
+                expl_cols = ["Ex_{}".format(i+1) for i in range(expl_data.shape[1])]
+            else:  # isinstance(explanatory, pd.DataFrame)
+                expl_data = explanatory.values
+                expl_cols = list(explanatory.columns)
+
+            if isinstance(response, np.ndarray):
+                if len(response.shape) == 1:
+                    response = response.reshape((len(response), 1))
+                else:
+                    assert(response.shape[1] == 1)
+                    assert(len(response.shape) == 2)
+
+                resp_data = response
+                resp_cols = ["Response"]
+            else:  # isinstance(response, pd.Series)
+                resp_data = response.values.reshape((len(response), 1))
+                if response.name is None:
+                    resp_cols = ["Response"]
+                else:
+                    resp_cols = [response.name]
+            
+            self.training_data = LightDataFrame(
+                np.hstack((expl_data, resp_data)),
+                columns=expl_cols + resp_cols,
+            )
+            explanatory = sum(Quantitative(c) for c in expl_cols)
+            response = Quantitative(resp_cols[0])
 
         if intercept:
             self.given_ex = explanatory + 1
@@ -165,8 +211,6 @@ class LinearModel(Model):
         self.ex = None
         self.re = None
 
-        self.training_data = None
-
         self.categorical_levels = dict()
 
     def __str__(self):
@@ -176,8 +220,8 @@ class LinearModel(Model):
         else:
             return str(self.given_re) + " ~ " + str(self.given_ex)
 
-    def fit(self, X, y=None):
-        """Fit a LinearModel to data..
+    def fit(self, X=None, y=None):
+        """Fit a LinearModel to data.
 
         Data can either be provided as a single DataFrame X that contains both
         the explanatory and response variables, or in separate data
@@ -189,18 +233,23 @@ class LinearModel(Model):
         the model---they will simply be ignored.
 
         Arugments:
-            X - A DataFrame containing all of the explanatory variables in the
-                model and possibly the response variable too.
+            X - An optional DataFrame containing all of the explanatory
+                variables in the model and possibly the response variable 
+                too. If not given, the model is assumed to have been
+                instantiated with the data in the constructor.
             y - An optional Series that contains the response variable.
 
         Returns:
             A DataFrame containing relevant statistics of fitted Model (e.g.,
             coefficients, p-values).
         """
-        if y is None:
-            data = X
+        if X is None:
+            data = self.training_data
         else:
-            data = pd.concat([X, y], axis=1)
+            if y is None:
+                data = X
+            else:
+                data = pd.concat([X, y], axis=1)
         return self._fit(data)
 
     def _fit(self, data):
