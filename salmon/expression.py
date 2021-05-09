@@ -38,6 +38,10 @@ class LightDataFrame(np.ndarray):
                 return self[:, i]
         raise KeyError("Column %s not in LightDataFrame." % colname)
 
+    @property
+    def index(self):
+        return range(self.shape[0])
+
 
 
 # ABC is a parent object that allows for Abstract methods

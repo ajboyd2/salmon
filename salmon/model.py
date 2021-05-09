@@ -183,11 +183,16 @@ class LinearModel(Model):
                 else:
                     resp_cols = [response.name]
             
+            self.X_train_ = LightDataFrame(expl_data, columns=expl_cols)
+            self.y_train_ = LightDataFrame(resp_data, columns=resp_cols)[:, 0]
             self.training_data = LightDataFrame(
-                np.hstack((expl_data, resp_data)),
-                columns=expl_cols + resp_cols,
+                np.hstack([expl_data, resp_data]),
+                columns=expl_cols+resp_cols,
             )
-            explanatory = sum(Quantitative(c) for c in expl_cols)
+            
+            # Bypass construction because we know explicitly that the terms will not collide
+            explanatory = Combination(terms=[])
+            explanatory.terms = set(Quantitative(c) for c in expl_cols) 
             response = Quantitative(resp_cols[0])
 
         if intercept:
@@ -244,31 +249,30 @@ class LinearModel(Model):
             coefficients, p-values).
         """
         if X is None:
-            data = self.training_data
+            X = self.X_train_
+            y = self.y_train_
         else:
             if y is None:
-                data = X
-            else:
-                data = pd.concat([X, y], axis=1)
-        return self._fit(data)
+                y = X
 
-    def _fit(self, data):
+            # Initialize the categorical levels
+            self.categorical_levels = dict()
+            self.training_data = X
 
-        # Initialize the categorical levels
-        self.categorical_levels = dict()
-        self.training_data = data
+            # Replace all Var's with either Q's or C's
+            self.re = self.given_re.copy().interpret(y)
+            self.ex = self.given_ex.copy().interpret(X)
 
-        # Replace all Var's with either Q's or C's
-        self.re = self.given_re.copy().interpret(data)
-        self.ex = self.given_ex.copy().interpret(data)
+            # Construct X matrix
+            X = self.ex.evaluate(X)
+            self.X_train_ = X
+            # Construct y vector
+            y = self.re.evaluate(y)[:, 0]
+            self.y_train_ = y
 
-        # Construct X matrix
-        X = self.ex.evaluate(data)
-        self.X_train_ = X
-        # Construct y vector
-        y = self.re.evaluate(data)[:, 0]
-        self.y_train_ = y
+        return self._fit(X, y)
 
+    def _fit(self, X, y):
         # Get dimensions
         self.n, self.p = X.shape
 
