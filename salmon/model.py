@@ -253,7 +253,7 @@ class LinearModel(Model):
         if self.intercept:
             cols.append("Intercept")
             coef_ = np.append(coef_, y_offset - (X_offsets * coef_).sum())
-            cov_coef_intercept = -1*np.dot(self.cov_, X_offsets)
+            cov_coef_intercept = -1 * np.dot(self.cov_, X_offsets)
 
             var_intercept = self.resid_var_ / self.n
             var_intercept -= (X_offsets * cov_coef_intercept).sum()
@@ -454,7 +454,7 @@ class LinearModel(Model):
 
     def score(self, X=None, y=None, adjusted=False, **kwargs):
         """Wrapper for sklearn api for cross fold validation.
-        
+
         See LinearModel.r_squared.
         """
         return self.r_squared(X, y, adjusted, **kwargs)
@@ -745,7 +745,7 @@ class LinearModel(Model):
         max_x = max(max_x - diff, max_x + diff)
         # TODO: Check if min() and max() are necessary here
 
-        plot_objs['x'] = {"min" : min_x, "max" : max_x, "name" : x_name}
+        plot_objs['x'] = {"min": min_x, "max": max_x, "name": x_name}
 
         # Quantitative inputs
         line_x = pd.DataFrame({x_name: np.linspace(min_x, max_x, 100)})
@@ -836,7 +836,7 @@ class LinearModel(Model):
         if original_y_space:
             y_train_vals = self.re.untransform(y_train_vals)
 
-        ax.scatter(x, y_train_vals, c = "black", alpha = alpha)
+        ax.scatter(x, y_train_vals, c="black", alpha=alpha)
 
     def _plot_band(
         self,
@@ -851,7 +851,7 @@ class LinearModel(Model):
         """A helper function to plot the confidence or prediction bands for
         a model. By default will plot prediction bands."""
         x_name = plot_objs['x']['name']
-        X_new = self.ex.evaluate(line_x, fit = False)
+        X_new = self.ex.evaluate(line_x, fit=False)
         if self.intercept:
             n, _ = X_new.shape
             X_new = np.hstack((X_new, np.ones((n, 1))))
@@ -876,7 +876,6 @@ class LinearModel(Model):
             alpha=0.3,
         )
 
-
     def _plot_one_quant_some_cats(
         self,
         x,
@@ -898,7 +897,6 @@ class LinearModel(Model):
         x_name = plot_objs['x']['name']
         y_name = plot_objs['y']['name']
 
-
         plots = []
         labels = []
         linestyles = [':', '-.', '--', '-']
@@ -909,19 +907,19 @@ class LinearModel(Model):
         # cartesian product of all combinations
         level_combinations = product(*levels)
 
-        dummy_data = line_x.copy() # rest of columns set in next few lines
+        dummy_data = line_x.copy()  # rest of columns set in next few lines
 
         y_train_vals = self.y_train_
         if original_y_space:
             y_train_vals = self.re.untransform(y_train_vals)
 
         for level_set in level_combinations:
-            label = [] # To be used in legend
-            for (cat,level) in zip(cats,level_set):
-                dummy_data[str(cat)] = level # set dummy data for prediction
+            label = []  # To be used in legend
+            for (cat, level) in zip(cats, level_set):
+                dummy_data[str(cat)] = level  # set dummy data for prediction
                 label.append(str(level))
 
-            line_type = linestyles.pop() # rotate through line styles
+            line_type = linestyles.pop()  # rotate through line styles
             linestyles.insert(0, line_type)
 
             line_y = self.predict(dummy_data, for_plot=True)
@@ -930,15 +928,17 @@ class LinearModel(Model):
                 y_vals_to_plot = self.re.untransform(y_vals)
             else:
                 y_vals_to_plot = y_vals
-            plot, = ax.plot(dummy_data[x_name], y_vals_to_plot, linestyle=line_type)
+            plot, = ax.plot(
+                dummy_data[x_name], y_vals_to_plot, linestyle=line_type)
             plots.append(plot)
             labels.append(", ".join(label))
 
-
             if categorize_residuals:
-                indices_to_use = pd.Series([True] * len(x)) # gradually gets filtered out
-                for (cat,level) in zip(cats,level_set):
-                    indices_to_use = indices_to_use & (self.training_data[str(cat)] == level)
+                indices_to_use = pd.Series(
+                    [True] * len(x))  # gradually gets filtered out
+                for (cat, level) in zip(cats, level_set):
+                    indices_to_use = indices_to_use & (
+                        self.training_data[str(cat)] == level)
                 ax.scatter(
                     x[indices_to_use],
                     y_train_vals[indices_to_use],
@@ -1015,7 +1015,7 @@ class LinearModel(Model):
             A tuple containing the matplotlib (figure, list of axes) for the
             partial plots.
         """
-        #terms = self.ex.flatten(separate_interactions = False)
+        # terms = self.ex.flatten(separate_interactions = False)
         terms = self.ex.get_terms()
         fig, axs = plt.subplots(1, len(terms), **kwargs)
 
@@ -1023,7 +1023,7 @@ class LinearModel(Model):
 
             xi = terms[i]
 
-            sans_xi = Combination(terms[:i] + terms[i+1:])
+            sans_xi = Combination(terms[:i] + terms[i + 1:])
             yaxis = LinearModel(sans_xi, self.re)
             xaxis = LinearModel(sans_xi, xi)
 
@@ -1038,7 +1038,7 @@ class LinearModel(Model):
     @staticmethod
     def ones_column(data):
         """Helper function to create a column of ones for the intercept."""
-        return pd.DataFrame({"Intercept" : np.repeat(1, data.shape[0])})
+        return pd.DataFrame({"Intercept": np.repeat(1, data.shape[0])})
 
     def plot_residual_diagnostics(self, **kwargs):
         """Produce a matrix of four diagnostic plots:
@@ -1074,7 +1074,7 @@ class LinearModel(Model):
             A rendered matplotlib axis object.
         """
         if ax is None:
-            _, ax = plt.subplots(1,1)
+            _, ax = plt.subplots(1, 1)
 
         stats.probplot(self.residuals_, dist="norm", plot=ax)
         ax.set_title("Residual Q-Q Plot")
@@ -1090,7 +1090,7 @@ class LinearModel(Model):
             A rendered matplotlib axis object.
         """
         if ax is None:
-            _, ax = plt.subplots(1,1)
+            _, ax = plt.subplots(1, 1)
 
         ax.scatter(self.fitted_, self.residuals_)
         ax.set_title("Fitted Values v. Residuals")
@@ -1109,7 +1109,7 @@ class LinearModel(Model):
             A rendered matplotlib axis object.
         """
         if ax is None:
-            _, ax = plt.subplots(1,1)
+            _, ax = plt.subplots(1, 1)
 
         ax.hist(self.residuals_)
         ax.set_title("Histogram of Residuals")
@@ -1128,7 +1128,7 @@ class LinearModel(Model):
             A rendered matplotlib axis object.
         """
         if ax is None:
-            _, ax = plt.subplots(1,1)
+            _, ax = plt.subplots(1, 1)
 
         ax.plot(self.training_data.index, self.residuals_, "o-")
         ax.set_title("Order v. Residuals")
@@ -1136,4 +1136,3 @@ class LinearModel(Model):
         ax.set_ylabel("Residual")
 
         return ax
-

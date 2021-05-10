@@ -1,6 +1,7 @@
 import numpy as np
 import math
-"""Contains the logic for automatic model building (i.e. stepwise regression)."""
+"""Contains the logic for automatic model building
+(i.e. stepwise regression)."""
 
 from abc import ABC, abstractmethod
 
@@ -29,10 +30,11 @@ class Score(ABC):
         return "{} | {}".format(type(self).__name__, self._score)
 
     def compare(self, other):
-        """Return true if self is better than other based on 'higher_is_better'."""
-        assert(type(self) is type(other))  
+        """Return true if self is better than other
+         based on 'higher_is_better'."""
+        assert(isinstance(self, type(other)))
         # make sure we are not comparing different types of scores
-        
+
         if self.higher_is_better:
             return self._score < other._score
         else:
@@ -42,7 +44,7 @@ class Score(ABC):
 class RSquared(Score):
 
     def __init__(self, model, adjusted=False):
-        self.adjusted=adjusted
+        self.adjusted = adjusted
 
         super(RSquared, self).__init__(
             model=model,
@@ -51,7 +53,7 @@ class RSquared(Score):
 
     def __str__(self):
         return "R^2 ({}adjusted) | {}".format(
-            "" if self.adjusted else "un", 
+            "" if self.adjusted else "un",
             self._score,
         )
 
@@ -147,7 +149,8 @@ class BIC(Score):
 
         return math.log(n) * p - 2 * log_likelihood
 
-"""All metrics that are supported by default.""" 
+
+"""All metrics that are supported by default."""
 _metrics = dict(
     r_squared=RSquared,
     r_squared_adjusted=lambda model: RSquared(model=model, adjusted=True),
@@ -167,9 +170,9 @@ def stepwise(
     verbose=False,
 ):
     """Perform forward or backward stepwise regression.
-    
+
     Arguments:
-        full_model - A model object that contains all of the terms to be 
+        full_model - A model object that contains all of the terms to be
             considered for the procedure.
         metric_name - A string containing the name of the metric to use in
             the procedure. Options include: "r_squared", "r_squared_adjusted",
@@ -187,7 +190,7 @@ def stepwise(
             Default is False.
 
     Returns:
-         
+
     """
 
     if data is not None:
@@ -200,10 +203,13 @@ def stepwise(
     data = full_model.training_data
 
     if ex_terms is None or re_term is None:
-        raise AssertionError("The full model must be fit prior to undergoing a stepwise procedure.")
+        raise AssertionError(
+            "The full model must be fit prior to \
+            undergoing a stepwise procedure.")
 
     if metric_name not in _metrics:
-        raise KeyError("Metric '{}' not supported. The following metrics are supported: {}".format(
+        raise KeyError("Metric '{}' not supported. The \
+            following metrics are supported: {}".format(
             metric_name,
             list(_metrics.keys())
         ))
@@ -218,13 +224,12 @@ def stepwise(
         best_model = full_model
 
     best_metric = metric_func(best_model)
-      
 
     while len(ex_term_list) > 0:
         best_potential_metric = metric_func(None)
         best_potential_model = None
         best_idx = None
-    
+
         if forward and not naive:
             ex_term_list_expression = None
             for t in ex_term_list:
@@ -233,9 +238,9 @@ def stepwise(
                 else:
                     ex_term_list_expression = ex_term_list_expression + t
             # Find all terms that do not depend on other terms
-            leaves = set(term for term in ex_term_list if not \
-                term.contains(ex_term_list_expression - term))
-    
+            leaves = set(term for term in ex_term_list if not
+                         term.contains(ex_term_list_expression - term))
+
         for i, term in enumerate(ex_term_list):
             try:
                 if forward:
@@ -244,7 +249,7 @@ def stepwise(
                         if term not in leaves:
                             continue
                     potential_model = LinearModel(
-                        best_model.given_ex + term, 
+                        best_model.given_ex + term,
                         re_term,
                     )
                 else:
@@ -268,7 +273,8 @@ def stepwise(
                 if verbose:
                     print(potential_model)
                     print(potential_metric)
-                    print("Current best potential model" if best_idx == i else "Not current best potential")
+                    print("Current best potential model" if best_idx ==
+                          i else "Not current best potential")
                     print()
 
             except np.linalg.linalg.LinAlgError:
@@ -278,18 +284,20 @@ def stepwise(
             best_metric = best_potential_metric
             best_model = best_potential_model
             if verbose:
-                print("!!! New model found. Now including", ex_term_list[best_idx])
+                print(
+                    "!!! New model found. Now including",
+                    ex_term_list[best_idx])
                 print()
             del ex_term_list[best_idx]
         else:
             if verbose:
-                print("!!! No potential models better than prior. Exiting search.")
+                print("!!! No potential models better \
+                    than prior. Exiting search.")
                 print()
             break
     else:
         if verbose:
             print("!!! Exhausted all potential terms. None left to consider.")
-
 
     return dict(
         forward=forward,
