@@ -155,38 +155,17 @@ class Standardize(Transformation):
 
 
 # Aliases for common Transformations
-def Sin(i): return Transformation(np.sin, "sin({})", "Sine")
-def Cos(i): return Transformation(np.cos, "cos({})", "Cosine")
-def Log(i): return Transformation(np.log, "log({})", "Natural Log", np.exp)
-
-
-def Log10(i): return Transformation(
-    np.log10,
-    "log({})",
-    "Log Base 10",
-    lambda x: 10 * x)
-
-
-def Exp(i): return Transformation(np.exp, "exp({})", "Exponential", np.log)
-def Std(i): return Standardize()
-def Cen(i): return Center()
-
-
-def Identity(i): return Transformation(
-    lambda x: x, "{}", "Identity", lambda x: x)
-
-
-def Increment(i): return Transformation(lambda x: x + i, "{}+" + str(i)
-                                        if i >= 0 else "{}-" + str(-i), "Increment", lambda x: x - i)
-
-
-def Multiply(i): return Transformation(lambda x: x * i,
-                                       str(i) + "*{}", "Multiply", lambda x: x * (1 / i))
-
-
-def Power(i): return Transformation(lambda x: x ** i, "{}^" + str(i), "Power",
-                                    lambda x: x ** (1 / i) if i % 2 == 1 else x.clip(0, None) ** (1 / i))
-
+Sin = lambda i: Transformation(np.sin, "sin({})", "Sine")
+Cos = lambda i: Transformation(np.cos, "cos({})", "Cosine")
+Log = lambda i: Transformation(np.log, "log({})", "Natural Log", np.exp)
+Log10 = lambda i: Transformation(np.log10, "log({})", "Log Base 10", lambda x: 10 * x)
+Exp = lambda i: Transformation(np.exp, "exp({})", "Exponential", np.log)
+Std = lambda i: Standardize()
+Cen = lambda i: Center()
+Identity = lambda i: Transformation(lambda x: x, "{}", "Identity", lambda x: x)
+Increment = lambda i: Transformation(lambda x: x + i, "{}+"+str(i) if i >= 0 else "{}-"+str(-i), "Increment", lambda x: x - i)
+Multiply = lambda i: Transformation(lambda x: x * i, str(i) + "*{}", "Multiply", lambda x: x * (1/i))
+Power = lambda i: Transformation(lambda x: x ** i, "{}^" + str(i), "Power", lambda x: x ** (1/i) if i % 2 == 1 else x.clip(0, None) ** (1/i))
 
 _default_transformations = {
     "sin": Sin,
