@@ -162,7 +162,7 @@ class LinearModel(Model):
                     assert(len(explanatory.shape) == 2)
 
                 expl_data = explanatory
-                expl_cols = ["Ex_{}".format(i+1) for i in range(expl_data.shape[1])]
+                expl_cols = ["x{}".format(i+1) for i in range(expl_data.shape[1])]
             else:  # isinstance(explanatory, pd.DataFrame)
                 expl_data = explanatory.values
                 expl_cols = list(explanatory.columns)
@@ -175,11 +175,11 @@ class LinearModel(Model):
                     assert(len(response.shape) == 2)
 
                 resp_data = response
-                resp_cols = ["Response"]
+                resp_cols = ["y"]
             else:  # isinstance(response, pd.Series)
                 resp_data = response.values.reshape((len(response), 1))
                 if response.name is None:
-                    resp_cols = ["Response"]
+                    resp_cols = ["y"]
                 else:
                     resp_cols = [response.name]
             
