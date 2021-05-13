@@ -251,6 +251,8 @@ class LinearModel(Model):
         if X is None:
             X = self.X_train_
             y = self.y_train_
+            self.re = self.given_re
+            self.ex = self.given_ex
         else:
             if y is None:
                 y = X
