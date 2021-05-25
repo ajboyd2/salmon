@@ -422,7 +422,12 @@ class LinearModel(Model):
             A DataFrame containing the predictions and/or intervals.
         """
         # Construct the X matrix
-        X = self.ex.evaluate(data, fit=False)
+        if isinstance(data, (LightDataFrame, pd.DataFrame)):
+            X = self.ex.evaluate(data, fit=False)
+        else:
+            assert(data.shape == self.X_train_.shape)
+            X = data
+
         if self.intercept:
             n, _ = X.shape
             X = np.hstack((X, np.ones((n, 1))))
