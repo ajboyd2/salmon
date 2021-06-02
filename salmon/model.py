@@ -425,7 +425,7 @@ class LinearModel(Model):
         if isinstance(data, (LightDataFrame, pd.DataFrame)):
             X = self.ex.evaluate(data, fit=False)
         else:
-            assert(data.shape == self.X_train_.shape)
+            assert(data.shape[-1] == self.X_train_.shape[-1])
             X = data
 
         if self.intercept:
