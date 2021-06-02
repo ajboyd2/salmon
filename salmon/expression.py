@@ -411,7 +411,7 @@ class Var(Expression):
         if self.scale != 1:
             return "{1}*{0}".format(self.name, self.scale) 
         else:
-            return self.name
+            return str(self.name)
   
     def copy(self):
         return Var(self.name, self.scale)
@@ -470,7 +470,7 @@ class TransVar(Expression):
     def __str__(self):
         base = self.transformation.compose(str(self.var))
         if self.scale == 1:
-            return base
+            return str(base)
         else:
             return "{}*{}".format(self.scale, base)
         
@@ -781,7 +781,7 @@ class Categorical(Var):
         self.baseline = baseline
         
     def __str__(self):
-        return self.name
+        return str(self.name)
         
     def copy(self):
         return Categorical(
@@ -901,7 +901,7 @@ class Interaction(Expression):
     def __str__(self):
         base = "(" + ")(".join(sorted(str(term) for term in self.terms)) + ")" 
         if self.scale == 1:
-            return base
+            return str(base)
         else:
             return "{}*{}".format(self.scale, base)
         
@@ -1057,7 +1057,7 @@ class Combination(Expression):
     def __str__(self):
         base = "+".join(sorted(str(term) for term in self.terms)) 
         if self.scale == 1:
-            return base
+            return str(base)
         else:
             return "{}*({})".format(self.scale, base)
 
