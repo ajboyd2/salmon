@@ -433,9 +433,14 @@ class LinearModel(Model):
             X = np.hstack((X, np.ones((n, 1))))
         y_vals = np.dot(X, self.coef_)
 
+        if isinstance(data, pd.DataFrame):
+            index = data.index
+        else:
+            index = None
+        
         predictions = pd.DataFrame(
             {"Predicted " + str(self.re): y_vals},
-            index=data.index
+            index=index,
         )
 
         if confidence_interval or prediction_interval:
