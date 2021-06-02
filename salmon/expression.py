@@ -38,6 +38,11 @@ class LightDataFrame(np.ndarray):
                 return self[:, i]
         raise KeyError("Column %s not in LightDataFrame." % colname)
 
+    @property
+    def index(self):
+        return range(self.shape[0])
+
+
 
 # ABC is a parent object that allows for Abstract methods
 class Expression(ABC):
@@ -406,17 +411,24 @@ class Var(Expression):
         if self.scale != 1:
             return "{1}*{0}".format(self.name, self.scale) 
         else:
-            return self.name
+            return str(self.name)
   
     def copy(self):
         return Var(self.name, self.scale)
         
     def interpret(self, data):
-        if ('float' in data[self.name].dtype.name or \
-                'int' in data[self.name].dtype.name):
-            return Quantitative(self.name, self.scale)
-        else:
-            return Categorical(self.name)
+        if isinstance(data, LightDataFrame):
+            if ('float' in data.get_column(self.name).dtype.name or \
+                    'int' in data.get_column(self.name).dtype.name):
+                return Quantitative(self.name, self.scale)
+            else:
+                return Categorical(self.name)
+        else:  # isinstance(data, pd.DataFrame)
+            if ('float' in data[self.name].dtype.name or \
+                    'int' in data[self.name].dtype.name):
+                return Quantitative(self.name, self.scale)
+            else:
+                return Categorical(self.name)
         
     def evaluate(self, data, fit=True):
         raise NotImplementedError("Must call interpret prior to evaluating data for variables.")
@@ -458,7 +470,7 @@ class TransVar(Expression):
     def __str__(self):
         base = self.transformation.compose(str(self.var))
         if self.scale == 1:
-            return base
+            return str(base)
         else:
             return "{}*{}".format(self.scale, base)
         
@@ -650,7 +662,11 @@ class Quantitative(Var):
         return self
     
     def evaluate(self, data, fit = True):
-        transformed_data = self.scale * data[self.name].values
+        if isinstance(data, LightDataFrame):
+            transformed_data = self.scale * data.get_column(self.name)
+        else:
+            transformed_data = self.scale * data[self.name].values
+
         return LightDataFrame(
             transformed_data[:, np.newaxis], 
             columns=[self.name],
@@ -765,7 +781,7 @@ class Categorical(Var):
         self.baseline = baseline
         
     def __str__(self):
-        return self.name
+        return str(self.name)
         
     def copy(self):
         return Categorical(
@@ -820,7 +836,10 @@ class Categorical(Var):
                 columns.append("%s{%s}" % (self.name, level))
         
         # define mapping of levels to integer codes
-        codes = data[self.name].map(mapping)
+        if isinstance(data, LightDataFrame):
+            codes = data.get_column(self.name).map(mapping)
+        else:
+            codes = data[self.name].map(mapping)
 
         # create dummy matrix by taking the appropriate rows from an 
         # identity matrix
@@ -882,7 +901,7 @@ class Interaction(Expression):
     def __str__(self):
         base = "(" + ")(".join(sorted(str(term) for term in self.terms)) + ")" 
         if self.scale == 1:
-            return base
+            return str(base)
         else:
             return "{}*{}".format(self.scale, base)
         
@@ -1038,7 +1057,7 @@ class Combination(Expression):
     def __str__(self):
         base = "+".join(sorted(str(term) for term in self.terms)) 
         if self.scale == 1:
-            return base
+            return str(base)
         else:
             return "{}*({})".format(self.scale, base)
 
