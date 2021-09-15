@@ -193,17 +193,20 @@ class LinearModel(Model):
             # Bypass construction because we know explicitly that the terms will not collide
             explanatory = Combination(terms=[])
             explanatory.terms = set(Quantitative(c) for c in expl_cols) 
+            if intercept:
+                explanatory.terms.add(Constant(1))
             response = Quantitative(resp_cols[0])
-
-        if intercept:
-            self.given_ex = explanatory + 1
         else:
-            if explanatory == Constant(0):
-                raise Exception(
-                    "Must have at least one predictor in explanatory "
-                    "expression and/or intercept enabled for a valid model."
-                )
-            self.given_ex = explanatory
+            if intercept:
+                explanatory = explanatory + 1
+
+        if explanatory == Constant(0):
+            raise Exception(
+                "Must have at least one predictor in explanatory "
+                "expression and/or intercept enabled for a valid model."
+            )
+        self.given_ex = explanatory
+
         constant = self.given_ex.reduce()['Constant']
         self.intercept = constant is not None
         if self.intercept:
