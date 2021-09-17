@@ -210,14 +210,19 @@ class LinearModel(Model):
         constant = self.given_ex.reduce()['Constant']
         self.intercept = constant is not None
         if self.intercept:
-            # This was done to easily check all options for indicating
-            # a wanted intercept
-            self.given_ex = self.given_ex - constant
+            if isinstance(self.given_ex, Combination) and len(self.given_ex.terms) > 1:
+                # This bypasses some potentially expensive checks 
+                self.given_ex.terms.remove(Constant(constant))
+            else:
+                # This was done to easily check all options for indicating
+                # a wanted intercept
+                self.given_ex = self.given_ex - constant
 
         # This will collapse any combination of variables into a single column
         self.given_re = Identity(response)
         self.ex = None
         self.re = None
+
 
         self.categorical_levels = dict()
 
