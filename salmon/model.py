@@ -280,7 +280,31 @@ class LinearModel(Model):
             y = self.re.evaluate(y)[:, 0]
             self.y_train_ = y
 
-        return self._fit(X, y)
+        # Perform linear algebra to find coefficients
+        self._fit(X, y)
+
+        # Now collect other desired statistics
+        cols = X.columns.copy()  # column names
+
+        # Get standard errors (diagonal of the covariance matrix)
+        se_coef_ = np.sqrt(np.diagonal(self.cov_))
+
+        # Get inference for coefficients
+        self.t_ = coef_ / se_coef_
+        self.p_ = 2 * stats.t.cdf(-abs(self.t_), self.rdf)
+        lower_bound, upper_bound = _confint(coef_, se_coef_, self.rdf, .975)
+
+        # Create output table
+        table = pd.DataFrame(OrderedDict((
+            ("Coefficient", coef_), ("SE", se_coef_),
+            ("t", self.t_), ("p", self.p_),
+            ("2.5%", lower_bound), ("97.5%", upper_bound)
+        )), index=cols)
+
+        self.coef_ = table["Coefficient"]
+        self.se_coef_ = table["SE"]
+
+        return table
 
     def _fit(self, X, y):
         # Get dimensions
@@ -325,26 +349,6 @@ class LinearModel(Model):
                 [self.cov_, cov_coef_intercept[:, np.newaxis]],
                 [cov_coef_intercept[np.newaxis, :], var_intercept]
             ])
-
-        # Get standard errors (diagonal of the covariance matrix)
-        se_coef_ = np.sqrt(np.diagonal(self.cov_))
-
-        # Get inference for coefficients
-        self.t_ = coef_ / se_coef_
-        self.p_ = 2 * stats.t.cdf(-abs(self.t_), self.rdf)
-        lower_bound, upper_bound = _confint(coef_, se_coef_, self.rdf, .975)
-
-        # Create output table
-        table = pd.DataFrame(OrderedDict((
-            ("Coefficient", coef_), ("SE", se_coef_),
-            ("t", self.t_), ("p", self.p_),
-            ("2.5%", lower_bound), ("97.5%", upper_bound)
-        )), index=cols)
-
-        self.coef_ = table["Coefficient"]
-        self.se_coef_ = table["SE"]
-
-        return table
 
     def likelihood(self, data=None):
         """Calculate likelihood for a fitted model on either original data or
