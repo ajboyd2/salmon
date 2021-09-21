@@ -281,11 +281,9 @@ class LinearModel(Model):
             self.y_train_ = y
 
         # Perform linear algebra to find coefficients
-        self._fit(X, y)
+        coef_, cols = self._fit(X, y)
 
         # Now collect other desired statistics
-        cols = X.columns.copy()  # column names
-
         # Get standard errors (diagonal of the covariance matrix)
         se_coef_ = np.sqrt(np.diagonal(self.cov_))
 
@@ -349,6 +347,8 @@ class LinearModel(Model):
                 [self.cov_, cov_coef_intercept[:, np.newaxis]],
                 [cov_coef_intercept[np.newaxis, :], var_intercept]
             ])
+
+        return coef_, cols
 
     def likelihood(self, data=None):
         """Calculate likelihood for a fitted model on either original data or
