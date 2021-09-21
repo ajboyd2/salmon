@@ -312,7 +312,7 @@ class LinearModel(Model):
         if self.intercept:
             X_offsets = X.mean(axis=0)
             y_offset = y.mean()
-            X -= X_offsets[np.newaxis, :]
+            X = X - X_offsets[np.newaxis, :]
         else:
             X_offsets = 0
             y_offset = 0
@@ -348,6 +348,7 @@ class LinearModel(Model):
                 [cov_coef_intercept[np.newaxis, :], var_intercept]
             ])
 
+        # TODO: Return the covariance rather than save it
         return coef_, cols
 
     def likelihood(self, data=None):
