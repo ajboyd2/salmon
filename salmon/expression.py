@@ -184,7 +184,7 @@ class Expression(ABC):
             else:
                 return ret_exp
         elif isinstance(other, Combination):
-            return other.__add__(self)
+            return Combination((self,)) + other  #other.__add__(self)
         elif isinstance(other, (Var, TransVar, Constant, Interaction)):
             # single term expressions
             return Combination((self, other))
@@ -193,7 +193,10 @@ class Expression(ABC):
         
     def __radd__(self, other):
         """See __add__. """
-        return self.__add__(other)
+        if isinstance(other, Expression):
+            return other.__add__(self)
+        else:
+            return self.__add__(other)
     
     def __sub__(self, other):
         """Subtract one Expression object from another. This is a special case
@@ -247,7 +250,7 @@ class Expression(ABC):
             self_copy.scale *= other.scale
             return self_copy
         else:
-            return self.__mul__(other)
+            return other.__mul__(self)
 
     def __truediv__(self, other):
         """Divide one expression by another. This is a special case of __mul__
@@ -615,7 +618,10 @@ class PowerVar(TransVar):
         return super().__mul__(other)
     
     def __rmul__(self, other):
-        return self.__mul__(other)
+        if isinstance(other, Expression):
+            return other.__mul__(self)
+        else:
+            return self.__mul__(other)
     
     def __pow__(self, other):
         if isinstance(other, int):
@@ -726,7 +732,10 @@ class Constant(Expression):
             return Constant(self.scale * other)
         
     def __rmul__(self, other):
-        return self.__mul__(other)
+        if isinstance(other, Expression):
+            return other.__mul__(self)
+        else:
+            return self.__mul__(other)
     
     def evaluate(self, data, fit = True):
         n = len(data)
@@ -1137,8 +1146,11 @@ class Combination(Expression):
             return super().__add__(other)
         
     def __radd__(self, other):
-        return self.__add__(other)
-    
+        if isinstance(other, Expression):
+            return other.__add__(self)
+        else:
+            return self.__add__(other)
+
     def __mul__(self, other):
         if isinstance(other, Combination):
             ret_comb = Combination(())
