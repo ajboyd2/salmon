@@ -798,7 +798,7 @@ class Categorical(Var):
     #    raise Exception("Categorical variables cannot be transformed.")
         
     def set_baseline(self, value):
-        if isinstance(value, collections.Iterable) and \
+        if isinstance(value, collections.abc.Iterable) and \
                 not isinstance(value, str):
             self.baseline = value
         else:
