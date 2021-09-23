@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 
 from itertools import product
 from collections import OrderedDict
+from ordered_set import OrderedSet
 
 from .expression import Expression, Combination, Identity, Constant, LightDataFrame, Quantitative
 
@@ -192,7 +193,7 @@ class LinearModel(Model):
             
             # Bypass construction because we know explicitly that the terms will not collide
             explanatory = Combination(terms=[])
-            explanatory.terms = set(Quantitative(c) for c in expl_cols) 
+            explanatory.terms = OrderedSet(Quantitative(c) for c in expl_cols) 
             if intercept:
                 explanatory.terms.add(Constant(1))
             response = Quantitative(resp_cols[0])

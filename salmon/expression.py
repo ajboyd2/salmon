@@ -6,6 +6,7 @@ from functools import reduce
 from itertools import product
 from abc import ABC, abstractmethod
 from scipy.special import binom
+from ordered_set import OrderedSet
 
 from . import transformation as _t 
 
@@ -333,9 +334,9 @@ class Expression(ABC):
             collection of the unique terms present.
         """
         return self._reduce({
-            "Q":set(),
-            "C":set(),
-            "V":set(),
+            "Q":OrderedSet(),
+            "C":OrderedSet(),
+            "V":OrderedSet(),
             "Constant": None,
         })
     
@@ -812,8 +813,8 @@ class Categorical(Var):
             if self.baseline is None:
                 self.set_baseline(unique_values[0])
         else:
-            unique_values = set(unique_values)
-            diff = unique_values - set(self.levels)
+            unique_values = OrderedSet(unique_values)
+            diff = unique_values - OrderedSet(self.levels)
             if len(diff) == 0:
                 self.set_baseline(self.levels[0])
             else:
@@ -884,7 +885,7 @@ class Interaction(Expression):
         if any(not isinstance(t, Expression) for t in terms):
             raise Exception("Interaction takes only Expressions for initialization.")
         
-        self.terms = set()
+        self.terms = OrderedSet()
         for term in terms:
             self._add_term(term)
         
@@ -935,7 +936,7 @@ class Interaction(Expression):
         return Interaction({term.copy() for term in self.terms}, self.scale)
         
     def interpret(self, data):
-        self.terms = set(term.interpret(data) for term in self.terms)
+        self.terms = OrderedSet(term.interpret(data) for term in self.terms)
         return self
     
     def __mul__(self, other):
@@ -1040,7 +1041,7 @@ class Combination(Expression):
         if any(not isinstance(t, Expression) for t in terms):
             raise Exception("Combination takes only Expressions for initialization.")
                         
-        self.terms = set()
+        self.terms = OrderedSet()
         for term in terms:
             self._add_term(term)
                     
@@ -1064,12 +1065,12 @@ class Combination(Expression):
     def __xor__(self, other):
         if isinstance(other, int) and other >= 0:
             power = min(other, len(self.terms))
-            new_terms = set()
+            new_terms = OrderedSet()
             base_terms = self.terms
             last_added_terms = [frozenset()]
 
             for _ in range(power):
-                newly_added_terms = set()
+                newly_added_terms = OrderedSet()
                 for new_term in base_terms:
                     for last_added_term in last_added_terms:
                         if new_term not in last_added_term:
@@ -1080,7 +1081,7 @@ class Combination(Expression):
                 new_terms = new_terms.union(newly_added_terms)
                 last_added_terms = newly_added_terms
 
-            processed_terms = set()
+            processed_terms = OrderedSet()
             for term in new_terms:
                 if len(term) == 1:
                     processed_terms.add(next(iter(term)))

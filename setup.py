@@ -28,6 +28,7 @@ setup(
         "numpy",
         "matplotlib",
         "scipy",
+        "ordered-set",
     ],
     packages=find_packages(exclude=("test",)),
 )
