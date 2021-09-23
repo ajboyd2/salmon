@@ -3,7 +3,7 @@ from .expression import *
 from .model import *
 import pandas as pd
 
-def floatComparison(a, b, eps = 0.0001):
+def floatComparison(a, b, eps=0.0001):
     if isinstance(a, (pd.Series, pd.DataFrame)) or isinstance(b, (pd.Series, pd.DataFrame)):
         return (a - eps < b) & (b < a + eps)
     else:
@@ -240,6 +240,70 @@ class TestModelMethods(unittest.TestCase):
 
         self.assertTrue(all(diff.apply(all, 1)))
         
+    def test_fit_types(self):
+        n, p = 1000, 100
+        num_iters = 10
+        for i in range(num_iters):
+            np.random.seed(i)
+            # prepare data
+            X_np, y_np = np.random.randn(n, p), np.random.randn(n)
+            X_df = pd.DataFrame(X_np, columns=["x{}".format(i) for i in range(1,p+1)])
+            y_df = pd.Series(y_np, name="y")
+            df = pd.concat([X_df, y_df], axis=1)
+            x_exp = sum(Q("x{}".format(i)) for i in range(1,p+1))
+            y_exp = Q("y")
+
+            # fit models with intercepts
+            np_model = LinearModel(X_np, y_np, intercept=True)
+            np_res = np_model.fit()[["Coefficient", "SE", "t", "p"]].sort_index()
+            df_model = LinearModel(X_df, y_df, intercept=True)
+            df_res = df_model.fit()[["Coefficient", "SE", "t", "p"]].sort_index()
+            exp_model = LinearModel(x_exp, y_exp, intercept=True)
+            exp_res = exp_model.fit(df)[["Coefficient", "SE", "t", "p"]].sort_index()
+
+            diff = np_res - df_res
+            diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.000001)
+            diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
+            diff["t"] = floatComparison(0, diff["t"], 0.01)
+            diff["p"] = floatComparison(0, diff["p"], 0.0001)
+
+            self.assertTrue(all(diff.apply(all, 1)))
+
+            diff = np_res - exp_res
+            diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.000001)
+            diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
+            diff["t"] = floatComparison(0, diff["t"], 0.01)
+            diff["p"] = floatComparison(0, diff["p"], 0.0001)
+
+            self.assertTrue(all(diff.apply(all, 1)))  
+            # We assume that if these previous two tests are good then we don't need to compare df_res and exp_res
+
+            # fit models without intercepts
+            np_model = LinearModel(X_np, y_np, intercept=False)
+            np_res = np_model.fit()[["Coefficient", "SE", "t", "p"]].sort_index()
+            df_model = LinearModel(X_df, y_df, intercept=False)
+            df_res = df_model.fit()[["Coefficient", "SE", "t", "p"]].sort_index()
+            exp_model = LinearModel(x_exp, y_exp, intercept=False)
+            exp_res = exp_model.fit(df)[["Coefficient", "SE", "t", "p"]].sort_index()
+
+            diff = np_res - df_res
+            diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.000001)
+            diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
+            diff["t"] = floatComparison(0, diff["t"], 0.01)
+            diff["p"] = floatComparison(0, diff["p"], 0.0001)
+
+            self.assertTrue(all(diff.apply(all, 1)))
+
+            diff = np_res - exp_res
+            diff["Coefficient"] = floatComparison(0, diff["Coefficient"], 0.000001)
+            diff["SE"] = floatComparison(0, diff["SE"], 0.000001)
+            diff["t"] = floatComparison(0, diff["t"], 0.01)
+            diff["p"] = floatComparison(0, diff["p"], 0.0001)
+
+            self.assertTrue(all(diff.apply(all, 1)))
+            # We assume that if these previous two tests are good then we don't need to compare df_res and exp_res
+
+
     def test_predict(self):
         levels = ["virginica", "setosa", "versicolor"]
         explanatory = Q("petal_width") + C("species", levels=levels)
