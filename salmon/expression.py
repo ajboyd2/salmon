@@ -909,7 +909,10 @@ class Interaction(Expression):
         return hash((frozenset(self.terms), self.scale))
         
     def __str__(self):
-        base = "(" + ")(".join(sorted(str(term) for term in self.terms)) + ")" 
+        if STR_AS_REPR:
+            base = "(" + ")(".join((str(term) for term in self.terms)) + ")" 
+        else:
+            base = "(" + ")(".join(sorted(str(term) for term in self.terms)) + ")" 
         if self.scale == 1:
             return str(base)
         else:
@@ -942,7 +945,7 @@ class Interaction(Expression):
 
 
     def copy(self):
-        return Interaction({term.copy() for term in self.terms}, self.scale)
+        return Interaction(OrderedSet(term.copy() for term in self.terms), self.scale)
         
     def interpret(self, data):
         self.terms = OrderedSet(term.interpret(data) for term in self.terms)
@@ -1065,7 +1068,10 @@ class Combination(Expression):
         return hash((frozenset(self.terms), self.scale))
                 
     def __str__(self):
-        base = "+".join(sorted(str(term) for term in self.terms)) 
+        if STR_AS_REPR:
+            base = "+".join((str(term) for term in self.terms)) 
+        else:
+            base = "+".join(sorted(str(term) for term in self.terms)) 
         if self.scale == 1:
             return str(base)
         else:
@@ -1127,7 +1133,7 @@ class Combination(Expression):
             self._add_term(term)
         
     def copy(self):
-        return Combination({term.copy() for term in self.terms}, self.scale)
+        return Combination(OrderedSet(term.copy() for term in self.terms), self.scale)
         
     def interpret(self, data):
         self.terms = [term.interpret(data) for term in self.terms]
