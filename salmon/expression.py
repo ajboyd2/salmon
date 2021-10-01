@@ -6,6 +6,7 @@ from functools import reduce
 from itertools import product
 from abc import ABC, abstractmethod
 from scipy.special import binom
+from ordered_set import OrderedSet
 
 from . import transformation as _t 
 
@@ -37,6 +38,11 @@ class LightDataFrame(np.ndarray):
             if column == colname: 
                 return self[:, i]
         raise KeyError("Column %s not in LightDataFrame." % colname)
+
+    @property
+    def index(self):
+        return range(self.shape[0])
+
 
 
 # ABC is a parent object that allows for Abstract methods
@@ -178,7 +184,7 @@ class Expression(ABC):
             else:
                 return ret_exp
         elif isinstance(other, Combination):
-            return other.__add__(self)
+            return Combination((self,)) + other  #other.__add__(self)
         elif isinstance(other, (Var, TransVar, Constant, Interaction)):
             # single term expressions
             return Combination((self, other))
@@ -187,7 +193,10 @@ class Expression(ABC):
         
     def __radd__(self, other):
         """See __add__. """
-        return self.__add__(other)
+        if isinstance(other, Expression):
+            return other.__add__(self)
+        else:
+            return self.__add__(other)
     
     def __sub__(self, other):
         """Subtract one Expression object from another. This is a special case
@@ -241,7 +250,7 @@ class Expression(ABC):
             self_copy.scale *= other.scale
             return self_copy
         else:
-            return self.__mul__(other)
+            return other.__mul__(self)
 
     def __truediv__(self, other):
         """Divide one expression by another. This is a special case of __mul__
@@ -328,9 +337,9 @@ class Expression(ABC):
             collection of the unique terms present.
         """
         return self._reduce({
-            "Q":set(),
-            "C":set(),
-            "V":set(),
+            "Q":OrderedSet(),
+            "C":OrderedSet(),
+            "V":OrderedSet(),
             "Constant": None,
         })
     
@@ -406,17 +415,24 @@ class Var(Expression):
         if self.scale != 1:
             return "{1}*{0}".format(self.name, self.scale) 
         else:
-            return self.name
+            return str(self.name)
   
     def copy(self):
         return Var(self.name, self.scale)
         
     def interpret(self, data):
-        if ('float' in data[self.name].dtype.name or \
-                'int' in data[self.name].dtype.name):
-            return Quantitative(self.name, self.scale)
-        else:
-            return Categorical(self.name)
+        if isinstance(data, LightDataFrame):
+            if ('float' in data.get_column(self.name).dtype.name or \
+                    'int' in data.get_column(self.name).dtype.name):
+                return Quantitative(self.name, self.scale)
+            else:
+                return Categorical(self.name)
+        else:  # isinstance(data, pd.DataFrame)
+            if ('float' in data[self.name].dtype.name or \
+                    'int' in data[self.name].dtype.name):
+                return Quantitative(self.name, self.scale)
+            else:
+                return Categorical(self.name)
         
     def evaluate(self, data, fit=True):
         raise NotImplementedError("Must call interpret prior to evaluating data for variables.")
@@ -458,7 +474,7 @@ class TransVar(Expression):
     def __str__(self):
         base = self.transformation.compose(str(self.var))
         if self.scale == 1:
-            return base
+            return str(base)
         else:
             return "{}*{}".format(self.scale, base)
         
@@ -602,7 +618,10 @@ class PowerVar(TransVar):
         return super().__mul__(other)
     
     def __rmul__(self, other):
-        return self.__mul__(other)
+        if isinstance(other, Expression):
+            return other.__mul__(self)
+        else:
+            return self.__mul__(other)
     
     def __pow__(self, other):
         if isinstance(other, int):
@@ -650,7 +669,11 @@ class Quantitative(Var):
         return self
     
     def evaluate(self, data, fit = True):
-        transformed_data = self.scale * data[self.name].values
+        if isinstance(data, LightDataFrame):
+            transformed_data = self.scale * data.get_column(self.name)
+        else:
+            transformed_data = self.scale * data[self.name].values
+
         return LightDataFrame(
             transformed_data[:, np.newaxis], 
             columns=[self.name],
@@ -709,7 +732,10 @@ class Constant(Expression):
             return Constant(self.scale * other)
         
     def __rmul__(self, other):
-        return self.__mul__(other)
+        if isinstance(other, Expression):
+            return other.__mul__(self)
+        else:
+            return self.__mul__(other)
     
     def evaluate(self, data, fit = True):
         n = len(data)
@@ -765,7 +791,7 @@ class Categorical(Var):
         self.baseline = baseline
         
     def __str__(self):
-        return self.name
+        return str(self.name)
         
     def copy(self):
         return Categorical(
@@ -782,7 +808,7 @@ class Categorical(Var):
     #    raise Exception("Categorical variables cannot be transformed.")
         
     def set_baseline(self, value):
-        if isinstance(value, collections.Iterable) and \
+        if isinstance(value, collections.abc.Iterable) and \
                 not isinstance(value, str):
             self.baseline = value
         else:
@@ -796,8 +822,8 @@ class Categorical(Var):
             if self.baseline is None:
                 self.set_baseline(unique_values[0])
         else:
-            unique_values = set(unique_values)
-            diff = unique_values - set(self.levels)
+            unique_values = OrderedSet(unique_values)
+            diff = unique_values - OrderedSet(self.levels)
             if len(diff) == 0:
                 self.set_baseline(self.levels[0])
             else:
@@ -820,7 +846,10 @@ class Categorical(Var):
                 columns.append("%s{%s}" % (self.name, level))
         
         # define mapping of levels to integer codes
-        codes = data[self.name].map(mapping)
+        if isinstance(data, LightDataFrame):
+            codes = data.get_column(self.name).map(mapping)
+        else:
+            codes = data[self.name].map(mapping)
 
         # create dummy matrix by taking the appropriate rows from an 
         # identity matrix
@@ -865,7 +894,7 @@ class Interaction(Expression):
         if any(not isinstance(t, Expression) for t in terms):
             raise Exception("Interaction takes only Expressions for initialization.")
         
-        self.terms = set()
+        self.terms = OrderedSet()
         for term in terms:
             self._add_term(term)
         
@@ -880,9 +909,12 @@ class Interaction(Expression):
         return hash((frozenset(self.terms), self.scale))
         
     def __str__(self):
-        base = "(" + ")(".join(sorted(str(term) for term in self.terms)) + ")" 
+        if STR_AS_REPR:
+            base = "(" + ")(".join((str(term) for term in self.terms)) + ")" 
+        else:
+            base = "(" + ")(".join(sorted(str(term) for term in self.terms)) + ")" 
         if self.scale == 1:
-            return base
+            return str(base)
         else:
             return "{}*{}".format(self.scale, base)
         
@@ -913,10 +945,10 @@ class Interaction(Expression):
 
 
     def copy(self):
-        return Interaction({term.copy() for term in self.terms}, self.scale)
+        return Interaction(OrderedSet(term.copy() for term in self.terms), self.scale)
         
     def interpret(self, data):
-        self.terms = set(term.interpret(data) for term in self.terms)
+        self.terms = OrderedSet(term.interpret(data) for term in self.terms)
         return self
     
     def __mul__(self, other):
@@ -1021,7 +1053,7 @@ class Combination(Expression):
         if any(not isinstance(t, Expression) for t in terms):
             raise Exception("Combination takes only Expressions for initialization.")
                         
-        self.terms = set()
+        self.terms = OrderedSet()
         for term in terms:
             self._add_term(term)
                     
@@ -1036,21 +1068,24 @@ class Combination(Expression):
         return hash((frozenset(self.terms), self.scale))
                 
     def __str__(self):
-        base = "+".join(sorted(str(term) for term in self.terms)) 
+        if STR_AS_REPR:
+            base = "+".join((str(term) for term in self.terms)) 
+        else:
+            base = "+".join(sorted(str(term) for term in self.terms)) 
         if self.scale == 1:
-            return base
+            return str(base)
         else:
             return "{}*({})".format(self.scale, base)
 
     def __xor__(self, other):
         if isinstance(other, int) and other >= 0:
             power = min(other, len(self.terms))
-            new_terms = set()
+            new_terms = OrderedSet()
             base_terms = self.terms
             last_added_terms = [frozenset()]
 
             for _ in range(power):
-                newly_added_terms = set()
+                newly_added_terms = OrderedSet()
                 for new_term in base_terms:
                     for last_added_term in last_added_terms:
                         if new_term not in last_added_term:
@@ -1061,7 +1096,7 @@ class Combination(Expression):
                 new_terms = new_terms.union(newly_added_terms)
                 last_added_terms = newly_added_terms
 
-            processed_terms = set()
+            processed_terms = OrderedSet()
             for term in new_terms:
                 if len(term) == 1:
                     processed_terms.add(next(iter(term)))
@@ -1098,7 +1133,7 @@ class Combination(Expression):
             self._add_term(term)
         
     def copy(self):
-        return Combination({term.copy() for term in self.terms}, self.scale)
+        return Combination(OrderedSet(term.copy() for term in self.terms), self.scale)
         
     def interpret(self, data):
         self.terms = [term.interpret(data) for term in self.terms]
@@ -1117,8 +1152,11 @@ class Combination(Expression):
             return super().__add__(other)
         
     def __radd__(self, other):
-        return self.__add__(other)
-    
+        if isinstance(other, Expression):
+            return other.__add__(self)
+        else:
+            return self.__add__(other)
+
     def __mul__(self, other):
         if isinstance(other, Combination):
             ret_comb = Combination(())

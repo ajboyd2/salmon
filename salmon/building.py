@@ -3,6 +3,7 @@ import math
 """Contains the logic for automatic model building (i.e. stepwise regression)."""
 
 from abc import ABC, abstractmethod
+from ordered_set import OrderedSet
 
 from .model import LinearModel
 from .comparison import _extract_dfs
@@ -233,7 +234,7 @@ def stepwise(
                 else:
                     ex_term_list_expression = ex_term_list_expression + t
             # Find all terms that do not depend on other terms
-            leaves = set(term for term in ex_term_list if not \
+            leaves = OrderedSet(term for term in ex_term_list if not \
                 term.contains(ex_term_list_expression - term))
     
         for i, term in enumerate(ex_term_list):

@@ -1,5 +1,6 @@
 from .model import *
 from scipy.stats import f
+from ordered_set import OrderedSet
 
 import numpy as np
 import pandas as pd
@@ -45,8 +46,8 @@ def is_subset(model1, model2):
         # Models should both have the same response variable
         return False
     
-    terms1 = set(model1.ex.get_terms())
-    terms2 = set(model2.ex.get_terms())
+    terms1 = OrderedSet(model1.ex.get_terms())
+    terms2 = OrderedSet(model2.ex.get_terms())
     return terms2.issubset(terms1)
 
 def _calc_stats(numer_ss, numer_df, denom_ss, denom_df):
