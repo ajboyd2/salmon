@@ -9,6 +9,7 @@ import pandas as pd
 from pandas.plotting import scatter_matrix
 
 import matplotlib.pyplot as plt
+import warnings
 
 from itertools import product
 from collections import OrderedDict
@@ -306,6 +307,9 @@ class LinearModel(Model):
         return table
 
     def _fit(self, X, y):
+        if np.isnan(X).any() or np.isnan(y).any():
+            warnings.warn("NaN's detected in data. Estimated coefficients may not be accurate.")
+
         # Get dimensions
         self.n, self.p = X.shape
 
