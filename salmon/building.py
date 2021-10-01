@@ -188,7 +188,8 @@ def stepwise(
             Default is False.
 
     Returns:
-         
+         A dictionary containing the metric used, the best value achieved, 
+         and the associated best model (ranked via the chosen metric).
     """
 
     if data is not None:
