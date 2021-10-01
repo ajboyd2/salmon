@@ -1,0 +1,2925 @@
+,Neighborhood,Price($),Style,Sq. Ft.,Fire?
+0,SawyerW,162000,2 Story,1400,No
+1,CollgCr,195000,2 Story,1660,No
+2,Crawfor,164000,Other,1646,Yes
+3,NridgHt,417500,1 Story,2464,Yes
+4,SawyerW,186800,1 Story,1400,No
+5,OldTown,135000,Other,1656,No
+6,NridgHt,250000,2 Story,1828,No
+7,NridgHt,552000,1 Story,2492,Yes
+8,Somerst,255000,1 Story,1636,Yes
+9,NridgHt,451950,2 Story,2296,Yes
+10,CollgCr,167000,2 Story,1536,No
+11,OldTown,96900,2 Story,1376,No
+12,NridgHt,309000,2 Story,2452,Yes
+13,NAmes,145500,1 Story,1053,No
+14,StoneBr,535000,2 Story,2698,Yes
+15,Crawfor,257000,2 Story,2315,Yes
+16,Edwards,100000,Other,1204,No
+17,CollgCr,204750,2 Story,1786,No
+18,NAmes,153000,1 Story,1297,Yes
+19,NridgHt,360000,1 Story,1944,Yes
+20,NWAmes,205000,2 Story,1964,Yes
+21,NAmes,136000,2 Story,1792,No
+22,CollgCr,150500,1 Story,1040,No
+23,Edwards,145000,Other,1072,No
+24,Blmngtn,210250,1 Story,1364,Yes
+25,Edwards,415000,Other,3672,Yes
+26,NWAmes,175500,1 Story,1422,Yes
+27,SWISU,159434,Other,1520,No
+28,CollgCr,275000,2 Story,2439,Yes
+29,SawyerW,151000,1 Story,1217,No
+30,Edwards,107000,Other,1117,Yes
+31,Gilbert,187500,2 Story,1604,Yes
+32,NPkVill,142500,1 Story,1055,No
+33,BrDale,116000,2 Story,1030,No
+34,Mitchel,215000,1 Story,1392,Yes
+35,CollgCr,254750,2 Story,2184,Yes
+36,OldTown,89471,1 Story,1131,No
+37,OldTown,139500,2 Story,1627,No
+38,NridgHt,196000,1 Story,1306,Yes
+39,NAmes,139000,1 Story,1196,Yes
+40,Somerst,207500,1 Story,1550,No
+41,MeadowV,79500,2 Story,1092,No
+42,NridgHt,322400,1 Story,1694,Yes
+43,SawyerW,189000,2 Story,1845,Yes
+44,NAmes,140000,1 Story,1375,Yes
+45,Edwards,167000,1 Story,1486,No
+46,Somerst,265000,2 Story,2443,Yes
+47,NWAmes,181900,1 Story,1260,No
+48,Mitchel,130500,1 Story,816,Yes
+49,StoneBr,170000,1 Story,1088,No
+50,Somerst,147400,2 Story,1223,No
+51,ClearCr,134432,Other,1588,Yes
+52,NoRidge,334000,2 Story,2826,Yes
+53,BrkSide,165000,Other,1376,No
+54,Edwards,179000,1 Story,1200,No
+55,NWAmes,176000,2 Story,1479,Yes
+56,NWAmes,235000,1 Story,2064,Yes
+57,NridgHt,385000,1 Story,2084,Yes
+58,OldTown,119000,Other,1251,No
+59,Sawyer,129000,1 Story,912,No
+60,ClearCr,230000,2 Story,1981,Yes
+61,IDOTRR,55000,2 Story,1092,No
+62,Sawyer,119500,Other,1654,No
+63,IDOTRR,139000,Other,1638,No
+64,OldTown,157000,2 Story,1762,No
+65,OldTown,155000,Other,1436,Yes
+66,Sawyer,175000,Other,1464,Yes
+67,Somerst,405749,2 Story,2640,Yes
+68,Timber,202000,1 Story,1403,No
+69,SawyerW,139500,1 Story,1142,No
+70,Somerst,221500,1 Story,1595,Yes
+71,Gilbert,169000,2 Story,2320,Yes
+72,Timber,220000,1 Story,1296,No
+73,NAmes,110000,1 Story,858,No
+74,Gilbert,167800,2 Story,1490,Yes
+75,BrkSide,128000,2 Story,1362,No
+76,OldTown,111500,Other,1951,No
+77,IDOTRR,116500,2 Story,1330,No
+78,NoRidge,745000,2 Story,4476,Yes
+79,Gilbert,176000,2 Story,1414,Yes
+80,Crawfor,194000,Other,1717,Yes
+81,NAmes,136300,Other,1775,No
+82,NAmes,101800,1 Story,1224,No
+83,SawyerW,209000,2 Story,2559,Yes
+84,Gilbert,171925,2 Story,1495,Yes
+85,Crawfor,210000,2 Story,1801,Yes
+86,Mitchel,80000,1 Story,1608,No
+87,Edwards,108000,2 Story,1510,Yes
+88,OldTown,98000,2 Story,1344,No
+89,Sawyer,129000,1 Story,1037,No
+90,NAmes,156500,1 Story,1478,Yes
+91,CollgCr,155900,1 Story,848,Yes
+92,NAmes,172000,1 Story,1329,No
+93,Gilbert,169985,2 Story,1492,No
+94,SawyerW,132000,1 Story,1131,No
+95,Edwards,82500,1 Story,1152,No
+96,Gilbert,173000,1 Story,1167,No
+97,Sawyer,142000,1 Story,912,No
+98,NAmes,132000,1 Story,1268,Yes
+99,NAmes,90000,1 Story,1040,No
+100,NAmes,159500,1 Story,1580,Yes
+101,NridgHt,194700,1 Story,1362,Yes
+102,NAmes,133000,1 Story,1104,No
+103,OldTown,110000,Other,1284,No
+104,BrkSide,137500,2 Story,1513,No
+105,CollgCr,246900,1 Story,1341,Yes
+106,NridgHt,345474,1 Story,2122,Yes
+107,OldTown,114000,2 Story,1039,No
+108,Crawfor,198000,1 Story,1696,Yes
+109,NWAmes,230000,2 Story,2288,Yes
+110,CollgCr,117000,1 Story,875,No
+111,Crawfor,96500,Other,789,No
+112,OldTown,325000,Other,2775,Yes
+113,NridgHt,317000,2 Story,2473,Yes
+114,Sawyer,136500,1 Story,1768,No
+115,OldTown,104000,Other,2229,No
+116,NWAmes,240050,2 Story,2411,Yes
+117,NAmes,128000,1 Story,1180,No
+118,ClearCr,187500,2 Story,2087,No
+119,OldTown,90000,2 Story,2337,No
+120,OldTown,128000,Other,1484,Yes
+121,IDOTRR,89500,Other,1406,No
+122,Crawfor,203135,Other,1652,No
+123,Somerst,345000,2 Story,2393,Yes
+124,GrnHill,330000,1 Story,1502,Yes
+125,CollgCr,193000,2 Story,1790,No
+126,OldTown,110500,1 Story,866,No
+127,Sawyer,148000,Other,1138,Yes
+128,NridgHt,212500,1 Story,1358,Yes
+129,NAmes,128900,1 Story,1050,No
+130,Mitchel,143000,1 Story,1632,No
+131,Gilbert,200000,2 Story,2267,Yes
+132,OldTown,116000,Other,1118,No
+133,StoneBr,182000,1 Story,1179,No
+134,CollgCr,228500,2 Story,2169,Yes
+135,Gilbert,133000,1 Story,1488,Yes
+136,Gilbert,184000,2 Story,1456,Yes
+137,Mitchel,165000,1 Story,1224,No
+138,IDOTRR,161000,Other,2180,Yes
+139,Sawyer,125500,1 Story,902,No
+140,MeadowV,129900,1 Story,1060,Yes
+141,OldTown,95000,2 Story,1699,No
+142,Timber,298751,1 Story,1728,Yes
+143,NAmes,127000,1 Story,925,No
+144,NoRidge,252000,2 Story,2385,Yes
+145,OldTown,114000,Other,1159,No
+146,CollgCr,217000,1 Story,1494,No
+147,NAmes,123000,Other,900,Yes
+148,Somerst,212109,2 Story,1588,No
+149,BrkSide,167500,2 Story,2019,No
+150,NAmes,128950,1 Story,1225,No
+151,NWAmes,176000,2 Story,1978,Yes
+152,NAmes,135000,1 Story,1134,No
+153,SawyerW,257000,1 Story,1844,Yes
+154,Blmngtn,215000,1 Story,1456,Yes
+155,NridgHt,314813,1 Story,1828,Yes
+156,NWAmes,202500,1 Story,1621,No
+157,NAmes,153000,1 Story,1306,No
+158,Crawfor,149000,2 Story,1502,Yes
+159,NWAmes,215000,1 Story,1602,Yes
+160,Edwards,84900,1 Story,930,No
+161,NAmes,135000,1 Story,1048,No
+162,Edwards,127500,Other,980,No
+163,Gilbert,168165,2 Story,1458,No
+164,Somerst,290000,1 Story,1660,Yes
+165,Gilbert,174190,1 Story,1326,No
+166,NWAmes,213000,1 Story,1621,Yes
+167,NAmes,235000,2 Story,3112,Yes
+168,NAmes,128000,1 Story,914,No
+169,NAmes,178000,Other,1128,Yes
+170,SawyerW,236000,2 Story,1949,Yes
+171,Edwards,154400,2 Story,1639,Yes
+172,MeadowV,87550,2 Story,1092,No
+173,OldTown,132000,2 Story,1450,No
+174,NridgHt,173000,2 Story,1626,No
+175,NridgHt,338500,2 Story,2091,Yes
+176,IDOTRR,57625,1 Story,810,No
+177,OldTown,107400,2 Story,1605,No
+178,NPkVill,146000,2 Story,1456,Yes
+179,BrkSide,207000,Other,1848,Yes
+180,NAmes,134450,1 Story,1236,Yes
+181,OldTown,52500,1 Story,693,No
+182,SWISU,114900,Other,1680,Yes
+183,OldTown,115000,1 Story,1028,Yes
+184,Sawyer,156500,1 Story,1967,No
+185,Gilbert,225000,2 Story,2322,Yes
+186,CollgCr,167840,1 Story,1330,Yes
+187,SWISU,112000,Other,1288,No
+188,NAmes,157500,1 Story,976,Yes
+189,Sawyer,108959,Other,1258,No
+190,NoRidge,291000,2 Story,2172,Yes
+191,Veenker,373000,1 Story,2497,Yes
+192,NAmes,97500,Other,1458,Yes
+193,CollgCr,149300,1 Story,848,Yes
+194,NPkVill,140000,1 Story,1069,No
+195,MeadowV,73000,Other,630,No
+196,CollgCr,141000,1 Story,848,Yes
+197,BrkSide,127000,Other,1252,No
+198,Sawyer,90000,1 Story,1296,No
+199,NAmes,166800,1 Story,1570,Yes
+200,Edwards,137500,2 Story,1709,No
+201,NridgHt,450000,1 Story,2046,Yes
+202,Somerst,210000,2 Story,1590,No
+203,NAmes,192100,1 Story,1851,Yes
+204,Somerst,253000,1 Story,1685,Yes
+205,CollgCr,475000,1 Story,2276,Yes
+206,CollgCr,187100,1 Story,1430,No
+207,NAmes,164900,1 Story,1363,Yes
+208,CollgCr,196000,2 Story,1749,No
+209,Somerst,254000,2 Story,1848,Yes
+210,Somerst,260000,1 Story,1538,No
+211,Crawfor,219500,2 Story,1740,Yes
+212,NWAmes,243500,2 Story,2495,Yes
+213,Crawfor,153500,1 Story,1226,Yes
+214,IDOTRR,109900,1 Story,1196,No
+215,Somerst,256000,1 Story,1660,Yes
+216,Somerst,151000,2 Story,1200,No
+217,CollgCr,180000,2 Story,1668,No
+218,Crawfor,215000,2 Story,2177,No
+219,Mitchel,84500,1 Story,1140,No
+220,OldTown,73000,1 Story,764,No
+221,NoRidge,625000,2 Story,3627,Yes
+222,NAmes,128600,1 Story,1560,No
+223,CollgCr,134900,1 Story,1040,No
+224,SWISU,108500,Other,1282,No
+225,NridgHt,254000,1 Story,1324,Yes
+226,NridgHt,250000,2 Story,2088,Yes
+227,Crawfor,275000,1 Story,1646,Yes
+228,NWAmes,255000,2 Story,2075,Yes
+229,Edwards,144500,1 Story,1074,Yes
+230,Edwards,79275,1 Story,864,No
+231,CollgCr,131000,1 Story,894,No
+232,SawyerW,120000,2 Story,1217,Yes
+233,CollgCr,188000,2 Story,1724,No
+234,NridgHt,202665,1 Story,1368,Yes
+235,Sawyer,144000,Other,904,No
+236,NAmes,113500,1 Story,1142,Yes
+237,Gilbert,179665,2 Story,1496,Yes
+238,Crawfor,218000,Other,1671,Yes
+239,NridgHt,337500,1 Story,1718,Yes
+240,ClearCr,161500,Other,1788,Yes
+241,Gilbert,320000,2 Story,2462,Yes
+242,NridgHt,310090,1 Story,1666,Yes
+243,NAmes,130000,1 Story,950,No
+244,OldTown,114000,Other,1017,No
+245,Somerst,208300,1 Story,1218,No
+246,Somerst,198600,1 Story,1278,No
+247,Crawfor,154900,Other,1343,Yes
+248,BrkSide,128250,Other,1435,No
+249,Somerst,148800,2 Story,1102,No
+250,CollgCr,255000,2 Story,1989,Yes
+251,NAmes,100000,1 Story,892,No
+252,NWAmes,173000,2 Story,1632,No
+253,Somerst,468000,1 Story,2490,Yes
+254,OldTown,107000,2 Story,1328,No
+255,SawyerW,175000,2 Story,1737,No
+256,Somerst,312500,2 Story,2362,Yes
+257,Crawfor,189950,Other,1426,Yes
+258,NAmes,155000,2 Story,1348,Yes
+259,Edwards,140000,1 Story,1121,No
+260,IDOTRR,67000,1 Story,1077,No
+261,Greens,155000,1 Story,788,Yes
+262,CollgCr,383970,2 Story,2696,Yes
+263,BrkSide,205000,Other,1548,No
+264,Sawyer,160500,Other,1040,Yes
+265,Gilbert,188000,2 Story,1720,Yes
+266,OldTown,200000,Other,2082,No
+267,NAmes,180500,1 Story,1425,Yes
+268,BrkSide,113000,Other,1013,No
+269,Mitchel,210000,1 Story,1478,Yes
+270,NAmes,143000,1 Story,1050,No
+271,CollgCr,145000,1 Story,990,No
+272,Sawyer,150000,1 Story,1620,Yes
+273,BrDale,113500,2 Story,1092,No
+274,NridgHt,555000,1 Story,2402,Yes
+275,CollgCr,230000,2 Story,1852,Yes
+276,NWAmes,262500,1 Story,2156,Yes
+277,NoRidge,384500,2 Story,2551,Yes
+278,Crawfor,90350,1 Story,694,Yes
+279,NAmes,156000,1 Story,1026,No
+280,NridgHt,192000,1 Story,1367,Yes
+281,Timber,425000,1 Story,1978,Yes
+282,Mitchel,231000,2 Story,1797,Yes
+283,NWAmes,229000,Other,2183,No
+284,Edwards,107000,Other,1669,No
+285,Veenker,290000,1 Story,1671,Yes
+286,SWISU,100000,Other,1392,No
+287,NWAmes,163000,1 Story,1336,Yes
+288,NridgHt,255900,1 Story,1606,Yes
+289,BrkSide,75000,Other,1162,No
+290,NAmes,167000,1 Story,1644,Yes
+291,Blmngtn,185485,1 Story,1266,Yes
+292,Crawfor,199500,2 Story,1609,Yes
+293,Timber,239000,1 Story,1571,Yes
+294,BrkSide,115000,Other,1216,Yes
+295,CollgCr,163990,2 Story,1456,Yes
+296,Veenker,241600,1 Story,1740,No
+297,Blueste,121000,2 Story,1229,Yes
+298,NridgHt,275000,1 Story,1698,Yes
+299,NAmes,165000,2 Story,1977,Yes
+300,OldTown,265979,2 Story,2640,Yes
+301,NoRidge,340000,2 Story,2450,Yes
+302,NridgHt,332200,1 Story,1686,Yes
+303,SawyerW,178000,2 Story,1732,Yes
+304,NWAmes,185000,1 Story,1610,Yes
+305,Somerst,209000,2 Story,1653,No
+306,Somerst,146000,2 Story,1392,No
+307,StoneBr,394432,1 Story,1856,Yes
+308,Gilbert,167000,Other,1374,No
+309,OldTown,122000,Other,1889,Yes
+310,NridgHt,326000,1 Story,1850,Yes
+311,ClearCr,280000,1 Story,1533,Yes
+312,NAmes,158000,Other,1302,No
+313,Blmngtn,264561,1 Story,1567,Yes
+314,BrkSide,141500,Other,1539,No
+315,NAmes,167000,1 Story,1277,Yes
+316,Edwards,260000,1 Story,1518,Yes
+317,Crawfor,239000,2 Story,2345,Yes
+318,Gilbert,216500,2 Story,1960,Yes
+319,NAmes,120500,1 Story,864,No
+320,Sawyer,158900,2 Story,1386,Yes
+321,StoneBr,318000,1 Story,1714,Yes
+322,IDOTRR,118400,1 Story,1012,Yes
+323,SawyerW,184000,2 Story,1540,No
+324,Somerst,423000,1 Story,2097,Yes
+325,Somerst,232600,1 Story,1489,Yes
+326,NAmes,167000,1 Story,2039,Yes
+327,NAmes,135000,1 Story,1098,No
+328,NridgHt,274000,1 Story,1518,Yes
+329,Sawyer,172500,Other,1920,Yes
+330,IDOTRR,68400,Other,1128,No
+331,CollgCr,130250,1 Story,938,No
+332,Edwards,92000,Other,1338,No
+333,BrkSide,79900,1 Story,747,No
+334,CollgCr,197000,2 Story,1909,No
+335,NAmes,98000,1 Story,1014,No
+336,CollgCr,173900,2 Story,1500,No
+337,ClearCr,190000,1 Story,1867,Yes
+338,Sawyer,129500,1 Story,1040,No
+339,NAmes,150000,1 Story,1053,No
+340,Somerst,200000,2 Story,1694,Yes
+341,BrDale,89500,2 Story,987,No
+342,Edwards,130000,2 Story,1709,No
+343,NAmes,157000,1 Story,1434,Yes
+344,SawyerW,138500,Other,1445,No
+345,SawyerW,184900,2 Story,1585,No
+346,NAmes,127000,Other,1312,No
+347,Somerst,230000,1 Story,1492,Yes
+348,NWAmes,190000,2 Story,1969,Yes
+349,CollgCr,190000,2 Story,1728,No
+350,OldTown,140750,2 Story,1470,No
+351,NAmes,160000,1 Story,1324,Yes
+352,OldTown,116900,Other,1111,Yes
+353,Mitchel,138000,1 Story,816,No
+354,SawyerW,160000,2 Story,1882,Yes
+355,NWAmes,140000,1 Story,1164,No
+356,NWAmes,158500,1 Story,1093,Yes
+357,NridgHt,372000,1 Story,1802,Yes
+358,Edwards,99000,1 Story,930,No
+359,NAmes,268000,1 Story,2217,Yes
+360,NAmes,136500,1 Story,1176,Yes
+361,Somerst,185000,1 Story,1221,No
+362,Crawfor,188000,Other,1755,Yes
+363,Edwards,122000,Other,1351,Yes
+364,NAmes,144900,1 Story,1086,No
+365,NAmes,125900,1 Story,1027,No
+366,Gilbert,185000,2 Story,1470,Yes
+367,NAmes,141000,1 Story,1100,Yes
+368,Edwards,137500,Other,1181,No
+369,NridgHt,259000,1 Story,1822,Yes
+370,Crawfor,119750,1 Story,954,Yes
+371,Edwards,235000,2 Story,2009,Yes
+372,NAmes,109500,1 Story,825,No
+373,Blmngtn,192000,1 Story,1269,Yes
+374,Timber,244000,1 Story,1501,Yes
+375,CollgCr,127000,1 Story,864,No
+376,CollgCr,189000,2 Story,1456,Yes
+377,NAmes,119200,1 Story,1082,Yes
+378,CollgCr,160000,Other,1009,Yes
+379,Edwards,113000,1 Story,672,No
+380,OldTown,119000,2 Story,1288,Yes
+381,SawyerW,144000,Other,884,No
+382,BrDale,89000,2 Story,948,No
+383,CollgCr,175000,2 Story,1308,No
+384,NWAmes,210000,1 Story,2073,Yes
+385,Gilbert,270000,2 Story,2283,Yes
+386,NAmes,156000,Other,1728,Yes
+387,Gilbert,170440,2 Story,1456,Yes
+388,ClearCr,245000,1 Story,1524,Yes
+389,BrkSide,136500,1 Story,1060,Yes
+390,NAmes,139400,1 Story,1056,No
+391,NAmes,180500,Other,1152,Yes
+392,SawyerW,181000,2 Story,1659,No
+393,SawyerW,131000,2 Story,2016,Yes
+394,BrkSide,106900,2 Story,1290,No
+395,NAmes,100000,1 Story,1764,Yes
+396,Blmngtn,234000,1 Story,1557,Yes
+397,Sawyer,180000,1 Story,1721,Yes
+398,Veenker,181500,1 Story,1262,Yes
+399,SawyerW,179200,1 Story,1294,No
+400,Gilbert,115000,1 Story,1474,Yes
+401,SawyerW,225000,2 Story,2243,Yes
+402,BrkSide,153000,Other,1738,Yes
+403,SawyerW,118858,1 Story,1535,No
+404,BrkSide,76500,1 Story,1306,No
+405,OldTown,106000,1 Story,846,No
+406,Gilbert,172400,2 Story,1664,Yes
+407,Somerst,253000,2 Story,1971,Yes
+408,OldTown,100000,1 Story,968,No
+409,Somerst,291000,1 Story,1662,Yes
+410,OldTown,144000,Other,1690,Yes
+411,Mitchel,206300,Other,1344,No
+412,Crawfor,158000,Other,1523,Yes
+413,SawyerW,125000,1 Story,752,No
+414,Somerst,179400,2 Story,1501,No
+415,SawyerW,215000,2 Story,1911,Yes
+416,Timber,293077,1 Story,1646,Yes
+417,Gilbert,177500,Other,1382,Yes
+418,Timber,187500,Other,1717,Yes
+419,Edwards,85000,1 Story,796,No
+420,ClearCr,278000,1 Story,1830,Yes
+421,Mitchel,135000,1 Story,1178,No
+422,Edwards,125200,Other,1096,Yes
+423,NAmes,214000,1 Story,1480,No
+424,CollgCr,207000,2 Story,1764,Yes
+425,Greens,214000,1 Story,1235,Yes
+426,MeadowV,71000,2 Story,1092,No
+427,Timber,375000,1 Story,2036,Yes
+428,NWAmes,161000,1 Story,1211,Yes
+429,NWAmes,192000,2 Story,1930,Yes
+430,NAmes,131000,1 Story,1062,No
+431,Somerst,155000,2 Story,1200,No
+432,NAmes,149900,1 Story,1293,No
+433,Somerst,340000,2 Story,2466,Yes
+434,NAmes,133000,1 Story,914,No
+435,NAmes,121000,1 Story,936,No
+436,Gilbert,169000,2 Story,1600,Yes
+437,Sawyer,129200,1 Story,941,Yes
+438,Mitchel,152500,1 Story,1160,No
+439,Gilbert,184000,2 Story,1490,Yes
+440,NWAmes,145000,1 Story,1258,No
+441,OldTown,103000,Other,1447,No
+442,CollgCr,246500,1 Story,1651,Yes
+443,Timber,178000,1 Story,1491,Yes
+444,Timber,294000,1 Story,1537,No
+445,NridgHt,319900,1 Story,1752,Yes
+446,SWISU,102000,Other,1522,No
+447,Edwards,118000,1 Story,1440,No
+448,OldTown,96500,Other,1140,No
+449,Somerst,197000,1 Story,1247,Yes
+450,Somerst,227680,1 Story,1428,No
+451,StoneBr,591587,1 Story,2338,Yes
+452,Crawfor,135000,2 Story,1461,Yes
+453,CollgCr,183600,1 Story,1208,No
+454,IDOTRR,75000,1 Story,572,No
+455,CollgCr,195400,1 Story,1208,No
+456,Timber,204000,2 Story,1756,No
+457,Sawyer,132500,1 Story,999,No
+458,NoRidge,410000,Other,3238,Yes
+459,Mitchel,172000,2 Story,1968,Yes
+460,Crawfor,158500,1 Story,1152,Yes
+461,NWAmes,171000,2 Story,1645,No
+462,SawyerW,152000,1 Story,1141,No
+463,Somerst,225000,1 Story,1496,No
+464,Crawfor,246000,1 Story,1646,Yes
+465,CollgCr,395039,1 Story,1766,Yes
+466,NoRidge,310000,2 Story,2520,Yes
+467,NWAmes,175000,1 Story,1484,Yes
+468,BrkSide,100000,1 Story,788,Yes
+469,NWAmes,197500,2 Story,1868,Yes
+470,NoRidge,315000,1 Story,2063,Yes
+471,Sawyer,144000,1 Story,912,No
+472,Gilbert,180400,2 Story,1465,Yes
+473,Edwards,117000,Other,1604,No
+474,Timber,257000,1 Story,2279,Yes
+475,IDOTRR,120500,1 Story,816,No
+476,NridgHt,280000,2 Story,2172,Yes
+477,CollgCr,217000,2 Story,1779,Yes
+478,CollgCr,181000,2 Story,1596,No
+479,Gilbert,166000,1 Story,1190,Yes
+480,BrDale,100500,2 Story,987,No
+481,NAmes,149000,1 Story,1004,Yes
+482,CollgCr,147000,Other,1026,No
+483,StoneBr,213500,1 Story,1338,No
+484,Timber,250000,2 Story,2514,No
+485,NAmes,143000,1 Story,1214,Yes
+486,NAmes,135500,Other,980,No
+487,NWAmes,188500,1 Story,1594,Yes
+488,NAmes,118000,1 Story,864,No
+489,NAmes,157500,1 Story,1472,Yes
+490,Sawyer,125000,1 Story,912,Yes
+491,NAmes,120000,1 Story,1144,Yes
+492,Edwards,127500,1 Story,1689,Yes
+493,NWAmes,195000,2 Story,2030,Yes
+494,Somerst,305000,1 Story,1557,Yes
+495,Edwards,114000,1 Story,1298,No
+496,NAmes,136870,1 Story,1117,No
+497,Mitchel,160000,1 Story,1126,Yes
+498,CollgCr,183000,2 Story,1640,No
+499,CollgCr,228000,1 Story,1592,Yes
+500,NridgHt,281000,2 Story,1970,Yes
+501,Edwards,110000,1 Story,1179,No
+502,Sawyer,120000,1 Story,1073,No
+503,NridgHt,280000,1 Story,1836,Yes
+504,NoRidge,290000,2 Story,2270,Yes
+505,CollgCr,149900,1 Story,894,No
+506,Gilbert,215000,2 Story,1959,Yes
+507,OldTown,130000,1 Story,1072,Yes
+508,NAmes,184000,1 Story,1337,Yes
+509,CollgCr,177500,1 Story,1200,No
+510,StoneBr,349265,2 Story,2541,Yes
+511,Timber,265900,1 Story,1484,Yes
+512,Veenker,260000,Other,2646,Yes
+513,OldTown,87000,Other,1248,No
+514,NridgHt,342643,2 Story,2596,No
+515,CollgCr,112500,1 Story,882,No
+516,Crawfor,155000,1 Story,1273,No
+517,Somerst,232000,1 Story,1574,Yes
+518,NAmes,120000,1 Story,1045,No
+519,Somerst,166000,1 Story,1151,No
+520,NridgHt,440000,1 Story,1976,Yes
+521,Gilbert,145000,1 Story,1056,No
+522,Mitchel,196000,1 Story,1567,Yes
+523,Gilbert,190000,Other,1166,No
+524,MeadowV,75000,2 Story,1092,No
+525,Gilbert,230500,2 Story,1936,Yes
+526,Edwards,145500,Other,1072,No
+527,NridgHt,318000,1 Story,1734,Yes
+528,Mitchel,242500,1 Story,1625,Yes
+529,NWAmes,170000,1 Story,1220,Yes
+530,Somerst,249000,1 Story,1506,Yes
+531,Crawfor,215000,1 Story,1488,Yes
+532,Gilbert,195500,2 Story,1594,Yes
+533,IDOTRR,81000,1 Story,894,No
+534,CollgCr,203160,2 Story,1737,No
+535,Edwards,123500,1 Story,1148,No
+536,OldTown,140000,2 Story,1344,Yes
+537,CollgCr,138000,1 Story,990,No
+538,Gilbert,183500,2 Story,1720,Yes
+539,NridgHt,284000,2 Story,2046,Yes
+540,Sawyer,138500,1 Story,894,Yes
+541,Sawyer,115000,1 Story,897,No
+542,Somerst,235128,1 Story,1580,No
+543,CollgCr,200000,2 Story,1729,No
+544,SWISU,95000,Other,919,No
+545,NAmes,206900,2 Story,2112,Yes
+546,Mitchel,213000,2 Story,1820,Yes
+547,Edwards,126000,Other,1134,No
+548,Veenker,180500,Other,2499,Yes
+549,CollgCr,144500,1 Story,848,Yes
+550,NAmes,144000,1 Story,1150,No
+551,NWAmes,278000,1 Story,2524,Yes
+552,IDOTRR,55000,1 Story,796,No
+553,NAmes,110000,1 Story,773,No
+554,OldTown,86900,1 Story,672,No
+555,NAmes,186000,1 Story,1312,Yes
+556,CollgCr,140000,1 Story,907,No
+557,BrDale,125500,2 Story,1365,Yes
+558,NAmes,157500,1 Story,1024,Yes
+559,Somerst,328900,1 Story,1709,Yes
+560,MeadowV,88000,2 Story,1092,No
+561,BrDale,106000,2 Story,1302,No
+562,Sawyer,171000,Other,1701,Yes
+563,Somerst,168500,2 Story,1512,Yes
+564,Mitchel,124500,1 Story,816,No
+565,Gilbert,226750,2 Story,1892,Yes
+566,CollgCr,268500,2 Story,2214,Yes
+567,NWAmes,158000,Other,2119,Yes
+568,ClearCr,143000,1 Story,1473,Yes
+569,Sawyer,153000,Other,1034,Yes
+570,Somerst,170000,2 Story,1586,No
+571,Gilbert,168000,2 Story,1572,Yes
+572,NWAmes,178000,Other,1868,Yes
+573,NWAmes,197900,Other,1724,Yes
+574,SawyerW,179200,1 Story,1575,No
+575,Somerst,282922,1 Story,1464,No
+576,NAmes,135000,1 Story,1604,No
+577,SawyerW,150000,2 Story,1320,No
+578,Edwards,82000,1 Story,944,No
+579,OldTown,139900,2 Story,1428,No
+580,Gilbert,185000,2 Story,1644,Yes
+581,OldTown,78500,1 Story,725,No
+582,IDOTRR,75200,1 Story,816,No
+583,Timber,160000,1 Story,1687,Yes
+584,IDOTRR,90000,1 Story,984,No
+585,OldTown,140000,2 Story,1710,No
+586,Sawyer,110000,1 Story,980,No
+587,OldTown,159500,2 Story,2554,No
+588,NridgHt,386250,1 Story,2392,Yes
+589,NAmes,137500,1 Story,964,Yes
+590,CollgCr,193000,1 Story,1425,No
+591,Blmngtn,172500,1 Story,1258,Yes
+592,NAmes,171000,2 Story,1716,Yes
+593,CollgCr,207500,2 Story,1652,No
+594,SawyerW,153900,1 Story,1199,No
+595,NAmes,133700,1 Story,1040,No
+596,Crawfor,315000,1 Story,2365,Yes
+597,Edwards,137000,1 Story,1057,No
+598,Edwards,216000,1 Story,1325,Yes
+599,BrkSide,105000,1 Story,875,No
+600,NAmes,133500,1 Story,1005,Yes
+601,Sawyer,127000,1 Story,1040,No
+602,NPkVill,147000,2 Story,1322,Yes
+603,Somerst,144152,2 Story,1200,No
+604,NridgHt,209500,1 Story,1554,Yes
+605,BrDale,108000,2 Story,1092,No
+606,NPkVill,146300,1 Story,1069,Yes
+607,OldTown,240000,2 Story,2268,No
+608,NridgHt,233170,1 Story,1502,No
+609,Somerst,151000,2 Story,1200,No
+610,Crawfor,165000,2 Story,1502,Yes
+611,Sawyer,137900,1 Story,892,No
+612,NoRidge,265000,2 Story,2344,Yes
+613,Somerst,176000,2 Story,1458,Yes
+614,CollgCr,294900,1 Story,1590,No
+615,SawyerW,145000,1 Story,1332,No
+616,Mitchel,119500,1 Story,923,No
+617,NAmes,84900,1 Story,1728,No
+618,NAmes,165500,1 Story,1700,Yes
+619,CollgCr,201000,1 Story,1492,Yes
+620,StoneBr,188500,1 Story,1337,Yes
+621,Gilbert,178000,2 Story,1414,Yes
+622,Somerst,248328,1 Story,1689,No
+623,Edwards,144000,1 Story,1196,No
+624,NAmes,166000,1 Story,1392,Yes
+625,Edwards,108000,1 Story,996,Yes
+626,NridgHt,317500,1 Story,1582,No
+627,NAmes,140000,2 Story,1796,Yes
+628,OldTown,110500,1 Story,1103,Yes
+629,IDOTRR,102776,Other,1178,No
+630,MeadowV,104500,2 Story,1304,Yes
+631,NAmes,174900,Other,1165,No
+632,OldTown,109500,1 Story,936,Yes
+633,Mitchel,156450,Other,926,Yes
+634,IDOTRR,135000,Other,1469,No
+635,OldTown,117000,Other,1635,No
+636,Sawyer,164500,Other,1320,Yes
+637,SawyerW,162000,Other,1061,No
+638,CollgCr,133000,1 Story,848,No
+639,Somerst,244600,1 Story,1468,Yes
+640,Edwards,122000,Other,1298,Yes
+641,CollgCr,217000,2 Story,1753,Yes
+642,SawyerW,215000,1 Story,1494,Yes
+643,Crawfor,250000,Other,2057,Yes
+644,NAmes,107500,1 Story,827,Yes
+645,NAmes,105000,1 Story,985,No
+646,CollgCr,185000,1 Story,1337,No
+647,SawyerW,184000,2 Story,1686,No
+648,OldTown,126175,1 Story,1163,No
+649,Blmngtn,213490,1 Story,1506,Yes
+650,NridgHt,250000,1 Story,1634,Yes
+651,NridgHt,582933,2 Story,2822,Yes
+652,MeadowV,92000,Other,630,No
+653,OldTown,131500,Other,1795,No
+654,OldTown,143000,1 Story,1347,No
+655,BrkSide,126500,1 Story,1072,No
+656,NAmes,134800,1 Story,900,No
+657,OldTown,150000,2 Story,1558,Yes
+658,OldTown,112500,1 Story,928,No
+659,Sawyer,165250,Other,1302,Yes
+660,NAmes,76500,1 Story,864,No
+661,Somerst,223000,2 Story,1789,Yes
+662,BrkSide,126000,Other,1409,Yes
+663,Gilbert,236000,2 Story,2256,Yes
+664,NridgHt,318000,1 Story,1694,No
+665,NAmes,157500,1 Story,1478,Yes
+666,Somerst,249700,1 Story,1656,No
+667,IDOTRR,40000,2 Story,1317,No
+668,BrkSide,39300,1 Story,334,No
+669,BrkSide,129000,1 Story,960,No
+670,Gilbert,161500,Other,1384,Yes
+671,Crawfor,335000,1 Story,1902,Yes
+672,Veenker,324000,1 Story,1719,Yes
+673,ClearCr,255000,1 Story,2422,Yes
+674,CollgCr,217000,1 Story,1546,No
+675,Edwards,98000,2 Story,1436,No
+676,CollgCr,192000,1 Story,1459,Yes
+677,BrkSide,138400,Other,1536,Yes
+678,Edwards,134000,2 Story,1709,No
+679,Landmrk,137000,2 Story,1320,No
+680,Sawyer,143500,1 Story,1285,Yes
+681,IDOTRR,141000,Other,1375,Yes
+682,Mitchel,171500,1 Story,1279,Yes
+683,Edwards,90000,1 Story,960,No
+684,Timber,250764,1 Story,1650,Yes
+685,Sawyer,63900,1 Story,660,No
+686,IDOTRR,99500,1 Story,912,No
+687,Sawyer,144000,1 Story,1211,Yes
+688,NAmes,129000,1 Story,864,No
+689,CollgCr,226001,1 Story,1418,Yes
+690,CollgCr,145000,1 Story,1097,No
+691,Blmngtn,178740,1 Story,1414,Yes
+692,BrDale,113000,2 Story,1218,No
+693,NPkVill,143000,2 Story,1456,No
+694,CollgCr,211000,2 Story,1870,No
+695,NAmes,143000,Other,1846,Yes
+696,BrDale,122500,2 Story,1365,No
+697,Veenker,270000,1 Story,1494,Yes
+698,Edwards,120000,Other,1053,No
+699,Somerst,250580,1 Story,1372,No
+700,Sawyer,120875,1 Story,1024,No
+701,NAmes,152500,2 Story,1527,Yes
+702,NAmes,118000,1 Story,1128,No
+703,CollgCr,203000,1 Story,1504,Yes
+704,CollgCr,175900,1 Story,1270,No
+705,NoRidge,269790,2 Story,2013,Yes
+706,Sawyer,124100,1 Story,1020,No
+707,NoRidge,258000,2 Story,2263,Yes
+708,NAmes,142000,1 Story,1154,No
+709,BrkSide,79000,1 Story,896,No
+710,Sawyer,127000,1 Story,955,No
+711,OldTown,155000,2 Story,1768,No
+712,CollgCr,220000,1 Story,1358,Yes
+713,StoneBr,372500,1 Story,2046,Yes
+714,NWAmes,249000,2 Story,2673,Yes
+715,Somerst,257500,1 Story,1658,Yes
+716,Somerst,215200,2 Story,1547,No
+717,IDOTRR,110000,Other,1107,No
+718,Crawfor,146500,Other,1298,Yes
+719,Crawfor,236500,1 Story,1898,Yes
+720,SawyerW,188000,2 Story,1696,No
+721,OldTown,475000,Other,3608,Yes
+722,Gilbert,187500,2 Story,1498,Yes
+723,Edwards,125000,1 Story,768,Yes
+724,BrkSide,144000,1 Story,1167,Yes
+725,NridgHt,248500,1 Story,1456,Yes
+726,Edwards,85000,1 Story,876,No
+727,NAmes,154000,1 Story,1380,No
+728,IDOTRR,129850,Other,1601,No
+729,NAmes,144750,2 Story,1806,No
+730,NridgHt,214000,1 Story,1535,No
+731,Mitchel,152000,1 Story,1595,No
+732,NoRidge,337000,2 Story,2365,Yes
+733,CollgCr,223500,2 Story,1786,Yes
+734,Timber,232500,1 Story,1440,Yes
+735,NAmes,137500,Other,1054,No
+736,Somerst,214000,1 Story,1378,Yes
+737,StoneBr,455000,1 Story,2042,Yes
+738,Sawyer,185000,1 Story,1188,Yes
+739,Sawyer,131000,1 Story,1640,Yes
+740,Sawyer,120750,1 Story,894,No
+741,OldTown,135000,Other,1668,No
+742,ClearCr,190000,1 Story,1453,Yes
+743,CollgCr,191000,2 Story,1716,Yes
+744,Somerst,208900,1 Story,1338,No
+745,Crawfor,220000,Other,1991,Yes
+746,NoRidge,327000,2 Story,2687,Yes
+747,NAmes,126500,1 Story,1065,No
+748,OldTown,129900,Other,1774,Yes
+749,NAmes,177500,2 Story,2140,Yes
+750,NWAmes,197500,1 Story,1381,Yes
+751,Edwards,112000,2 Story,1346,No
+752,Somerst,185000,1 Story,1262,No
+753,Somerst,176000,1 Story,1266,Yes
+754,StoneBr,187500,1 Story,1360,Yes
+755,MeadowV,88250,2 Story,1092,No
+756,NWAmes,235000,2 Story,2263,Yes
+757,Edwards,110000,Other,1196,No
+758,SawyerW,184900,1 Story,1200,No
+759,NPkVill,120000,1 Story,836,No
+760,NAmes,142100,1 Story,1053,No
+761,SWISU,118000,1 Story,864,No
+762,Mitchel,134000,1 Story,1080,No
+763,CollgCr,128500,1 Story,864,No
+764,Gilbert,215000,2 Story,1889,Yes
+765,Edwards,150000,1 Story,1440,No
+766,Edwards,130000,2 Story,1708,No
+767,CollgCr,128200,1 Story,894,No
+768,NWAmes,127000,1 Story,1052,No
+769,SawyerW,149000,1 Story,1094,No
+770,Timber,174000,1 Story,1240,No
+771,Gilbert,175900,2 Story,1655,Yes
+772,Gilbert,189900,2 Story,1629,Yes
+773,NAmes,109500,1 Story,894,No
+774,NWAmes,150000,1 Story,1740,Yes
+775,Edwards,96000,Other,1362,No
+776,NridgHt,395192,1 Story,1940,Yes
+777,SawyerW,99500,1 Story,918,Yes
+778,NAmes,178900,1 Story,1510,No
+779,ClearCr,195000,1 Story,1643,Yes
+780,CollgCr,198900,1 Story,1226,No
+781,NridgHt,492000,2 Story,2656,Yes
+782,OldTown,86900,Other,720,No
+783,Edwards,63000,Other,1112,No
+784,NoRidge,348000,2 Story,2392,Yes
+785,Mitchel,239686,Other,2149,Yes
+786,NAmes,133000,2 Story,1792,No
+787,NridgHt,155000,2 Story,1626,No
+788,NWAmes,190000,2 Story,1993,Yes
+789,Gilbert,163900,Other,1482,Yes
+790,NAmes,139000,1 Story,1044,Yes
+791,SawyerW,173000,2 Story,1640,No
+792,NAmes,124000,1 Story,1144,No
+793,BrDale,112000,2 Story,1302,No
+794,NridgHt,415298,1 Story,2121,Yes
+795,SawyerW,158000,1 Story,1158,No
+796,Sawyer,128000,1 Story,1067,No
+797,NWAmes,162500,Other,1082,No
+798,OldTown,161000,2 Story,1666,Yes
+799,NAmes,94000,1 Story,876,Yes
+800,SWISU,104000,1 Story,1296,Yes
+801,Gilbert,177000,2 Story,1470,No
+802,Gilbert,188500,2 Story,1432,Yes
+803,IDOTRR,80900,Other,1049,No
+804,Crawfor,145000,2 Story,2002,No
+805,Crawfor,223000,1 Story,1844,Yes
+806,OldTown,184900,2 Story,1772,No
+807,Mitchel,169000,1 Story,1264,Yes
+808,Somerst,226700,2 Story,1768,No
+809,NAmes,130000,1 Story,1411,Yes
+810,NAmes,157500,2 Story,1440,Yes
+811,NWAmes,185000,2 Story,2044,Yes
+812,Edwards,130500,Other,1200,No
+813,Somerst,419005,1 Story,1966,Yes
+814,NoRidge,322500,2 Story,2582,Yes
+815,OldTown,117500,2 Story,2210,No
+816,BrDale,94500,2 Story,987,Yes
+817,NridgHt,275500,2 Story,2098,Yes
+818,Timber,267300,1 Story,1564,Yes
+819,NridgHt,382500,1 Story,2200,Yes
+820,OldTown,122500,2 Story,2290,No
+821,Gilbert,258000,2 Story,2373,Yes
+822,Somerst,155000,2 Story,1416,No
+823,Crawfor,139000,Other,1250,Yes
+824,CollgCr,279500,1 Story,1828,Yes
+825,Crawfor,201000,1 Story,1560,Yes
+826,ClearCr,240000,Other,2358,Yes
+827,Edwards,130000,1 Story,1038,No
+828,NoRidge,315750,2 Story,2398,Yes
+829,Edwards,171500,2 Story,1408,No
+830,Edwards,107500,2 Story,1347,No
+831,Somerst,229800,1 Story,1402,No
+832,Mitchel,146000,1 Story,1092,No
+833,BrkSide,138000,1 Story,1143,Yes
+834,NWAmes,197000,Other,1725,Yes
+835,Mitchel,251000,2 Story,2052,Yes
+836,NAmes,120000,1 Story,888,No
+837,NPkVill,149900,2 Story,1456,Yes
+838,CollgCr,191000,2 Story,1692,Yes
+839,Sawyer,131500,1 Story,1039,No
+840,Edwards,160500,2 Story,1398,Yes
+841,NPkVill,147000,2 Story,1548,Yes
+842,NAmes,142000,1 Story,1188,No
+843,NridgHt,360000,1 Story,1736,Yes
+844,CollgCr,147900,1 Story,1097,No
+845,OldTown,113000,2 Story,1452,No
+846,NridgHt,204000,1 Story,1302,Yes
+847,CollgCr,191000,1 Story,1479,No
+848,Mitchel,196000,1 Story,1676,Yes
+849,NAmes,244000,1 Story,2110,Yes
+850,OldTown,146500,2 Story,1521,No
+851,SawyerW,159000,1 Story,1114,No
+852,OldTown,170000,Other,1466,Yes
+853,OldTown,130000,Other,1306,No
+854,Edwards,135000,1 Story,1127,Yes
+855,OldTown,105000,2 Story,1004,Yes
+856,Edwards,135000,1 Story,1488,Yes
+857,Edwards,104900,Other,1221,No
+858,NWAmes,148000,Other,1032,Yes
+859,NWAmes,161500,1 Story,1342,Yes
+860,Somerst,264132,1 Story,1506,Yes
+861,CollgCr,250000,1 Story,1611,No
+862,NridgHt,209500,1 Story,1554,Yes
+863,OldTown,153500,1 Story,1559,No
+864,NPkVill,143750,1 Story,958,No
+865,NoRidge,250000,2 Story,2198,Yes
+866,NPkVill,127500,1 Story,1069,Yes
+867,OldTown,114504,2 Story,1368,No
+868,Edwards,117250,1 Story,914,No
+869,CollgCr,221800,1 Story,1254,No
+870,SawyerW,119900,1 Story,965,No
+871,IDOTRR,141000,Other,1215,No
+872,Somerst,275500,1 Story,1702,Yes
+873,OldTown,139000,Other,1652,No
+874,Mitchel,131000,1 Story,902,No
+875,Edwards,61000,1 Story,904,No
+876,NAmes,151000,1 Story,1054,No
+877,OldTown,118000,Other,1594,No
+878,Somerst,260261,1 Story,1542,Yes
+879,Somerst,252000,2 Story,1964,Yes
+880,CollgCr,143195,1 Story,1076,Yes
+881,Crawfor,257076,2 Story,1873,Yes
+882,NAmes,190000,2 Story,2544,No
+883,Crawfor,238000,Other,1718,Yes
+884,Edwards,82000,1 Story,1152,No
+885,ClearCr,277000,Other,2144,Yes
+886,Edwards,159900,1 Story,1509,Yes
+887,MeadowV,127000,2 Story,1475,Yes
+888,Sawyer,136000,1 Story,1832,No
+889,Gilbert,156932,2 Story,1412,Yes
+890,Edwards,84900,1 Story,640,No
+891,Edwards,97900,Other,936,No
+892,Gilbert,203000,1 Story,1326,No
+893,Mitchel,126000,Other,1734,No
+894,OldTown,152000,1 Story,1616,No
+895,OldTown,143000,2 Story,1482,No
+896,Mitchel,171000,1 Story,1959,No
+897,NAmes,120500,1 Story,864,No
+898,NAmes,116050,1 Story,864,No
+899,Mitchel,157000,2 Story,1432,Yes
+900,OldTown,139500,Other,1456,No
+901,Timber,392000,1 Story,1824,Yes
+902,NAmes,141000,2 Story,1464,No
+903,NAmes,87500,1 Story,1040,No
+904,NWAmes,143000,1 Story,1328,Yes
+905,Somerst,285000,1 Story,1310,Yes
+906,NAmes,205000,2 Story,1986,Yes
+907,MeadowV,115000,2 Story,1304,Yes
+908,NAmes,145000,1 Story,1092,No
+909,Somerst,252000,2 Story,1953,Yes
+910,NAmes,115000,Other,1540,No
+911,NWAmes,143450,1 Story,1152,No
+912,NAmes,237500,1 Story,2117,Yes
+913,Veenker,300000,2 Story,2503,Yes
+914,NAmes,140000,1 Story,1170,Yes
+915,CollgCr,144000,1 Story,1099,No
+916,CollgCr,236500,1 Story,1788,Yes
+917,Sawyer,133000,1 Story,1040,No
+918,Edwards,94750,1 Story,960,No
+919,Somerst,190000,2 Story,1680,No
+920,NridgHt,426000,2 Story,2332,Yes
+921,Gilbert,194500,2 Story,1895,Yes
+922,Mitchel,130000,2 Story,1287,No
+923,Edwards,120000,1 Story,1368,No
+924,CollgCr,212900,1 Story,1552,No
+925,CollgCr,130000,1 Story,907,No
+926,NoRidge,325000,2 Story,2622,Yes
+927,Somerst,166000,2 Story,1524,No
+928,Timber,180000,1 Story,1256,Yes
+929,OldTown,179900,2 Story,1944,No
+930,NAmes,192000,1 Story,1395,Yes
+931,OldTown,79000,Other,1440,No
+932,IDOTRR,120000,Other,1308,No
+933,Gilbert,176485,1 Story,1302,No
+934,NoRidge,350000,1 Story,2113,Yes
+935,Gilbert,188000,2 Story,1658,Yes
+936,Somerst,194000,1 Story,1352,Yes
+937,Timber,187500,Other,1146,Yes
+938,CollgCr,133000,Other,768,No
+939,NAmes,167000,1 Story,1516,No
+940,Crawfor,250000,1 Story,1646,Yes
+941,BrDale,96000,2 Story,987,No
+942,Crawfor,167000,Other,1636,Yes
+943,Edwards,121000,Other,1273,No
+944,Somerst,183900,2 Story,1452,No
+945,CollgCr,208500,2 Story,1710,No
+946,Timber,282000,1 Story,1922,Yes
+947,Gilbert,168000,2 Story,1642,Yes
+948,SawyerW,205000,2 Story,2110,Yes
+949,SawyerW,175900,2 Story,1603,No
+950,Mitchel,245000,1 Story,1409,Yes
+951,NAmes,141000,1 Story,1092,Yes
+952,Crawfor,145000,2 Story,1958,No
+953,NAmes,105000,Other,1376,Yes
+954,Mitchel,254900,2 Story,1916,Yes
+955,Edwards,112000,1 Story,960,No
+956,NridgHt,465000,1 Story,2076,Yes
+957,Somerst,177000,2 Story,1573,No
+958,NridgHt,500000,1 Story,2696,Yes
+959,Timber,264966,2 Story,1780,Yes
+960,NAmes,145100,1 Story,1292,Yes
+961,CollgCr,313000,2 Story,2153,Yes
+962,MeadowV,86000,Other,630,No
+963,Crawfor,148500,2 Story,1098,Yes
+964,NoRidge,755000,2 Story,4316,Yes
+965,Mitchel,156000,Other,912,Yes
+966,Sawyer,130000,1 Story,899,No
+967,Edwards,118500,Other,816,No
+968,CollgCr,158000,1 Story,1174,No
+969,IDOTRR,123000,2 Story,2168,No
+970,Mitchel,147000,1 Story,1120,No
+971,Veenker,275000,1 Story,2014,Yes
+972,NAmes,146000,1 Story,1150,No
+973,NoRidge,260000,2 Story,2417,Yes
+974,Somerst,238500,1 Story,1448,Yes
+975,NWAmes,157000,1 Story,1601,Yes
+976,Mitchel,285000,1 Story,1803,Yes
+977,CollgCr,213000,1 Story,1484,No
+978,MeadowV,81000,Other,630,No
+979,IDOTRR,103000,Other,1836,No
+980,CollgCr,200000,2 Story,1772,Yes
+981,CollgCr,214000,2 Story,1755,Yes
+982,Somerst,250000,2 Story,1958,Yes
+983,NAmes,132000,1 Story,928,No
+984,OldTown,155000,Other,2104,No
+985,BrkSide,140200,Other,1577,Yes
+986,Somerst,250000,2 Story,1977,No
+987,Blmngtn,174000,1 Story,1555,Yes
+988,Mitchel,139000,2 Story,1824,No
+989,Timber,180500,1 Story,1312,No
+990,Edwards,81000,Other,1184,No
+991,Sawyer,134500,1 Story,943,No
+992,Crawfor,137000,2 Story,1228,Yes
+993,NAmes,102900,1 Story,1210,No
+994,Crawfor,217000,1 Story,2259,Yes
+995,SawyerW,170000,1 Story,1162,No
+996,Timber,220000,1 Story,1346,Yes
+997,BrkSide,134900,Other,1176,No
+998,Edwards,99900,1 Story,864,No
+999,CollgCr,197900,2 Story,1779,No
+1000,SWISU,168000,1 Story,1424,Yes
+1001,IDOTRR,127000,Other,1236,Yes
+1002,Sawyer,85000,1 Story,756,No
+1003,SawyerW,203000,1 Story,1512,No
+1004,NridgHt,372402,1 Story,1710,Yes
+1005,Edwards,108000,Other,1292,No
+1006,Gilbert,162000,2 Story,1320,No
+1007,Gilbert,170000,2 Story,1671,Yes
+1008,OldTown,105900,1 Story,720,No
+1009,MeadowV,97000,2 Story,1344,Yes
+1010,Somerst,252678,2 Story,1852,Yes
+1011,SWISU,80000,1 Story,879,No
+1012,NAmes,151500,1 Story,958,No
+1013,NAmes,146500,2 Story,1644,Yes
+1014,Gilbert,185000,2 Story,1511,Yes
+1015,SawyerW,228500,Other,1822,Yes
+1016,Gilbert,176000,2 Story,1536,Yes
+1017,Somerst,212700,1 Story,1372,No
+1018,Edwards,243000,1 Story,2158,Yes
+1019,OldTown,120000,Other,1182,No
+1020,NridgHt,306000,1 Story,1704,Yes
+1021,Gilbert,173500,1 Story,1258,No
+1022,CollgCr,211000,2 Story,1796,No
+1023,Crawfor,144800,1 Story,1112,Yes
+1024,BrkSide,119000,Other,904,No
+1025,NWAmes,179900,2 Story,1552,Yes
+1026,Edwards,84000,1 Story,845,No
+1027,Mitchel,145000,1 Story,1664,No
+1028,Edwards,149900,Other,1609,No
+1029,NWAmes,152000,1 Story,1370,Yes
+1030,ClearCr,256000,1 Story,1663,Yes
+1031,Sawyer,108000,1 Story,672,No
+1032,StoneBr,501837,1 Story,2234,Yes
+1033,SWISU,126000,1 Story,856,Yes
+1034,NridgHt,376162,2 Story,2334,Yes
+1035,NoRidge,321000,2 Story,2494,Yes
+1036,Edwards,35000,1 Story,498,No
+1037,Edwards,147000,Other,1117,Yes
+1038,Somerst,266000,2 Story,1939,Yes
+1039,Gilbert,181000,2 Story,1675,Yes
+1040,NWAmes,167900,1 Story,1334,Yes
+1041,NAmes,117600,1 Story,894,No
+1042,Somerst,320000,1 Story,1905,Yes
+1043,NWAmes,306000,2 Story,2340,Yes
+1044,Veenker,192000,1 Story,1430,Yes
+1045,Mitchel,132250,1 Story,1040,No
+1046,Crawfor,208000,Other,1982,Yes
+1047,Sawyer,148000,1 Story,1382,Yes
+1048,CollgCr,240000,2 Story,2098,Yes
+1049,IDOTRR,102000,1 Story,976,No
+1050,NAmes,149900,1 Story,1078,Yes
+1051,NAmes,140500,1 Story,1187,Yes
+1052,StoneBr,191500,1 Story,1280,No
+1053,OldTown,147000,1 Story,1122,No
+1054,Sawyer,108000,1 Story,948,No
+1055,Edwards,118000,1 Story,698,No
+1056,IDOTRR,68104,Other,845,No
+1057,NAmes,215000,1 Story,1656,Yes
+1058,CollgCr,214000,1 Story,1536,No
+1059,NWAmes,151500,1 Story,1177,No
+1060,BrkSide,164900,Other,1672,Yes
+1061,NAmes,155000,1 Story,1128,No
+1062,CollgCr,215700,2 Story,1771,No
+1063,Somerst,213133,1 Story,1369,No
+1064,NridgHt,329900,2 Story,2358,Yes
+1065,NridgHt,412500,2 Story,2668,Yes
+1066,BrDale,103400,2 Story,987,No
+1067,NAmes,183000,1 Story,1773,Yes
+1068,CollgCr,214000,1 Story,1588,No
+1069,NridgHt,232698,1 Story,1721,No
+1070,NAmes,155000,2 Story,1770,No
+1071,Sawyer,134900,Other,858,No
+1072,Somerst,267916,1 Story,1418,Yes
+1073,CollgCr,192500,2 Story,1776,Yes
+1074,Sawyer,140000,Other,1641,Yes
+1075,Gilbert,176000,1 Story,1253,Yes
+1076,NridgHt,335000,2 Story,2184,Yes
+1077,Mitchel,165500,Other,1110,Yes
+1078,NAmes,159000,1 Story,1394,Yes
+1079,Sawyer,130000,Other,810,No
+1080,Somerst,240900,2 Story,1884,Yes
+1081,BrDale,118000,2 Story,987,No
+1082,BrkSide,133000,Other,1573,No
+1083,NAmes,124000,1 Story,1584,No
+1084,GrnHill,230000,1 Story,1295,No
+1085,NAmes,180000,1 Story,1790,Yes
+1086,SawyerW,152000,1 Story,1097,No
+1087,NridgHt,379000,2 Story,2331,Yes
+1088,MeadowV,98000,2 Story,1092,No
+1089,Sawyer,219000,2 Story,2267,Yes
+1090,Crawfor,138000,2 Story,1603,Yes
+1091,IDOTRR,100000,Other,1123,No
+1092,Gilbert,225000,2 Story,1733,Yes
+1093,Gilbert,174000,2 Story,1560,Yes
+1094,NAmes,149500,1 Story,988,No
+1095,Sawyer,62383,1 Story,864,Yes
+1096,Edwards,179000,1 Story,1200,No
+1097,IDOTRR,125500,Other,1360,No
+1098,Gilbert,166000,2 Story,1504,No
+1099,Sawyer,145000,1 Story,1040,No
+1100,NridgHt,378000,1 Story,1780,Yes
+1101,Gilbert,178000,2 Story,1342,Yes
+1102,OldTown,159900,2 Story,1560,No
+1103,NAmes,110000,1 Story,892,No
+1104,NWAmes,165000,1 Story,1350,Yes
+1105,NAmes,153000,1 Story,1313,Yes
+1106,NAmes,135000,2 Story,2080,Yes
+1107,Veenker,294000,2 Story,2167,Yes
+1108,Crawfor,257500,Other,2133,Yes
+1109,OldTown,93000,1 Story,936,No
+1110,IDOTRR,34900,1 Story,720,No
+1111,Gilbert,199900,2 Story,1886,Yes
+1112,MeadowV,124000,1 Story,1040,No
+1113,Gilbert,309000,2 Story,2212,Yes
+1114,Edwards,140000,Other,1072,No
+1115,Somerst,255000,2 Story,1792,No
+1116,Sawyer,152000,Other,1126,No
+1117,Mitchel,169900,Other,1034,No
+1118,StoneBr,556581,2 Story,2868,Yes
+1119,OldTown,144000,Other,1056,No
+1120,NAmes,105500,Other,832,No
+1121,Sawyer,151000,Other,1212,Yes
+1122,Sawyer,129000,Other,913,No
+1123,MeadowV,90500,2 Story,1092,No
+1124,NPkVill,144000,2 Story,1456,Yes
+1125,CollgCr,148000,Other,914,No
+1126,NAmes,106500,1 Story,882,No
+1127,NAmes,116000,1 Story,882,No
+1128,BrkSide,132500,Other,1412,Yes
+1129,OldTown,127500,Other,1609,No
+1130,Gilbert,192000,2 Story,1638,Yes
+1131,OldTown,94550,2 Story,1701,No
+1132,Crawfor,147500,Other,1264,No
+1133,Crawfor,177500,2 Story,1494,Yes
+1134,NAmes,147000,1 Story,1374,Yes
+1135,NAmes,132000,1 Story,972,Yes
+1136,OldTown,125000,1 Story,960,No
+1137,SawyerW,144000,1 Story,2020,Yes
+1138,NAmes,138000,Other,1904,No
+1139,OldTown,107500,2 Story,2372,No
+1140,Timber,281213,2 Story,2482,Yes
+1141,CollgCr,305900,1 Story,2000,No
+1142,Gilbert,164000,Other,1752,No
+1143,SawyerW,269500,2 Story,2787,Yes
+1144,OldTown,99800,1 Story,713,No
+1145,NridgHt,207500,1 Story,1314,Yes
+1146,Veenker,318750,1 Story,1694,Yes
+1147,MeadowV,84500,Other,630,No
+1148,NAmes,98300,1 Story,1048,No
+1149,BrkSide,118000,Other,1077,Yes
+1150,OldTown,129400,2 Story,1540,No
+1151,NWAmes,213000,1 Story,1664,Yes
+1152,MeadowV,105000,Other,988,No
+1153,NAmes,88000,1 Story,858,No
+1154,Mitchel,209000,1 Story,1491,No
+1155,CollgCr,221000,1 Story,1494,Yes
+1156,ClearCr,165000,Other,2071,Yes
+1157,Edwards,116000,Other,1250,No
+1158,Timber,410000,1 Story,2036,Yes
+1159,NAmes,130000,1 Story,864,No
+1160,ClearCr,241500,1 Story,1363,Yes
+1161,BrkSide,102000,1 Story,986,Yes
+1162,NAmes,190000,1 Story,1419,No
+1163,CollgCr,220000,1 Story,1513,Yes
+1164,ClearCr,244400,2 Story,2403,Yes
+1165,Crawfor,224000,1 Story,1906,Yes
+1166,Sawyer,147000,1 Story,1055,Yes
+1167,CollgCr,146000,1 Story,990,No
+1168,Sawyer,125000,1 Story,1728,No
+1169,SawyerW,320000,2 Story,3222,Yes
+1170,Somerst,301000,2 Story,2048,Yes
+1171,NAmes,142000,1 Story,1056,Yes
+1172,NoRidge,290000,2 Story,2520,Yes
+1173,NAmes,122000,1 Story,960,No
+1174,Somerst,200000,2 Story,1607,No
+1175,Somerst,264500,1 Story,1836,Yes
+1176,NridgHt,336860,1 Story,1866,Yes
+1177,IDOTRR,107000,Other,1430,No
+1178,NWAmes,240000,2 Story,2614,Yes
+1179,Edwards,82000,1 Story,1152,No
+1180,Somerst,235876,1 Story,1528,Yes
+1181,SawyerW,213000,2 Story,1775,Yes
+1182,SWISU,140000,2 Story,1482,No
+1183,Somerst,199900,1 Story,1241,No
+1184,NAmes,124500,1 Story,1041,No
+1185,NridgHt,279000,2 Story,1914,Yes
+1186,NAmes,142000,1 Story,1252,No
+1187,Somerst,195000,1 Story,1256,Yes
+1188,Edwards,154000,Other,1626,No
+1189,OldTown,108000,1 Story,1032,No
+1190,Mitchel,139500,1 Story,1008,No
+1191,ClearCr,173000,1 Story,1675,Yes
+1192,NAmes,185000,1 Story,1440,No
+1193,BrkSide,128500,Other,1612,No
+1194,Mitchel,168000,1 Story,1622,Yes
+1195,NAmes,145000,1 Story,1314,No
+1196,Mitchel,146500,1 Story,1652,No
+1197,SawyerW,153000,1 Story,1114,No
+1198,Blmngtn,191000,1 Story,1504,Yes
+1199,ClearCr,211000,2 Story,2060,Yes
+1200,CollgCr,240000,2 Story,2327,Yes
+1201,Edwards,91500,Other,1456,Yes
+1202,NridgHt,205000,1 Story,1370,Yes
+1203,Edwards,125000,1 Story,1164,No
+1204,StoneBr,180000,1 Story,1280,No
+1205,NridgHt,202500,1 Story,1368,Yes
+1206,NAmes,126000,1 Story,1560,No
+1207,IDOTRR,93850,1 Story,768,No
+1208,NAmes,155000,1 Story,1422,No
+1209,Gilbert,184500,Other,1374,Yes
+1210,NAmes,135000,1 Story,1105,No
+1211,NWAmes,168500,2 Story,2061,Yes
+1212,Timber,167500,Other,1394,No
+1213,NAmes,111900,1 Story,936,No
+1214,Mitchel,143000,Other,1362,No
+1215,Edwards,127500,Other,1355,No
+1216,NWAmes,181000,1 Story,1586,Yes
+1217,Sawyer,122000,1 Story,864,No
+1218,Edwards,127500,Other,1012,No
+1219,CollgCr,240000,2 Story,2090,Yes
+1220,Sawyer,128000,1 Story,984,Yes
+1221,Gilbert,176000,2 Story,1456,No
+1222,Blmngtn,180000,1 Story,1220,Yes
+1223,CollgCr,332000,1 Story,1720,Yes
+1224,Crawfor,266500,2 Story,2340,Yes
+1225,NAmes,119000,1 Story,1556,No
+1226,Mitchel,140000,Other,936,No
+1227,NridgHt,260116,2 Story,2152,Yes
+1228,NWAmes,260000,2 Story,2353,Yes
+1229,NAmes,165500,Other,1661,Yes
+1230,CollgCr,272000,1 Story,1601,Yes
+1231,OldTown,256000,Other,2792,Yes
+1232,Mitchel,173000,Other,1217,No
+1233,CollgCr,261500,2 Story,1872,Yes
+1234,NPkVill,148500,1 Story,1055,No
+1235,StoneBr,207500,2 Story,2090,Yes
+1236,Gilbert,244000,2 Story,2054,Yes
+1237,NWAmes,187500,Other,1472,Yes
+1238,NridgHt,324000,1 Story,1808,Yes
+1239,Timber,316500,1 Story,1641,No
+1240,IDOTRR,64500,Other,1020,No
+1241,NAmes,139000,1 Story,952,No
+1242,Somerst,270000,2 Story,1959,Yes
+1243,NAmes,148800,1 Story,1120,Yes
+1244,NPkVill,128000,1 Story,958,Yes
+1245,NAmes,140000,1 Story,1362,Yes
+1246,NAmes,155000,1 Story,1269,Yes
+1247,ClearCr,235000,1 Story,1252,Yes
+1248,NAmes,139900,1 Story,1422,Yes
+1249,NAmes,152000,1 Story,1040,No
+1250,NridgHt,500067,1 Story,2290,Yes
+1251,NAmes,140000,1 Story,1114,No
+1252,SawyerW,192500,2 Story,1663,No
+1253,NAmes,242000,1 Story,2069,Yes
+1254,Sawyer,131400,1 Story,1144,Yes
+1255,OldTown,124900,Other,1869,No
+1256,OldTown,85000,1 Story,1022,No
+1257,Gilbert,156000,Other,1430,Yes
+1258,SWISU,160000,2 Story,2650,No
+1259,NWAmes,170000,Other,1173,Yes
+1260,NAmes,167900,2 Story,1611,No
+1261,NridgHt,293000,1 Story,1740,No
+1262,Somerst,207500,2 Story,1728,No
+1263,NAmes,140000,1 Story,1283,No
+1264,NridgHt,221370,1 Story,1324,Yes
+1265,BrkSide,131750,Other,1426,Yes
+1266,CollgCr,170000,2 Story,1396,Yes
+1267,NoRidge,336000,2 Story,2612,Yes
+1268,NridgHt,344133,2 Story,2253,Yes
+1269,Sawyer,157000,1 Story,1949,No
+1270,Edwards,140000,1 Story,1214,No
+1271,Blmngtn,159895,1 Story,1266,Yes
+1272,NoRidge,290000,2 Story,2531,Yes
+1273,Sawyer,123000,1 Story,912,No
+1274,Timber,315000,1 Story,1838,Yes
+1275,OldTown,46500,1 Story,407,No
+1276,OldTown,129000,2 Story,1464,No
+1277,Somerst,204000,1 Story,1358,No
+1278,NridgHt,284000,1 Story,1575,Yes
+1279,NWAmes,165150,2 Story,1790,Yes
+1280,StoneBr,392000,1 Story,1419,Yes
+1281,BrkSide,88000,1 Story,1015,No
+1282,SawyerW,147983,2 Story,2228,No
+1283,SWISU,131000,Other,1465,Yes
+1284,Timber,170000,2 Story,2014,No
+1285,Timber,214900,2 Story,1894,Yes
+1286,NAmes,81400,1 Story,1040,No
+1287,BrkSide,52000,1 Story,729,No
+1288,NoRidge,290000,2 Story,2501,Yes
+1289,CollgCr,152000,1 Story,1040,No
+1290,CollgCr,203000,1 Story,1444,No
+1291,SawyerW,229000,Other,2037,Yes
+1292,Gilbert,154204,1 Story,1128,Yes
+1293,Somerst,257000,2 Story,1861,Yes
+1294,OldTown,122250,Other,1740,Yes
+1295,NAmes,124000,1 Story,932,Yes
+1296,OldTown,135000,Other,1174,Yes
+1297,ClearCr,158900,1 Story,1388,Yes
+1298,Sawyer,158450,Other,1452,Yes
+1299,BrkSide,115000,Other,1344,No
+1300,Sawyer,121500,1 Story,1392,Yes
+1301,OldTown,122000,2 Story,2358,No
+1302,NWAmes,154000,2 Story,2050,Yes
+1303,CollgCr,133900,Other,768,No
+1304,OldTown,150000,2 Story,1566,No
+1305,NAmes,115000,1 Story,912,No
+1306,Mitchel,215000,2 Story,1961,Yes
+1307,NridgHt,256300,1 Story,1600,Yes
+1308,NAmes,142000,1 Story,1051,No
+1309,BrkSide,149000,1 Story,1432,Yes
+1310,Sawyer,149500,2 Story,1400,Yes
+1311,CollgCr,176432,1 Story,1314,Yes
+1312,Somerst,310013,2 Story,1880,Yes
+1313,ClearCr,302000,1 Story,1824,Yes
+1314,Gilbert,185900,2 Story,1651,Yes
+1315,Sawyer,128500,1 Story,988,No
+1316,Sawyer,129000,1 Story,912,No
+1317,Mitchel,113000,1 Story,988,No
+1318,Edwards,100000,1 Story,1664,No
+1319,StoneBr,387000,1 Story,1884,Yes
+1320,Crawfor,141500,2 Story,1436,Yes
+1321,SWISU,100000,Other,1666,Yes
+1322,NridgHt,325624,2 Story,2161,Yes
+1323,NAmes,134500,Other,999,No
+1324,IDOTRR,72000,1 Story,819,No
+1325,CollgCr,139500,1 Story,1022,No
+1326,OldTown,120000,1 Story,1130,Yes
+1327,Somerst,245000,1 Story,1432,Yes
+1328,NWAmes,182900,1 Story,1440,Yes
+1329,NAmes,147500,Other,1521,No
+1330,OldTown,140000,Other,936,No
+1331,CollgCr,179900,1 Story,1234,No
+1332,Mitchel,150900,1 Story,1728,No
+1333,NAmes,143250,1 Story,981,No
+1334,OldTown,120000,Other,1183,No
+1335,NWAmes,200000,2 Story,2090,Yes
+1336,BrkSide,100000,1 Story,1301,No
+1337,IDOTRR,85000,1 Story,641,No
+1338,StoneBr,377426,1 Story,1922,Yes
+1339,NAmes,163500,1 Story,1200,Yes
+1340,IDOTRR,35311,1 Story,480,No
+1341,CollgCr,239799,2 Story,1962,No
+1342,Edwards,83000,Other,1414,Yes
+1343,NridgHt,370000,2 Story,2690,Yes
+1344,NridgHt,230000,1 Story,1314,Yes
+1345,Somerst,262500,1 Story,1566,No
+1346,OldTown,220000,Other,2486,Yes
+1347,Somerst,147000,1 Story,1795,Yes
+1348,SawyerW,225000,2 Story,2200,Yes
+1349,Edwards,122000,1 Story,1383,No
+1350,Gilbert,214000,2 Story,2060,Yes
+1351,IDOTRR,115000,Other,1517,No
+1352,Mitchel,171000,Other,1118,Yes
+1353,BrkSide,157000,Other,1497,No
+1354,SawyerW,180000,1 Story,1298,Yes
+1355,Blmngtn,160200,1 Story,1145,Yes
+1356,OldTown,107900,1 Story,901,No
+1357,CollgCr,185000,Other,1838,No
+1358,NAmes,148000,1 Story,1194,No
+1359,Edwards,159900,Other,1152,No
+1360,BrDale,83000,2 Story,987,No
+1361,NAmes,141000,1 Story,1800,No
+1362,SawyerW,171000,2 Story,1564,Yes
+1363,NAmes,139950,1 Story,1144,No
+1364,BrkSide,116500,1 Story,858,No
+1365,IDOTRR,141000,Other,1969,Yes
+1366,NAmes,108000,Other,1337,No
+1367,CollgCr,207000,1 Story,1390,No
+1368,OldTown,79900,Other,1198,No
+1369,Crawfor,300000,1 Story,1646,Yes
+1370,OldTown,143000,1 Story,1133,No
+1371,Somerst,139000,2 Story,1080,No
+1372,Mitchel,112000,1 Story,833,No
+1373,CollgCr,177439,2 Story,1356,Yes
+1374,Edwards,93000,1 Story,1124,Yes
+1375,SWISU,136500,Other,1694,Yes
+1376,Sawyer,149900,Other,1034,Yes
+1377,Sawyer,80000,1 Story,1006,No
+1378,CollgCr,156000,1 Story,990,No
+1379,Mitchel,148000,Other,1210,No
+1380,Veenker,245500,1 Story,1288,Yes
+1381,Sawyer,141000,1 Story,864,No
+1382,OldTown,106000,Other,2138,No
+1383,CollgCr,260000,1 Story,1734,No
+1384,BrkSide,128000,2 Story,1232,Yes
+1385,Blueste,162500,1 Story,1191,Yes
+1386,Mitchel,157900,1 Story,1188,No
+1387,Gilbert,195500,2 Story,1604,No
+1388,Sawyer,124000,1 Story,912,No
+1389,OldTown,155500,2 Story,1595,Yes
+1390,SawyerW,275000,Other,1644,Yes
+1391,Mitchel,138000,Other,796,No
+1392,Mitchel,173000,Other,1287,Yes
+1393,SawyerW,159000,1 Story,1218,No
+1394,BrkSide,108000,Other,1668,No
+1395,BrkSide,72500,1 Story,720,No
+1396,SawyerW,155000,1 Story,1114,No
+1397,SawyerW,224243,1 Story,1450,No
+1398,NridgHt,266000,1 Story,1684,Yes
+1399,Blmngtn,246990,1 Story,1511,Yes
+1400,NAmes,142600,1 Story,1728,No
+1401,Gilbert,169990,1 Story,1316,Yes
+1402,OldTown,117000,1 Story,833,No
+1403,BrDale,100000,2 Story,987,No
+1404,NridgHt,394617,1 Story,1932,Yes
+1405,NoRidge,263000,2 Story,2202,Yes
+1406,NAmes,139000,1 Story,1056,No
+1407,BrDale,106000,2 Story,987,No
+1408,NAmes,159500,1 Story,1194,Yes
+1409,CollgCr,323262,1 Story,1680,Yes
+1410,IDOTRR,108000,Other,1336,No
+1411,SawyerW,228000,2 Story,2097,Yes
+1412,NAmes,130000,1 Story,864,No
+1413,IDOTRR,127000,2 Story,1355,No
+1414,SWISU,127000,Other,1691,Yes
+1415,BrkSide,109500,Other,784,No
+1416,Somerst,227875,2 Story,1761,No
+1417,Somerst,177500,2 Story,1573,No
+1418,Gilbert,183200,2 Story,1509,Yes
+1419,Timber,180000,1 Story,1339,Yes
+1420,SawyerW,172000,1 Story,1398,No
+1421,CollgCr,207000,1 Story,1463,No
+1422,NWAmes,167900,1 Story,1116,Yes
+1423,Sawyer,143900,1 Story,1696,Yes
+1424,SawyerW,159000,1 Story,1114,No
+1425,BrDale,111750,2 Story,1302,No
+1426,OldTown,149700,1 Story,1236,No
+1427,Mitchel,240000,1 Story,1710,Yes
+1428,BrkSide,121000,Other,952,Yes
+1429,CollgCr,149900,Other,985,No
+1430,Gilbert,178900,2 Story,1484,Yes
+1431,Mitchel,126500,1 Story,874,No
+1432,CollgCr,128500,1 Story,971,Yes
+1433,NridgHt,370967,1 Story,1800,Yes
+1434,Blmngtn,192500,1 Story,1555,Yes
+1435,CollgCr,297000,1 Story,1718,Yes
+1436,CollgCr,276000,2 Story,2574,Yes
+1437,Gilbert,165000,2 Story,1470,Yes
+1438,Edwards,86000,1 Story,605,No
+1439,IDOTRR,44000,1 Story,797,No
+1440,OldTown,89900,1 Story,869,No
+1441,Gilbert,240000,1 Story,1670,Yes
+1442,NoRidge,430000,1 Story,3228,Yes
+1443,CollgCr,250000,1 Story,1651,Yes
+1444,NAmes,155000,1 Story,1575,Yes
+1445,BrkSide,150000,Other,2009,Yes
+1446,Gilbert,186500,2 Story,1792,Yes
+1447,Sawyer,115000,1 Story,890,No
+1448,Gilbert,178000,2 Story,1593,Yes
+1449,NAmes,158500,Other,1254,Yes
+1450,NAmes,146500,1 Story,1624,Yes
+1451,NAmes,197600,Other,2461,Yes
+1452,NAmes,127500,1 Story,864,No
+1453,Edwards,128000,1 Story,1172,No
+1454,NAmes,157900,1 Story,1442,No
+1455,OldTown,114000,2 Story,1232,No
+1456,Mitchel,137500,1 Story,889,No
+1457,NWAmes,250000,2 Story,2654,Yes
+1458,NAmes,114500,1 Story,912,No
+1459,Mitchel,143000,Other,1026,Yes
+1460,Gilbert,185088,2 Story,1733,Yes
+1461,Mitchel,131900,Other,796,No
+1462,NAmes,139000,1 Story,1632,Yes
+1463,Gilbert,168500,Other,1474,Yes
+1464,Sawyer,89500,1 Story,998,No
+1465,NWAmes,172000,Other,1083,Yes
+1466,Edwards,177000,Other,1357,Yes
+1467,NAmes,153000,1 Story,1124,Yes
+1468,Somerst,225000,1 Story,1436,No
+1469,BrkSide,210000,Other,1635,Yes
+1470,OldTown,105000,Other,1214,No
+1471,NAmes,127000,1 Story,1107,No
+1472,IDOTRR,124900,1 Story,1001,No
+1473,Mitchel,188000,2 Story,2000,Yes
+1474,Edwards,124000,Other,1610,Yes
+1475,NAmes,136500,1 Story,1050,No
+1476,Gilbert,245000,2 Story,2312,Yes
+1477,IDOTRR,84500,Other,754,No
+1478,NAmes,155000,1 Story,1337,Yes
+1479,NAmes,137000,2 Story,1728,Yes
+1480,NAmes,176000,1 Story,1329,Yes
+1481,OldTown,110000,2 Story,1230,No
+1482,CollgCr,157500,2 Story,1388,No
+1483,NAmes,154000,1 Story,1154,Yes
+1484,NAmes,124500,1 Story,882,No
+1485,Gilbert,181134,1 Story,1340,No
+1486,CollgCr,224900,2 Story,1768,No
+1487,Edwards,115000,1 Story,864,No
+1488,Mitchel,146800,Other,1062,Yes
+1489,Timber,175000,1 Story,1412,Yes
+1490,Mitchel,149900,1 Story,833,No
+1491,Sawyer,132000,1 Story,1057,No
+1492,NAmes,130000,1 Story,1800,No
+1493,SawyerW,179000,1 Story,1349,No
+1494,CollgCr,200000,2 Story,1861,No
+1495,SawyerW,269500,2 Story,2787,Yes
+1496,SWISU,189000,2 Story,2601,No
+1497,NWAmes,200000,1 Story,1671,Yes
+1498,Edwards,176000,1 Story,1132,No
+1499,Somerst,221300,2 Story,1830,No
+1500,Sawyer,88750,1 Story,704,No
+1501,NAmes,131000,1 Story,1008,No
+1502,CollgCr,187000,1 Story,1222,No
+1503,BrDale,85400,2 Story,987,No
+1504,Gilbert,175000,2 Story,1647,Yes
+1505,CollgCr,293200,1 Story,1602,Yes
+1506,NWAmes,180000,1 Story,1523,Yes
+1507,NridgHt,325300,2 Story,2376,Yes
+1508,NWAmes,175000,1 Story,1126,No
+1509,SawyerW,218000,2 Story,1802,Yes
+1510,NAmes,172500,Other,1556,Yes
+1511,SawyerW,239500,2 Story,2020,Yes
+1512,NAmes,160000,1 Story,1116,No
+1513,Edwards,155000,1 Story,1125,No
+1514,Edwards,79000,1 Story,774,No
+1515,Sawyer,129000,1 Story,1120,No
+1516,BrDale,91500,2 Story,1218,No
+1517,SawyerW,277000,2 Story,2062,Yes
+1518,Crawfor,222000,1 Story,1680,Yes
+1519,ClearCr,200500,Other,3086,Yes
+1520,SawyerW,148325,Other,1229,Yes
+1521,Crawfor,170000,1 Story,1680,No
+1522,NridgHt,280000,1 Story,1577,Yes
+1523,NAmes,128000,1 Story,1063,No
+1524,OldTown,295000,Other,3493,Yes
+1525,BrkSide,87000,2 Story,906,No
+1526,Gilbert,179000,2 Story,1515,Yes
+1527,Edwards,135500,Other,1393,No
+1528,NAmes,132500,1 Story,1148,No
+1529,SawyerW,262280,2 Story,2329,Yes
+1530,BrkSide,114500,Other,1176,Yes
+1531,OldTown,112000,Other,1310,No
+1532,Timber,204000,2 Story,2237,Yes
+1533,SawyerW,269500,2 Story,2787,Yes
+1534,SawyerW,182000,2 Story,1609,No
+1535,NAmes,227000,2 Story,1988,Yes
+1536,Sawyer,144900,1 Story,960,No
+1537,SWISU,145000,Other,1477,Yes
+1538,NAmes,129000,1 Story,936,No
+1539,OldTown,100000,1 Story,1047,No
+1540,Timber,172500,Other,1442,No
+1541,NAmes,148000,1 Story,1175,No
+1542,NWAmes,158000,1 Story,1193,Yes
+1543,Sawyer,139000,1 Story,1121,No
+1544,NAmes,163000,1 Story,1261,Yes
+1545,MeadowV,85500,2 Story,1092,No
+1546,NAmes,136000,1 Story,1143,No
+1547,NAmes,104900,Other,1738,Yes
+1548,BrkSide,130000,1 Story,838,No
+1549,Edwards,119900,1 Story,1678,No
+1550,BrkSide,162900,Other,1573,Yes
+1551,NWAmes,170000,2 Story,1670,No
+1552,Gilbert,188500,Other,1119,No
+1553,Gilbert,183000,2 Story,1633,Yes
+1554,CollgCr,174000,Other,1282,No
+1555,Gilbert,184100,Other,1419,Yes
+1556,NoRidge,402000,2 Story,2448,Yes
+1557,Edwards,96000,Other,1137,No
+1558,BrkSide,139900,Other,1416,No
+1559,Somerst,263435,2 Story,1935,No
+1560,OldTown,123000,2 Story,1427,No
+1561,NoRidge,279500,2 Story,2125,Yes
+1562,NAmes,242000,Other,2978,Yes
+1563,Edwards,146000,1 Story,1350,Yes
+1564,OldTown,119900,Other,1118,Yes
+1565,OldTown,122000,2 Story,1324,No
+1566,Crawfor,157000,1 Story,1336,Yes
+1567,Somerst,173733,2 Story,1224,No
+1568,NAmes,187500,1 Story,1453,Yes
+1569,CollgCr,237000,2 Story,2031,Yes
+1570,Mitchel,162000,1 Story,1204,No
+1571,NWAmes,135000,1 Story,1656,No
+1572,ClearCr,200000,2 Story,1688,No
+1573,NoRidge,221000,2 Story,1839,No
+1574,StoneBr,275000,1 Story,1742,Yes
+1575,Gilbert,206580,1 Story,1525,Yes
+1576,NridgHt,173000,1 Story,1405,Yes
+1577,NAmes,163000,1 Story,1362,Yes
+1578,BrkSide,117000,Other,1348,Yes
+1579,CollgCr,231500,2 Story,1792,Yes
+1580,Edwards,135000,1 Story,1229,No
+1581,NWAmes,184500,Other,1875,Yes
+1582,OldTown,140000,Other,1499,Yes
+1583,NoRidge,284500,Other,2199,Yes
+1584,Edwards,108500,Other,865,Yes
+1585,IDOTRR,135000,Other,1666,No
+1586,OldTown,160000,Other,2414,Yes
+1587,NAmes,129500,1 Story,1216,No
+1588,OldTown,105000,Other,1374,No
+1589,CollgCr,194000,1 Story,1240,No
+1590,Crawfor,188700,2 Story,1660,Yes
+1591,NAmes,112900,1 Story,1036,No
+1592,OldTown,119164,Other,1656,No
+1593,Sawyer,154000,1 Story,1060,Yes
+1594,CollgCr,360000,1 Story,2140,No
+1595,NAmes,172000,Other,1246,Yes
+1596,NWAmes,218500,1 Story,1829,No
+1597,OldTown,149500,Other,1962,Yes
+1598,Blueste,123900,2 Story,1045,Yes
+1599,NoRidge,235000,2 Story,1755,Yes
+1600,Gilbert,181000,2 Story,1690,Yes
+1601,Mitchel,100000,2 Story,1872,No
+1602,SawyerW,233000,2 Story,2084,No
+1603,CollgCr,164990,1 Story,1310,Yes
+1604,Edwards,225000,2 Story,2008,No
+1605,Gilbert,185000,1 Story,1187,No
+1606,Sawyer,137500,Other,1422,Yes
+1607,CollgCr,205000,1 Story,1541,Yes
+1608,NridgHt,207000,1 Story,1362,Yes
+1609,Somerst,339750,2 Story,2078,Yes
+1610,NridgHt,298236,2 Story,2389,Yes
+1611,Somerst,176400,1 Story,1143,Yes
+1612,StoneBr,438780,2 Story,2945,Yes
+1613,SawyerW,146000,1 Story,1100,No
+1614,NoRidge,280000,2 Story,1924,Yes
+1615,NridgHt,290000,2 Story,2400,Yes
+1616,NAmes,103000,1 Story,1224,No
+1617,CollgCr,206000,1 Story,1208,No
+1618,Edwards,129000,1 Story,1144,No
+1619,NPkVill,148500,2 Story,1441,Yes
+1620,Mitchel,160000,Other,1750,No
+1621,Sawyer,158000,1 Story,1159,Yes
+1622,SawyerW,220000,2 Story,1915,Yes
+1623,SawyerW,248500,2 Story,1731,No
+1624,SWISU,150000,2 Story,2592,No
+1625,Timber,335000,2 Story,2519,Yes
+1626,Timber,231713,1 Story,1689,No
+1627,OldTown,115000,1 Story,789,No
+1628,NAmes,145000,Other,941,No
+1629,BrkSide,159000,Other,1664,Yes
+1630,CollgCr,285000,1 Story,1668,Yes
+1631,Gilbert,176500,2 Story,1632,Yes
+1632,NAmes,277500,2 Story,2448,Yes
+1633,NAmes,138000,Other,1320,No
+1634,CollgCr,219500,2 Story,2034,No
+1635,NAmes,129800,1 Story,816,Yes
+1636,NoRidge,290000,2 Story,2526,Yes
+1637,Sawyer,124000,1 Story,1054,No
+1638,CollgCr,211000,2 Story,1992,Yes
+1639,NAmes,141000,1 Story,936,No
+1640,Sawyer,126000,1 Story,984,No
+1641,NAmes,133500,Other,1461,No
+1642,SWISU,155000,2 Story,1135,No
+1643,CollgCr,198000,1 Story,1336,No
+1644,CollgCr,235000,2 Story,1823,No
+1645,CollgCr,194500,1 Story,1232,No
+1646,Crawfor,230000,1 Story,1648,Yes
+1647,NAmes,180000,1 Story,2207,Yes
+1648,Somerst,280750,2 Story,3005,Yes
+1649,CollgCr,193000,1 Story,1361,No
+1650,StoneBr,236500,1 Story,1616,Yes
+1651,Sawyer,137000,Other,860,No
+1652,IDOTRR,120500,1 Story,778,Yes
+1653,Crawfor,230000,2 Story,1517,Yes
+1654,NAmes,98600,1 Story,1235,No
+1655,SawyerW,143500,1 Story,1158,No
+1656,Edwards,125000,1 Story,1089,Yes
+1657,NridgHt,318061,1 Story,1869,Yes
+1658,OldTown,80000,1 Story,861,No
+1659,NoRidge,372500,Other,2786,Yes
+1660,NAmes,127000,1 Story,1045,Yes
+1661,Edwards,159500,2 Story,1426,No
+1662,SawyerW,163000,2 Story,1680,No
+1663,Crawfor,234000,2 Story,2080,Yes
+1664,Sawyer,187000,1 Story,1375,Yes
+1665,NWAmes,164000,1 Story,1295,No
+1666,Somerst,216000,2 Story,1674,No
+1667,NAmes,128500,1 Story,952,No
+1668,NridgHt,171750,1 Story,1405,Yes
+1669,ClearCr,185000,2 Story,2126,No
+1670,IDOTRR,82000,1 Story,540,No
+1671,Somerst,303477,2 Story,2610,Yes
+1672,NoRidge,584500,2 Story,3500,Yes
+1673,Gilbert,141000,1 Story,864,No
+1674,BrkSide,137000,Other,1654,Yes
+1675,CollgCr,145000,1 Story,1100,No
+1676,CollgCr,239000,1 Story,1800,No
+1677,Somerst,307000,1 Story,1694,Yes
+1678,OldTown,109500,1 Story,792,No
+1679,Gilbert,185000,2 Story,1718,Yes
+1680,CollgCr,192000,1 Story,1431,No
+1681,SWISU,197000,Other,3082,Yes
+1682,SawyerW,113722,1 Story,1513,No
+1683,Somerst,311872,1 Story,1726,Yes
+1684,MeadowV,75190,2 Story,1092,No
+1685,OldTown,127500,Other,1296,No
+1686,Edwards,235000,2 Story,2108,Yes
+1687,IDOTRR,127500,1 Story,1040,No
+1688,Crawfor,205000,Other,2480,Yes
+1689,CollgCr,226000,1 Story,1479,No
+1690,NAmes,159000,1 Story,1256,No
+1691,OldTown,139000,Other,1436,Yes
+1692,SawyerW,193000,1 Story,1617,Yes
+1693,Crawfor,191000,Other,2555,Yes
+1694,Sawyer,119916,1 Story,864,No
+1695,NWAmes,215000,2 Story,2093,Yes
+1696,Edwards,64000,Other,1120,No
+1697,Timber,224500,2 Story,1692,No
+1698,NAmes,345000,Other,2704,Yes
+1699,ClearCr,107500,Other,1224,No
+1700,NAmes,156500,1 Story,1377,Yes
+1701,IDOTRR,169500,Other,1818,Yes
+1702,NAmes,137900,1 Story,2136,No
+1703,CollgCr,133500,1 Story,864,Yes
+1704,Timber,359900,1 Story,1838,Yes
+1705,NAmes,142125,1 Story,1078,No
+1706,Edwards,121500,1 Story,1073,No
+1707,BrkSide,131000,Other,1218,Yes
+1708,NridgHt,286500,1 Story,1712,Yes
+1709,Edwards,144500,1 Story,1526,Yes
+1710,Somerst,260000,1 Story,1488,Yes
+1711,Sawyer,150000,1 Story,1921,No
+1712,Somerst,222000,1 Story,1726,Yes
+1713,Crawfor,174500,2 Story,1564,Yes
+1714,SawyerW,142500,1 Story,1141,No
+1715,Edwards,130000,1 Story,1630,Yes
+1716,Edwards,58500,1 Story,864,No
+1717,NridgHt,350000,2 Story,2385,Yes
+1718,NAmes,111250,1 Story,864,No
+1719,Mitchel,201000,1 Story,1560,No
+1720,NAmes,165000,Other,1146,Yes
+1721,BrkSide,132000,Other,854,No
+1722,Somerst,177000,2 Story,1512,No
+1723,CollgCr,235500,2 Story,1873,Yes
+1724,NAmes,177625,1 Story,1728,Yes
+1725,BrkSide,150000,Other,1582,Yes
+1726,CollgCr,155835,2 Story,1456,Yes
+1727,NAmes,179900,Other,1265,Yes
+1728,SawyerW,271900,1 Story,2196,Yes
+1729,OldTown,55000,2 Story,1086,No
+1730,OldTown,135500,1 Story,960,No
+1731,Mitchel,159000,2 Story,2432,No
+1732,BrkSide,80500,Other,912,No
+1733,Sawyer,122000,1 Story,900,No
+1734,Crawfor,294464,1 Story,1648,Yes
+1735,SWISU,135000,Other,1981,Yes
+1736,Veenker,218000,1 Story,1437,Yes
+1737,CollgCr,295493,1 Story,1630,Yes
+1738,NWAmes,185000,1 Story,1442,Yes
+1739,NWAmes,159900,1 Story,1444,Yes
+1740,CollgCr,173000,2 Story,1422,Yes
+1741,NAmes,139500,1 Story,1008,No
+1742,CollgCr,153500,Other,1025,Yes
+1743,NAmes,200000,1 Story,1652,Yes
+1744,Edwards,135000,Other,1470,No
+1745,StoneBr,251000,1 Story,1652,No
+1746,SWISU,105000,2 Story,1242,Yes
+1747,CollgCr,136500,1 Story,848,No
+1748,Gilbert,193000,2 Story,1593,Yes
+1749,NAmes,119000,Other,1252,No
+1750,CollgCr,149000,1 Story,848,Yes
+1751,NAmes,124500,1 Story,864,No
+1752,Gilbert,160000,Other,1694,Yes
+1753,NAmes,97000,1 Story,864,No
+1754,NWAmes,175500,1 Story,1242,Yes
+1755,NWAmes,272000,2 Story,2872,Yes
+1756,OldTown,125000,1 Story,825,No
+1757,NWAmes,136905,1 Story,1680,No
+1758,Somerst,370878,1 Story,1766,Yes
+1759,NAmes,119000,1 Story,1728,No
+1760,IDOTRR,65000,2 Story,864,No
+1761,CollgCr,200500,2 Story,1682,No
+1762,Gilbert,180000,Other,1430,Yes
+1763,Gilbert,183500,2 Story,1525,Yes
+1764,CollgCr,230000,2 Story,1840,No
+1765,Timber,186700,1 Story,1572,Yes
+1766,Gilbert,257500,2 Story,2004,Yes
+1767,OldTown,66500,Other,1131,No
+1768,NoRidge,290000,2 Story,2683,Yes
+1769,NAmes,169500,2 Story,1812,Yes
+1770,Mitchel,132000,Other,970,No
+1771,BrDale,111000,2 Story,987,No
+1772,NAmes,115000,1 Story,1005,Yes
+1773,CollgCr,210000,1 Story,1436,No
+1774,Somerst,297900,2 Story,1874,Yes
+1775,BrDale,105500,2 Story,1092,No
+1776,Somerst,227000,1 Story,1588,Yes
+1777,NAmes,120000,1 Story,912,No
+1778,NoRidge,262000,1 Story,1624,Yes
+1779,Timber,283463,1 Story,1776,Yes
+1780,MeadowV,94900,Other,988,Yes
+1781,Sawyer,113500,1 Story,1052,Yes
+1782,IDOTRR,150909,2 Story,1828,No
+1783,CollgCr,237000,1 Story,1498,Yes
+1784,Timber,279900,2 Story,2486,Yes
+1785,Somerst,300000,1 Story,1638,Yes
+1786,BrkSide,113000,Other,884,No
+1787,IDOTRR,145400,Other,1285,No
+1788,NAmes,126000,1 Story,882,No
+1789,OldTown,93500,2 Story,1248,No
+1790,OldTown,157500,2 Story,1539,Yes
+1791,CollgCr,231500,2 Story,1764,No
+1792,Gilbert,377500,1 Story,1746,Yes
+1793,NWAmes,241500,1 Story,1872,Yes
+1794,Crawfor,177000,2 Story,1680,No
+1795,CollgCr,216837,1 Story,1836,Yes
+1796,NAmes,154300,2 Story,2274,No
+1797,CollgCr,140000,1 Story,848,No
+1798,NAmes,207500,1 Story,1600,Yes
+1799,SawyerW,146000,1 Story,1175,No
+1800,CollgCr,191000,2 Story,1795,No
+1801,SawyerW,147000,Other,996,No
+1802,CollgCr,300000,1 Story,1786,Yes
+1803,NridgHt,338931,2 Story,2550,Yes
+1804,CollgCr,210900,2 Story,2049,Yes
+1805,NAmes,162000,1 Story,1287,Yes
+1806,SawyerW,82000,1 Story,841,No
+1807,Gilbert,155000,1 Story,1424,No
+1808,CollgCr,173500,1 Story,1190,No
+1809,BrkSide,127000,Other,1285,No
+1810,Sawyer,150000,1 Story,1299,Yes
+1811,Somerst,336820,1 Story,1670,Yes
+1812,Sawyer,125000,1 Story,894,No
+1813,OldTown,80400,Other,1844,Yes
+1814,NAmes,137000,2 Story,1920,No
+1815,NridgHt,615000,1 Story,2470,Yes
+1816,SawyerW,201000,2 Story,1721,No
+1817,OldTown,180000,Other,2640,Yes
+1818,BrkSide,214500,Other,2134,No
+1819,Gilbert,192000,2 Story,1489,Yes
+1820,Edwards,119000,Other,1367,No
+1821,NAmes,117500,1 Story,925,No
+1822,CollgCr,194000,1 Story,1220,No
+1823,IDOTRR,126000,Other,1656,Yes
+1824,MeadowV,76000,2 Story,1092,No
+1825,OldTown,148000,2 Story,1534,No
+1826,IDOTRR,99500,Other,1315,No
+1827,SWISU,179500,Other,2192,Yes
+1828,NAmes,138000,Other,1183,No
+1829,Blueste,200000,1 Story,1020,No
+1830,NAmes,123000,1 Story,872,No
+1831,OldTown,109000,Other,1034,No
+1832,Gilbert,192140,2 Story,1838,Yes
+1833,OldTown,140000,2 Story,1812,Yes
+1834,Gilbert,175000,2 Story,1446,Yes
+1835,NridgHt,175500,2 Story,1626,No
+1836,SawyerW,224500,Other,1440,No
+1837,Sawyer,133500,1 Story,925,No
+1838,Mitchel,129500,Other,768,No
+1839,NridgHt,315000,1 Story,1980,Yes
+1840,Gilbert,168000,Other,1430,Yes
+1841,BrDale,88000,2 Story,1092,No
+1842,Veenker,187000,Other,1855,Yes
+1843,OldTown,111500,1 Story,844,No
+1844,CollgCr,196500,2 Story,1720,No
+1845,BrkSide,79500,1 Story,935,No
+1846,Gilbert,180000,2 Story,1509,Yes
+1847,NAmes,150750,1 Story,1327,No
+1848,StoneBr,319000,1 Story,1826,Yes
+1849,BrkSide,68500,1 Story,520,No
+1850,Sawyer,140000,Other,1601,No
+1851,OldTown,119000,Other,1480,No
+1852,ClearCr,270000,1 Story,1483,Yes
+1853,NPkVill,155000,2 Story,1548,Yes
+1854,CollgCr,229800,2 Story,1876,No
+1855,NAmes,147000,1 Story,912,No
+1856,NAmes,139000,Other,1109,No
+1857,SawyerW,181000,1 Story,1486,No
+1858,NAmes,129900,1 Story,1200,No
+1859,Blmngtn,246578,1 Story,1500,Yes
+1860,SWISU,137450,Other,1608,Yes
+1861,Timber,195000,1 Story,1675,No
+1862,Somerst,186500,2 Story,1553,No
+1863,Gilbert,160000,Other,1472,Yes
+1864,Edwards,79000,Other,1096,No
+1865,Crawfor,200100,2 Story,1802,Yes
+1866,StoneBr,180000,1 Story,1337,Yes
+1867,NWAmes,256900,2 Story,2640,Yes
+1868,Greens,206000,1 Story,1226,Yes
+1869,Edwards,186000,1 Story,1212,No
+1870,CollgCr,227000,2 Story,1939,Yes
+1871,Mitchel,153500,Other,1008,Yes
+1872,Sawyer,168000,1 Story,1437,Yes
+1873,OldTown,124500,2 Story,1358,Yes
+1874,ClearCr,155000,Other,1052,No
+1875,NWAmes,162000,2 Story,1395,Yes
+1876,NAmes,145000,1 Story,1387,Yes
+1877,Gilbert,181000,2 Story,1604,Yes
+1878,SWISU,160000,Other,1268,Yes
+1879,Mitchel,130000,1 Story,2034,No
+1880,Blmngtn,156820,1 Story,1142,No
+1881,NridgHt,402861,1 Story,2020,Yes
+1882,Mitchel,160500,1 Story,1189,No
+1883,Crawfor,315000,2 Story,2727,Yes
+1884,NWAmes,178900,2 Story,1877,Yes
+1885,Sawyer,135000,1 Story,980,No
+1886,Edwards,139600,1 Story,1733,Yes
+1887,CollgCr,126000,1 Story,990,No
+1888,Edwards,119000,1 Story,948,Yes
+1889,ClearCr,164000,1 Story,1000,Yes
+1890,Gilbert,179000,2 Story,1800,Yes
+1891,Somerst,245000,1 Story,1563,Yes
+1892,CollgCr,187000,2 Story,1499,Yes
+1893,Sawyer,165000,Other,1020,Yes
+1894,Crawfor,136500,1 Story,1422,No
+1895,NAmes,146000,1 Story,1824,No
+1896,OldTown,125000,1 Story,1200,No
+1897,Edwards,157000,1 Story,1090,No
+1898,Somerst,149900,2 Story,1223,No
+1899,NridgHt,479069,1 Story,2552,Yes
+1900,NoRidge,355000,2 Story,2475,Yes
+1901,OldTown,112500,1 Story,924,No
+1902,OldTown,142900,Other,2377,Yes
+1903,OldTown,64000,1 Story,672,No
+1904,NAmes,167500,1 Story,1264,Yes
+1905,NAmes,129900,1 Story,864,No
+1906,NAmes,110000,1 Story,1392,Yes
+1907,IDOTRR,101000,Other,1111,No
+1908,Edwards,131750,1 Story,960,No
+1909,IDOTRR,87000,Other,803,No
+1910,NAmes,148000,1 Story,1081,No
+1911,NWAmes,153500,1 Story,1074,No
+1912,NAmes,99000,1 Story,925,No
+1913,NridgHt,224000,1 Story,1358,Yes
+1914,CollgCr,230000,1 Story,1795,Yes
+1915,OldTown,99900,1 Story,967,Yes
+1916,MeadowV,134000,1 Story,1142,Yes
+1917,Edwards,308030,1 Story,1508,Yes
+1918,NWAmes,227000,2 Story,1665,No
+1919,NAmes,153000,1 Story,1118,No
+1920,Blmngtn,187687,1 Story,1246,Yes
+1921,NoRidge,300000,2 Story,2234,Yes
+1922,Edwards,155891,1 Story,992,No
+1923,Crawfor,230000,1 Story,1811,Yes
+1924,CollgCr,287000,2 Story,2263,Yes
+1925,NoRidge,260000,2 Story,2061,Yes
+1926,OldTown,133900,Other,2291,Yes
+1927,Somerst,270000,2 Story,1795,Yes
+1928,Mitchel,209200,Other,1344,No
+1929,Edwards,125000,1 Story,1342,No
+1930,BrDale,125000,2 Story,1365,No
+1931,CollgCr,245350,1 Story,1694,No
+1932,SawyerW,187000,2 Story,1710,No
+1933,NAmes,129000,2 Story,2380,Yes
+1934,Gilbert,174000,2 Story,1484,Yes
+1935,CollgCr,131500,1 Story,848,No
+1936,Somerst,149500,2 Story,1200,No
+1937,NAmes,201800,2 Story,1820,Yes
+1938,CollgCr,222000,2 Story,1762,No
+1939,CollgCr,200000,1 Story,1700,No
+1940,NWAmes,184000,1 Story,1707,Yes
+1941,Blueste,151000,2 Story,1556,Yes
+1942,OldTown,109500,1 Story,1068,Yes
+1943,SawyerW,143000,1 Story,923,Yes
+1944,Edwards,119900,1 Story,1176,No
+1945,SawyerW,107000,1 Story,1056,No
+1946,SWISU,160000,2 Story,1928,No
+1947,Timber,269500,2 Story,1968,Yes
+1948,Sawyer,137000,1 Story,935,No
+1949,BrkSide,115000,1 Story,995,No
+1950,CollgCr,163000,1 Story,1558,No
+1951,NAmes,154000,1 Story,1246,No
+1952,ClearCr,145000,1 Story,1721,Yes
+1953,Edwards,125000,1 Story,1482,Yes
+1954,Blmngtn,226500,1 Story,1589,Yes
+1955,CollgCr,275000,1 Story,1787,Yes
+1956,Veenker,255000,1 Story,2362,Yes
+1957,OldTown,184000,2 Story,2495,Yes
+1958,NAmes,120000,1 Story,864,No
+1959,StoneBr,212000,1 Story,1502,No
+1960,Edwards,102000,1 Story,1220,No
+1961,NAmes,129900,1 Story,816,No
+1962,NAmes,150000,Other,1588,No
+1963,Edwards,95000,Other,1111,No
+1964,Edwards,60000,1 Story,1276,No
+1965,Somerst,234500,1 Story,1553,No
+1966,CollgCr,193879,1 Story,1294,Yes
+1967,CollgCr,274300,2 Story,2097,Yes
+1968,NridgHt,367294,1 Story,1702,Yes
+1969,OldTown,135000,2 Story,1389,Yes
+1970,Crawfor,195000,2 Story,1550,Yes
+1971,NoRidge,330000,2 Story,2538,Yes
+1972,CollgCr,123000,1 Story,894,No
+1973,OldTown,163000,Other,1912,Yes
+1974,Crawfor,235000,1 Story,1625,Yes
+1975,CollgCr,212000,2 Story,1768,No
+1976,CollgCr,124900,1 Story,780,No
+1977,BrkSide,113000,Other,1048,Yes
+1978,CollgCr,220000,1 Story,1604,Yes
+1979,CollgCr,230000,1 Story,1654,No
+1980,BrkSide,120000,Other,1158,Yes
+1981,Sawyer,165000,Other,1774,Yes
+1982,NAmes,116000,1 Story,910,No
+1983,OldTown,119000,1 Story,804,Yes
+1984,Mitchel,81500,1 Story,1600,No
+1985,Gilbert,213000,2 Story,1986,Yes
+1986,Edwards,145900,Other,2200,No
+1987,OldTown,91300,1 Story,886,No
+1988,CollgCr,210000,1 Story,1417,Yes
+1989,OldTown,163000,Other,1768,Yes
+1990,CollgCr,213000,2 Story,1932,Yes
+1991,OldTown,156500,Other,1416,No
+1992,OldTown,110000,1 Story,984,No
+1993,SWISU,200000,Other,3395,No
+1994,Somerst,221000,1 Story,1568,Yes
+1995,NAmes,130000,Other,936,Yes
+1996,Crawfor,375000,1 Story,1625,Yes
+1997,Sawyer,116000,1 Story,909,No
+1998,NAmes,153000,1 Story,1647,Yes
+1999,NWAmes,190000,2 Story,1574,Yes
+2000,NWAmes,212500,Other,1891,Yes
+2001,Blmngtn,181000,1 Story,1504,Yes
+2002,IDOTRR,202500,Other,2294,Yes
+2003,OldTown,87500,2 Story,1510,No
+2004,CollgCr,161750,2 Story,1392,No
+2005,Somerst,222000,1 Story,1478,Yes
+2006,Somerst,261329,1 Story,1584,Yes
+2007,Mitchel,131000,1 Story,1224,Yes
+2008,NAmes,123000,1 Story,1319,No
+2009,BrkSide,85500,1 Story,869,No
+2010,Sawyer,130500,2 Story,1479,No
+2011,SawyerW,189000,1 Story,1434,Yes
+2012,IDOTRR,139400,Other,1108,Yes
+2013,OldTown,100000,Other,1245,No
+2014,NPkVill,137500,1 Story,1055,No
+2015,Edwards,127000,1 Story,1149,No
+2016,NAmes,150000,1 Story,1244,Yes
+2017,Mitchel,215000,Other,1368,No
+2018,IDOTRR,70000,Other,892,No
+2019,NAmes,145500,1 Story,1031,No
+2020,NAmes,159950,Other,1086,Yes
+2021,NWAmes,190000,1 Story,1844,Yes
+2022,Edwards,91900,1 Story,784,No
+2023,SawyerW,141000,1 Story,1080,No
+2024,CollgCr,110000,1 Story,924,No
+2025,OldTown,99500,1 Story,792,No
+2026,OldTown,144100,Other,1650,No
+2027,NAmes,126000,1 Story,1112,No
+2028,Timber,174000,2 Story,1444,No
+2029,Edwards,98500,1 Story,1195,No
+2030,Edwards,82500,1 Story,861,No
+2031,IDOTRR,72000,1 Story,672,No
+2032,NridgHt,398800,2 Story,2690,Yes
+2033,Somerst,172500,2 Story,1471,No
+2034,Somerst,178000,1 Story,1245,No
+2035,OldTown,80000,Other,1760,Yes
+2036,Veenker,194000,Other,1432,Yes
+2037,NAmes,155000,2 Story,1839,Yes
+2038,ClearCr,190000,1 Story,1582,No
+2039,Mitchel,160000,1 Story,1404,Yes
+2040,Timber,170000,1 Story,1328,Yes
+2041,SWISU,128000,Other,1340,No
+2042,NAmes,127500,Other,1278,No
+2043,CollgCr,136500,1 Story,864,No
+2044,CollgCr,219500,2 Story,1928,Yes
+2045,CollgCr,190550,2 Story,1690,No
+2046,Somerst,275000,1 Story,1696,No
+2047,Mitchel,129500,1 Story,845,No
+2048,Crawfor,198000,Other,1938,Yes
+2049,Crawfor,137500,1 Story,1180,Yes
+2050,Sawyer,152400,Other,1350,No
+2051,NWAmes,197900,2 Story,1935,Yes
+2052,Mitchel,170000,1 Story,1389,Yes
+2053,Blmngtn,194201,1 Story,1402,Yes
+2054,BrkSide,112000,1 Story,808,No
+2055,NAmes,133000,1 Story,1268,Yes
+2056,OldTown,138000,Other,1544,No
+2057,OldTown,95000,Other,1080,No
+2058,Somerst,250000,2 Story,1992,Yes
+2059,NAmes,150000,1 Story,1144,No
+2060,Timber,202900,2 Story,1908,No
+2061,Somerst,229456,1 Story,1314,No
+2062,IDOTRR,50000,Other,1484,No
+2063,Somerst,232000,1 Story,1616,No
+2064,Edwards,320000,1 Story,1698,Yes
+2065,SawyerW,147000,1 Story,1143,No
+2066,NWAmes,140500,1 Story,1625,No
+2067,IDOTRR,136000,2 Story,1536,No
+2068,SawyerW,179900,1 Story,1442,Yes
+2069,CollgCr,168675,2 Story,1491,Yes
+2070,NAmes,125000,1 Story,1056,No
+2071,NridgHt,300000,1 Story,1531,Yes
+2072,Mitchel,135000,Other,1004,No
+2073,Veenker,165000,1 Story,1208,Yes
+2074,ClearCr,173000,1 Story,1291,Yes
+2075,Somerst,177000,2 Story,1525,Yes
+2076,OldTown,110000,1 Story,813,No
+2077,Gilbert,173000,2 Story,1636,Yes
+2078,NWAmes,82500,1 Story,1411,Yes
+2079,NWAmes,170000,Other,1920,Yes
+2080,NridgHt,234250,1 Story,1342,Yes
+2081,Somerst,287090,1 Story,1578,Yes
+2082,NAmes,224500,2 Story,2154,Yes
+2083,NridgHt,374000,1 Story,1792,Yes
+2084,Edwards,274970,Other,2201,Yes
+2085,NridgHt,421250,2 Story,2649,Yes
+2086,NridgHt,383000,1 Story,1950,Yes
+2087,NAmes,105000,1 Story,896,No
+2088,Blmngtn,219990,1 Story,1576,Yes
+2089,Sawyer,112000,Other,1902,No
+2090,NAmes,119000,1 Story,988,No
+2091,OldTown,128500,Other,1281,No
+2092,Sawyer,137250,1 Story,864,No
+2093,OldTown,115500,1 Story,1093,No
+2094,Mitchel,170000,1 Story,2048,No
+2095,Crawfor,231000,2 Story,1512,Yes
+2096,OldTown,106250,2 Story,1294,No
+2097,SawyerW,301000,2 Story,2730,Yes
+2098,Timber,228000,1 Story,1707,Yes
+2099,OldTown,99900,1 Story,792,No
+2100,NAmes,143000,Other,1144,Yes
+2101,BrkSide,128000,Other,1324,No
+2102,Edwards,83000,1 Story,835,No
+2103,Sawyer,165000,1 Story,1383,Yes
+2104,Gilbert,202000,2 Story,1776,Yes
+2105,Mitchel,115000,1 Story,1771,Yes
+2106,Gilbert,219500,2 Story,1995,Yes
+2107,NridgHt,285000,2 Story,2374,Yes
+2108,NAmes,129250,1 Story,988,No
+2109,StoneBr,355000,2 Story,2500,Yes
+2110,NAmes,153000,1 Story,1382,No
+2111,CollgCr,143000,1 Story,848,No
+2112,NAmes,145000,1 Story,1712,No
+2113,Edwards,99600,Other,864,No
+2114,NAmes,184000,2 Story,1479,No
+2115,IDOTRR,110000,1 Story,816,No
+2116,StoneBr,319900,1 Story,1612,Yes
+2117,StoneBr,240000,1 Story,1478,No
+2118,SWISU,91000,1 Story,790,No
+2119,NAmes,167000,1 Story,1488,Yes
+2120,SawyerW,193000,2 Story,1812,No
+2121,OldTown,103000,1 Story,960,No
+2122,NridgHt,200000,1 Story,1302,Yes
+2123,IDOTRR,140000,1 Story,1073,No
+2124,OldTown,125500,2 Story,1363,No
+2125,BrDale,97000,2 Story,987,No
+2126,NridgHt,418000,2 Story,2758,Yes
+2127,Crawfor,259500,2 Story,2320,Yes
+2128,Somerst,164700,2 Story,1250,No
+2129,IDOTRR,125500,Other,1154,No
+2130,NridgHt,220000,1 Story,1541,Yes
+2131,Crawfor,289000,1 Story,1801,Yes
+2132,Crawfor,138887,2 Story,1784,No
+2133,SWISU,140000,Other,1595,Yes
+2134,NAmes,140000,Other,1095,No
+2135,Crawfor,359100,2 Story,3194,Yes
+2136,Sawyer,142500,1 Story,894,Yes
+2137,NAmes,125500,1 Story,864,No
+2138,SawyerW,156500,Other,1338,Yes
+2139,NAmes,144000,Other,1524,No
+2140,BrkSide,127500,Other,1367,Yes
+2141,IDOTRR,55993,1 Story,1044,No
+2142,NoRidge,287500,2 Story,2197,Yes
+2143,Sawyer,149350,1 Story,1228,No
+2144,Edwards,229000,2 Story,2314,Yes
+2145,NWAmes,152000,2 Story,1620,No
+2146,SawyerW,220000,2 Story,2122,Yes
+2147,Edwards,100000,1 Story,816,Yes
+2148,Edwards,110000,1 Story,1088,No
+2149,NAmes,133000,Other,767,No
+2150,NAmes,109008,1 Story,907,No
+2151,Crawfor,217500,1 Story,1647,Yes
+2152,NWAmes,206000,2 Story,2067,Yes
+2153,ClearCr,260000,1 Story,1524,Yes
+2154,OldTown,161000,2 Story,1378,Yes
+2155,Somerst,172900,2 Story,1549,No
+2156,BrkSide,145000,Other,1505,No
+2157,NAmes,123000,1 Story,864,No
+2158,Somerst,182000,1 Story,1428,No
+2159,MeadowV,91000,Other,988,No
+2160,NPkVill,128500,1 Story,836,No
+2161,StoneBr,375000,1 Story,2522,Yes
+2162,CollgCr,232000,1 Story,1668,Yes
+2163,NAmes,176000,Other,1382,Yes
+2164,NAmes,168500,Other,1350,No
+2165,OldTown,124000,2 Story,1750,No
+2166,CollgCr,233555,1 Story,1846,Yes
+2167,Somerst,170000,Other,1404,No
+2168,OldTown,86000,1 Story,691,No
+2169,Timber,248900,1 Story,1646,Yes
+2170,NridgHt,300000,2 Story,2206,Yes
+2171,OldTown,160000,2 Story,2007,No
+2172,Blmngtn,225000,1 Story,1548,Yes
+2173,StoneBr,189000,1 Story,1228,Yes
+2174,Somerst,208900,1 Story,1352,Yes
+2175,Gilbert,259000,1 Story,1530,Yes
+2176,OldTown,105000,1 Story,864,No
+2177,Sawyer,132500,1 Story,970,No
+2178,BrkSide,90000,Other,1316,No
+2179,NAmes,93500,1 Story,1040,No
+2180,IDOTRR,115000,Other,1396,No
+2181,NAmes,105000,1 Story,864,No
+2182,NAmes,138500,1 Story,1052,No
+2183,Edwards,134500,2 Story,1269,No
+2184,Sawyer,130000,1 Story,894,No
+2185,MeadowV,106500,Other,992,No
+2186,CollgCr,212000,2 Story,1661,Yes
+2187,NWAmes,174000,1 Story,1682,Yes
+2188,Crawfor,392500,1 Story,1652,Yes
+2189,NAmes,138500,Other,908,No
+2190,Edwards,118500,Other,936,Yes
+2191,IDOTRR,103000,Other,1208,No
+2192,Mitchel,183500,Other,1299,Yes
+2193,Edwards,140000,Other,1072,No
+2194,Mitchel,148000,Other,918,No
+2195,Edwards,108000,1 Story,1126,No
+2196,Somerst,180000,2 Story,1512,No
+2197,NAmes,181000,1 Story,1337,No
+2198,OldTown,62500,2 Story,2128,No
+2199,SawyerW,190500,2 Story,1677,No
+2200,NridgHt,404000,1 Story,2020,Yes
+2201,BrkSide,119000,1 Story,949,Yes
+2202,NAmes,142250,1 Story,1232,No
+2203,SawyerW,194500,2 Story,1744,No
+2204,OldTown,130000,2 Story,2350,No
+2205,NAmes,167300,1 Story,1587,Yes
+2206,MeadowV,129500,2 Story,1475,Yes
+2207,Gilbert,179540,2 Story,1456,Yes
+2208,MeadowV,75500,Other,630,No
+2209,BrDale,105500,2 Story,1092,No
+2210,BrkSide,110000,Other,1203,Yes
+2211,NoRidge,285000,2 Story,2225,Yes
+2212,Gilbert,183500,1 Story,1169,Yes
+2213,NWAmes,226500,1 Story,1688,Yes
+2214,NoRidge,286000,2 Story,1976,Yes
+2215,NoRidge,410000,2 Story,3078,Yes
+2216,NAmes,157000,1 Story,1253,Yes
+2217,Edwards,80000,Other,924,No
+2218,OldTown,125000,1 Story,1078,No
+2219,Timber,228950,Other,1786,Yes
+2220,BrkSide,132000,Other,1453,Yes
+2221,NWAmes,146500,1 Story,1193,No
+2222,NWAmes,181000,1 Story,1309,Yes
+2223,NridgHt,269500,1 Story,1760,Yes
+2224,NridgHt,290941,1 Story,1544,No
+2225,NAmes,135000,Other,1495,No
+2226,MeadowV,80000,Other,630,No
+2227,Sawyer,148000,Other,1155,No
+2228,BrkSide,209500,Other,2068,Yes
+2229,NoRidge,350000,1 Story,2006,Yes
+2230,NAmes,115000,1 Story,864,Yes
+2231,Gilbert,250000,2 Story,2064,Yes
+2232,Edwards,125000,1 Story,1032,Yes
+2233,NridgHt,320000,1 Story,1884,Yes
+2234,Crawfor,315000,1 Story,2726,Yes
+2235,CollgCr,218836,1 Story,1564,No
+2236,Somerst,254900,2 Story,1947,Yes
+2237,Sawyer,130000,Other,999,No
+2238,Somerst,214000,2 Story,1933,Yes
+2239,Timber,305000,2 Story,2262,Yes
+2240,Somerst,147110,2 Story,1080,No
+2241,NAmes,145250,1 Story,1383,No
+2242,OldTown,139000,Other,1566,No
+2243,NAmes,110000,1 Story,1776,No
+2244,CollgCr,230500,2 Story,2161,Yes
+2245,Timber,378500,1 Story,2018,Yes
+2246,CollgCr,225000,1 Story,1614,Yes
+2247,Gilbert,180500,1 Story,1442,No
+2248,NridgHt,316000,2 Story,2332,Yes
+2249,NridgHt,446261,2 Story,2713,Yes
+2250,BrDale,118000,2 Story,1218,No
+2251,CollgCr,185500,1 Story,1414,No
+2252,NridgHt,345000,2 Story,2324,Yes
+2253,Blmngtn,195000,1 Story,1455,Yes
+2254,Greens,213750,1 Story,1295,Yes
+2255,NAmes,140000,1 Story,1136,Yes
+2256,NAmes,177000,1 Story,1337,Yes
+2257,Edwards,136500,Other,1480,Yes
+2258,NWAmes,164500,1 Story,1334,No
+2259,Somerst,263000,2 Story,2094,Yes
+2260,NAmes,116900,1 Story,925,Yes
+2261,NridgHt,184500,1 Story,1306,Yes
+2262,CollgCr,143000,1 Story,990,No
+2263,Timber,369900,1 Story,2028,Yes
+2264,CollgCr,124000,1 Story,1040,No
+2265,NridgHt,342000,2 Story,2956,Yes
+2266,Edwards,109900,1 Story,1242,No
+2267,Timber,137500,Other,1344,Yes
+2268,Gilbert,222000,2 Story,2236,Yes
+2269,NAmes,158000,Other,1445,Yes
+2270,Edwards,155000,1 Story,1094,Yes
+2271,NAmes,174500,Other,1576,Yes
+2272,Somerst,200825,2 Story,1716,No
+2273,Sawyer,135000,1 Story,1236,Yes
+2274,NAmes,137000,1 Story,1043,Yes
+2275,CollgCr,132500,Other,954,No
+2276,NridgHt,219500,1 Story,1342,Yes
+2277,CollgCr,248500,1 Story,1615,Yes
+2278,NPkVill,137900,2 Story,1456,Yes
+2279,Gilbert,190000,2 Story,1514,Yes
+2280,Edwards,148000,Other,1072,No
+2281,SawyerW,76000,Other,784,No
+2282,Sawyer,145000,Other,960,No
+2283,SawyerW,189000,2 Story,1657,No
+2284,OldTown,64000,1 Story,840,No
+2285,CollgCr,233230,2 Story,1919,Yes
+2286,Sawyer,155000,1 Story,1803,Yes
+2287,Somerst,226000,2 Story,1929,Yes
+2288,Somerst,204500,1 Story,1218,No
+2289,Gilbert,185101,2 Story,1492,No
+2290,StoneBr,325000,2 Story,2504,Yes
+2291,Somerst,187750,1 Story,1301,Yes
+2292,BrkSide,128000,Other,1196,Yes
+2293,NAmes,143500,1 Story,951,No
+2294,CollgCr,318000,1 Story,1978,Yes
+2295,ClearCr,148400,Other,1700,No
+2296,NAmes,146000,1 Story,1200,No
+2297,SWISU,169000,Other,2447,Yes
+2298,CollgCr,213000,1 Story,1630,Yes
+2299,Mitchel,124500,1 Story,887,No
+2300,SawyerW,171500,2 Story,1730,No
+2301,BrkSide,180500,2 Story,1824,Yes
+2302,Crawfor,160000,Other,1308,Yes
+2303,CollgCr,195000,2 Story,1948,Yes
+2304,Sawyer,170000,1 Story,1779,Yes
+2305,OldTown,97500,Other,1864,No
+2306,OldTown,115000,Other,1224,No
+2307,NAmes,159000,1 Story,1209,No
+2308,Crawfor,104000,1 Story,1091,Yes
+2309,Crawfor,381000,Other,3447,Yes
+2310,NWAmes,215000,1 Story,1620,Yes
+2311,CollgCr,221500,1 Story,1614,No
+2312,OldTown,137000,2 Story,1928,No
+2313,Veenker,217500,1 Story,1239,Yes
+2314,NAmes,256000,1 Story,1567,Yes
+2315,Somerst,271500,1 Story,1468,Yes
+2316,SWISU,137000,Other,1551,No
+2317,Gilbert,180000,2 Story,1714,Yes
+2318,BrkSide,64500,1 Story,666,No
+2319,CollgCr,204900,1 Story,1498,No
+2320,SawyerW,142000,1 Story,1114,No
+2321,OldTown,103500,2 Story,1944,No
+2322,Sawyer,157500,Other,1096,Yes
+2323,Edwards,139500,1 Story,1049,No
+2324,IDOTRR,119000,Other,1200,No
+2325,CollgCr,119900,1 Story,864,No
+2326,Somerst,230348,1 Story,1218,No
+2327,CollgCr,237000,2 Story,1995,Yes
+2328,OldTown,113000,Other,1173,No
+2329,Blueste,124000,2 Story,1229,Yes
+2330,Greens,190000,1 Story,1226,Yes
+2331,NridgHt,485000,2 Story,3140,Yes
+2332,Blmngtn,160000,1 Story,1145,No
+2333,SawyerW,153337,Other,1224,Yes
+2334,NAmes,135000,1 Story,1008,No
+2335,Sawyer,115400,1 Story,1005,No
+2336,NoRidge,350000,2 Story,2726,Yes
+2337,NAmes,109000,1 Story,1057,No
+2338,NWAmes,205000,1 Story,1610,Yes
+2339,OldTown,149000,2 Story,1352,No
+2340,Timber,270000,1 Story,1629,Yes
+2341,Veenker,162500,1 Story,1232,No
+2342,Crawfor,311500,Other,1954,Yes
+2343,NPkVill,123000,1 Story,1055,Yes
+2344,NoRidge,190000,2 Story,1923,Yes
+2345,SawyerW,187000,2 Story,1837,No
+2346,Mitchel,134500,1 Story,845,No
+2347,OldTown,145000,2 Story,1642,Yes
+2348,Mitchel,136000,2 Story,1274,No
+2349,Sawyer,135000,Other,1271,Yes
+2350,NAmes,169000,1 Story,1797,Yes
+2351,Sawyer,165000,1 Story,1458,Yes
+2352,CollgCr,134900,1 Story,914,No
+2353,NWAmes,172500,Other,1320,Yes
+2354,NridgHt,412083,2 Story,2589,Yes
+2355,NAmes,135000,1 Story,1216,No
+2356,NoRidge,260000,2 Story,2646,Yes
+2357,OldTown,64500,1 Story,968,No
+2358,ClearCr,328000,2 Story,2260,No
+2359,NoRidge,405000,2 Story,2855,Yes
+2360,Gilbert,177900,1 Story,1384,No
+2361,Edwards,103500,1 Story,1560,Yes
+2362,Somerst,290000,1 Story,1419,Yes
+2363,NAmes,128000,1 Story,1041,No
+2364,Mitchel,161000,Other,1479,No
+2365,NAmes,124000,1 Story,1074,Yes
+2366,Timber,315500,1 Story,1620,Yes
+2367,MeadowV,151400,2 Story,2521,Yes
+2368,NAmes,141000,1 Story,1150,No
+2369,CollgCr,272500,1 Story,1838,Yes
+2370,CollgCr,203000,1 Story,1274,No
+2371,NAmes,132000,1 Story,1364,Yes
+2372,NAmes,252000,1 Story,1390,Yes
+2373,NridgHt,245700,1 Story,1614,No
+2374,Gilbert,204000,2 Story,2299,Yes
+2375,OldTown,130000,Other,1316,No
+2376,CollgCr,190000,1 Story,1500,No
+2377,Timber,201000,1 Story,1466,No
+2378,Sawyer,172500,2 Story,1683,Yes
+2379,NridgHt,325000,1 Story,1652,Yes
+2380,Edwards,198500,Other,1922,Yes
+2381,Timber,184000,1 Story,1651,Yes
+2382,Mitchel,149000,Other,883,Yes
+2383,NAmes,122900,Other,924,Yes
+2384,StoneBr,212000,1 Story,1321,Yes
+2385,Edwards,105000,Other,1258,No
+2386,Blmngtn,175900,1 Story,1569,Yes
+2387,IDOTRR,78000,2 Story,1192,No
+2388,Somerst,220000,2 Story,1874,Yes
+2389,BrDale,119500,2 Story,1302,No
+2390,NAmes,109500,1 Story,1040,No
+2391,NoRidge,301500,1 Story,1987,Yes
+2392,NWAmes,155000,1 Story,1103,No
+2393,Mitchel,140000,1 Story,1360,Yes
+2394,NAmes,134500,1 Story,1008,No
+2395,Gilbert,170000,Other,1430,Yes
+2396,SWISU,135900,2 Story,1716,No
+2397,SawyerW,316600,Other,2132,Yes
+2398,Sawyer,158000,2 Story,2654,Yes
+2399,Gilbert,185000,2 Story,1934,Yes
+2400,NAmes,135000,Other,1192,No
+2401,BrkSide,81300,1 Story,808,No
+2402,OldTown,97000,1 Story,882,No
+2403,Somerst,193800,1 Story,1565,No
+2404,IDOTRR,126000,1 Story,919,No
+2405,Gilbert,201490,2 Story,1598,Yes
+2406,NoRidge,248000,2 Story,2285,Yes
+2407,BrDale,113700,2 Story,1218,No
+2408,OldTown,129500,Other,1328,No
+2409,NAmes,156000,1 Story,1073,No
+2410,Somerst,174000,2 Story,1441,No
+2411,Timber,213500,Other,1479,Yes
+2412,ClearCr,225000,Other,2287,Yes
+2413,SawyerW,226500,1 Story,1626,Yes
+2414,OldTown,122600,Other,1323,No
+2415,Timber,150000,1 Story,1495,Yes
+2416,OldTown,111000,2 Story,1360,No
+2417,MeadowV,93900,2 Story,1092,No
+2418,Somerst,241000,2 Story,1550,No
+2419,Sawyer,118500,1 Story,1029,No
+2420,SWISU,60000,1 Story,438,No
+2421,Greens,170000,1 Story,1226,Yes
+2422,NAmes,148000,Other,1370,Yes
+2423,BrkSide,89000,1 Story,616,No
+2424,StoneBr,278000,1 Story,1659,Yes
+2425,CollgCr,159000,Other,965,No
+2426,NAmes,175000,1 Story,1691,No
+2427,OldTown,128500,Other,1382,No
+2428,SWISU,160000,2 Story,1479,Yes
+2429,Crawfor,257500,1 Story,1839,Yes
+2430,CollgCr,267000,2 Story,2452,Yes
+2431,NAmes,108538,1 Story,1206,No
+2432,SawyerW,128000,2 Story,1266,Yes
+2433,IDOTRR,120000,Other,1090,No
+2434,Sawyer,137000,1 Story,1176,Yes
+2435,NAmes,135000,1 Story,925,No
+2436,ClearCr,130000,Other,1352,No
+2437,IDOTRR,212300,2 Story,1952,Yes
+2438,OldTown,123500,2 Story,1902,No
+2439,OldTown,137000,2 Story,1798,No
+2440,NAmes,190000,1 Story,1888,Yes
+2441,SawyerW,193500,1 Story,1679,Yes
+2442,Sawyer,190000,Other,2620,Yes
+2443,NAmes,244000,1 Story,2223,Yes
+2444,Somerst,250000,1 Story,1530,Yes
+2445,StoneBr,361919,2 Story,2576,Yes
+2446,Blueste,137000,2 Story,1229,Yes
+2447,NAmes,68000,1 Story,715,No
+2448,NAmes,132500,Other,1190,No
+2449,Gilbert,165600,2 Story,1501,Yes
+2450,Gilbert,178750,2 Story,1553,No
+2451,Sawyer,123000,1 Story,1040,No
+2452,NAmes,119000,1 Story,1584,No
+2453,NAmes,176500,1 Story,1414,Yes
+2454,NWAmes,146900,2 Story,1308,No
+2455,Sawyer,119900,1 Story,868,No
+2456,Gilbert,187000,2 Story,1690,Yes
+2457,OldTown,93000,Other,1387,No
+2458,NAmes,301600,2 Story,3086,No
+2459,NridgHt,213000,1 Story,1358,Yes
+2460,NAmes,158000,Other,1141,No
+2461,NridgHt,185850,1 Story,1364,Yes
+2462,NridgHt,372397,1 Story,1792,Yes
+2463,NAmes,137500,1 Story,1152,No
+2464,NWAmes,183000,Other,1427,No
+2465,Sawyer,112000,1 Story,1416,No
+2466,NAmes,118500,Other,1216,No
+2467,NWAmes,179900,2 Story,1416,Yes
+2468,NridgHt,284000,1 Story,1629,Yes
+2469,Gilbert,178000,2 Story,1571,Yes
+2470,SWISU,157000,1 Story,1073,No
+2471,Edwards,148000,1 Story,1113,Yes
+2472,Edwards,141000,2 Story,2233,No
+2473,Somerst,171900,2 Story,1250,No
+2474,StoneBr,239000,2 Story,1767,Yes
+2475,NAmes,156000,1 Story,1050,No
+2476,BrkSide,93000,Other,1142,No
+2477,SWISU,93369,2 Story,1884,No
+2478,MeadowV,79400,2 Story,1092,No
+2479,NAmes,147000,1 Story,1113,Yes
+2480,Edwards,113000,Other,1487,Yes
+2481,NAmes,140000,Other,1558,Yes
+2482,NridgHt,275000,2 Story,1904,Yes
+2483,CollgCr,255900,2 Story,2290,Yes
+2484,Gilbert,287602,2 Story,2322,No
+2485,Somerst,205950,2 Story,1665,No
+2486,SWISU,175000,Other,1768,Yes
+2487,Somerst,172500,2 Story,1739,No
+2488,Mitchel,164000,1 Story,1216,No
+2489,OldTown,87000,Other,840,Yes
+2490,NoRidge,466500,1 Story,2633,Yes
+2491,Gilbert,181755,2 Story,1496,No
+2492,BrkSide,184000,Other,1820,No
+2493,Edwards,142500,Other,1072,No
+2494,NridgHt,611657,1 Story,2364,Yes
+2495,StoneBr,130000,1 Story,1204,No
+2496,CollgCr,179400,2 Story,1476,No
+2497,NAmes,118900,1 Story,732,No
+2498,Sawyer,95541,1 Story,1140,No
+2499,NPkVill,138000,2 Story,1456,Yes
+2500,NAmes,97500,1 Story,874,No
+2501,Somerst,199000,1 Story,1504,No
+2502,SWISU,139500,Other,1489,Yes
+2503,MeadowV,119500,1 Story,945,Yes
+2504,CollgCr,208900,1 Story,1493,Yes
+2505,CollgCr,144000,1 Story,848,No
+2506,MeadowV,85500,2 Story,1092,No
+2507,NridgHt,335000,1 Story,1743,Yes
+2508,CollgCr,212999,1 Story,1500,Yes
+2509,Somerst,235000,2 Story,1811,Yes
+2510,NoRidge,341000,2 Story,2418,Yes
+2511,Mitchel,130000,1 Story,874,No
+2512,OldTown,58500,1 Story,816,Yes
+2513,NridgHt,350000,2 Story,2224,Yes
+2514,Somerst,156000,2 Story,1452,No
+2515,NAmes,178400,Other,999,No
+2516,IDOTRR,119600,2 Story,1991,No
+2517,Somerst,294323,2 Story,2318,Yes
+2518,CollgCr,237000,2 Story,1829,Yes
+2519,NridgHt,154000,2 Story,1626,No
+2520,SWISU,118500,Other,2230,No
+2521,Somerst,215000,1 Story,1534,Yes
+2522,Sawyer,158000,2 Story,1352,No
+2523,NridgHt,281500,2 Story,1818,Yes
+2524,NWAmes,162900,2 Story,1664,Yes
+2525,BrkSide,202500,2 Story,1827,Yes
+2526,NAmes,174000,1 Story,1537,Yes
+2527,NWAmes,185750,1 Story,1489,Yes
+2528,OldTown,153900,Other,1416,Yes
+2529,NWAmes,250000,2 Story,2784,Yes
+2530,Gilbert,191000,2 Story,1636,Yes
+2531,CollgCr,185900,2 Story,1582,No
+2532,Crawfor,147500,1 Story,1232,Yes
+2533,Crawfor,224000,1 Story,1640,Yes
+2534,Sawyer,145000,1 Story,992,No
+2535,NridgHt,202500,1 Story,1370,Yes
+2536,NoRidge,248000,2 Story,1850,Yes
+2537,Sawyer,160250,Other,1373,Yes
+2538,BrkSide,82500,1 Story,708,No
+2539,ClearCr,240000,2 Story,1953,Yes
+2540,NAmes,187000,2 Story,1851,Yes
+2541,SawyerW,207000,2 Story,1873,Yes
+2542,NoRidge,263550,2 Story,2232,Yes
+2543,Gilbert,185000,2 Story,1709,No
+2544,Sawyer,153600,1 Story,1064,Yes
+2545,Mitchel,166500,1 Story,1344,Yes
+2546,IDOTRR,78000,Other,936,No
+2547,OldTown,168000,2 Story,1742,Yes
+2548,CollgCr,227000,1 Story,1573,No
+2549,Gilbert,181316,2 Story,1516,Yes
+2550,BrkSide,87000,1 Story,765,No
+2551,CollgCr,186500,1 Story,1445,No
+2552,StoneBr,457347,2 Story,2798,Yes
+2553,IDOTRR,85000,Other,1526,No
+2554,ClearCr,192000,2 Story,2022,Yes
+2555,Sawyer,142500,1 Story,1059,No
+2556,NoRidge,333168,2 Story,2599,Yes
+2557,Mitchel,142500,Other,1003,No
+2558,Gilbert,189000,2 Story,1804,Yes
+2559,OldTown,200000,2 Story,2264,No
+2560,NAmes,116000,1 Story,922,No
+2561,CollgCr,127000,1 Story,876,No
+2562,NWAmes,220000,1 Story,1782,Yes
+2563,NAmes,141500,1 Story,1496,No
+2564,NAmes,109900,1 Story,1040,No
+2565,BrkSide,223500,2 Story,1576,Yes
+2566,Mitchel,128500,1 Story,816,No
+2567,Gilbert,175000,Other,1374,Yes
+2568,Sawyer,134000,1 Story,1211,Yes
+2569,NAmes,137000,1 Story,1008,Yes
+2570,OldTown,89500,1 Story,1022,Yes
+2571,NAmes,140000,Other,898,No
+2572,SWISU,128000,2 Story,1647,No
+2573,Edwards,120000,1 Story,1340,Yes
+2574,IDOTRR,85000,1 Story,759,No
+2575,NAmes,124400,1 Story,1051,No
+2576,Mitchel,228500,1 Story,1689,Yes
+2577,NWAmes,113000,1 Story,1216,No
+2578,Edwards,128000,Other,1150,Yes
+2579,Crawfor,205000,Other,1567,Yes
+2580,SawyerW,238000,2 Story,2127,Yes
+2581,NridgHt,380000,2 Story,2643,Yes
+2582,CollgCr,213500,2 Story,1797,No
+2583,Somerst,310000,2 Story,2007,Yes
+2584,NAmes,160000,1 Story,1251,Yes
+2585,Edwards,133500,Other,1044,Yes
+2586,NAmes,135750,1 Story,952,No
+2587,StoneBr,239500,1 Story,1734,No
+2588,Gilbert,230000,2 Story,2291,Yes
+2589,NridgHt,320000,2 Story,2250,Yes
+2590,Crawfor,140000,2 Story,1717,Yes
+2591,NAmes,133000,Other,1578,Yes
+2592,Edwards,127000,Other,1531,Yes
+2593,OldTown,78000,1 Story,899,No
+2594,CollgCr,122000,1 Story,969,No
+2595,Edwards,123000,1 Story,1092,No
+2596,BrkSide,124000,Other,1210,No
+2597,Edwards,131000,Other,1716,Yes
+2598,Gilbert,274725,2 Story,2021,Yes
+2599,Crawfor,193000,1 Story,1561,Yes
+2600,Sawyer,135000,1 Story,864,Yes
+2601,SawyerW,220000,2 Story,1958,Yes
+2602,Gilbert,172785,2 Story,1456,No
+2603,Gilbert,173000,2 Story,1671,Yes
+2604,StoneBr,270000,2 Story,2687,No
+2605,StoneBr,334000,1 Story,1710,Yes
+2606,SWISU,130000,2 Story,1964,No
+2607,Timber,241500,1 Story,1501,Yes
+2608,CollgCr,222500,2 Story,2031,Yes
+2609,SWISU,115000,Other,1639,No
+2610,NridgHt,207000,1 Story,1358,Yes
+2611,Gilbert,160000,1 Story,1187,No
+2612,CollgCr,200141,1 Story,1316,Yes
+2613,Sawyer,105000,1 Story,872,Yes
+2614,CollgCr,173500,2 Story,1476,No
+2615,Timber,370000,1 Story,1964,Yes
+2616,StoneBr,401179,2 Story,2795,Yes
+2617,Somerst,196000,1 Story,1391,No
+2618,BrkSide,153575,2 Story,1396,No
+2619,IDOTRR,149000,2 Story,1930,No
+2620,NAmes,165000,Other,1431,Yes
+2621,Gilbert,177594,2 Story,1456,No
+2622,Gilbert,195500,2 Story,1604,Yes
+2623,IDOTRR,50138,1 Story,952,No
+2624,Timber,218689,2 Story,1612,No
+2625,NAmes,148500,1 Story,1002,No
+2626,Mitchel,93500,1 Story,974,No
+2627,NAmes,151500,1 Story,1248,No
+2628,NridgHt,217300,1 Story,1358,Yes
+2629,Somerst,146000,2 Story,1392,No
+2630,SawyerW,142953,2 Story,2240,No
+2631,NWAmes,299800,2 Story,2715,Yes
+2632,Mitchel,190000,Other,1285,Yes
+2633,Gilbert,211000,2 Story,1948,Yes
+2634,NAmes,147000,1 Story,1207,No
+2635,Somerst,239000,2 Story,1950,Yes
+2636,NAmes,155000,1 Story,1215,No
+2637,CollgCr,200000,1 Story,1290,Yes
+2638,StoneBr,286000,1 Story,1593,Yes
+2639,Gilbert,199500,1 Story,1324,No
+2640,NAmes,128500,Other,1133,No
+2641,NridgHt,409900,2 Story,2520,Yes
+2642,NAmes,140000,Other,1668,No
+2643,NAmes,112500,Other,984,No
+2644,Veenker,385000,1 Story,1842,Yes
+2645,OldTown,128900,Other,1378,No
+2646,Blueste,115000,2 Story,1032,Yes
+2647,IDOTRR,147000,2 Story,1344,No
+2648,NAmes,162000,1 Story,1336,Yes
+2649,BrkSide,123900,Other,1040,No
+2650,Sawyer,109900,1 Story,904,No
+2651,NridgHt,319500,2 Story,2100,Yes
+2652,OldTown,136000,Other,2526,Yes
+2653,Crawfor,177000,Other,1913,Yes
+2654,Timber,179781,1 Story,1214,No
+2655,BrkSide,135000,Other,1274,No
+2656,Crawfor,375000,1 Story,1778,Yes
+2657,NAmes,193500,2 Story,2142,Yes
+2658,NAmes,142000,1 Story,884,No
+2659,NridgHt,354000,2 Story,2468,Yes
+2660,BrkSide,121600,Other,1230,No
+2661,SawyerW,118858,1 Story,1535,No
+2662,NAmes,135960,Other,943,Yes
+2663,Gilbert,165500,Other,1394,Yes
+2664,NWAmes,174000,1 Story,1284,No
+2665,NridgHt,356000,1 Story,1816,Yes
+2666,Edwards,98000,Other,1529,No
+2667,OldTown,45000,1 Story,612,No
+2668,Edwards,165400,2 Story,1656,Yes
+2669,OldTown,156500,2 Story,1690,No
+2670,NAmes,159000,Other,1734,Yes
+2671,CollgCr,143750,1 Story,848,No
+2672,Mitchel,173500,1 Story,1430,No
+2673,NoRidge,362500,2 Story,2349,Yes
+2674,ClearCr,233500,2 Story,1759,Yes
+2675,OldTown,76500,2 Story,2256,No
+2676,CollgCr,120000,1 Story,879,No
+2677,OldTown,108500,1 Story,960,No
+2678,Crawfor,140000,Other,1355,No
+2679,NridgHt,415000,1 Story,1868,Yes
+2680,NWAmes,196500,2 Story,1714,Yes
+2681,Sawyer,94000,Other,1020,No
+2682,NAmes,141500,1 Story,894,Yes
+2683,Timber,176000,1 Story,1137,Yes
+2684,NAmes,152000,1 Story,1242,No
+2685,Crawfor,110000,Other,1374,No
+2686,NWAmes,188900,2 Story,1857,Yes
+2687,IDOTRR,152000,Other,1558,No
+2688,StoneBr,356383,2 Story,2473,Yes
+2689,NAmes,226000,2 Story,2157,Yes
+2690,BrkSide,105000,Other,1342,Yes
+2691,Timber,175000,Other,1509,Yes
+2692,Crawfor,200624,1 Story,2515,Yes
+2693,IDOTRR,82375,2 Story,1344,No
+2694,CollgCr,143500,1 Story,1268,No
+2695,Gilbert,219210,2 Story,1863,Yes
+2696,OldTown,160000,Other,1984,No
+2697,NWAmes,192350,1 Story,1353,Yes
+2698,Blueste,116500,2 Story,1032,Yes
+2699,Somerst,164500,2 Story,1224,No
+2700,CollgCr,123600,1 Story,990,No
+2701,Sawyer,139000,1 Story,1092,Yes
+2702,ClearCr,180000,Other,988,Yes
+2703,Greens,188000,1 Story,1036,Yes
+2704,SawyerW,270000,1 Story,1433,Yes
+2705,Gilbert,189500,2 Story,1608,Yes
+2706,CollgCr,198500,2 Story,1725,No
+2707,NAmes,172000,Other,1651,Yes
+2708,OldTown,129000,Other,1633,Yes
+2709,NAmes,200000,2 Story,2634,No
+2710,BrkSide,60000,1 Story,800,Yes
+2711,OldTown,61500,1 Story,492,No
+2712,NAmes,92900,1 Story,1040,No
+2713,NAmes,185900,1 Story,1565,Yes
+2714,Edwards,149900,1 Story,1466,Yes
+2715,NWAmes,157000,1 Story,1178,Yes
+2716,Edwards,125600,Other,1079,Yes
+2717,Edwards,182000,Other,1560,Yes
+2718,NAmes,149500,1 Story,1505,Yes
+2719,OldTown,104500,1 Story,968,No
+2720,Somerst,176500,2 Story,1501,Yes
+2721,NAmes,145000,Other,1138,No
+2722,Mitchel,188000,1 Story,1728,No
+2723,Crawfor,239000,2 Story,2624,Yes
+2724,NridgHt,200000,1 Story,1405,Yes
+2725,NAmes,113000,1 Story,793,No
+2726,NAmes,135000,Other,893,No
+2727,NAmes,120000,1 Story,1202,No
+2728,Gilbert,198444,2 Story,1746,Yes
+2729,NridgHt,395000,1 Story,1973,Yes
+2730,Sawyer,132000,Other,934,No
+2731,Edwards,147500,1 Story,1256,No
+2732,OldTown,80000,1 Story,747,No
+2733,NridgHt,445000,1 Story,2452,Yes
+2734,NAmes,136000,1 Story,1040,No
+2735,Somerst,205000,2 Story,1812,Yes
+2736,NAmes,144000,1 Story,1200,Yes
+2737,SWISU,149000,2 Story,1510,No
+2738,Edwards,111000,1 Story,948,No
+2739,OldTown,111500,Other,1657,Yes
+2740,NAmes,141500,1 Story,1337,Yes
+2741,Gilbert,239900,2 Story,1801,Yes
+2742,Somerst,165000,2 Story,1200,No
+2743,BrkSide,134000,Other,1132,No
+2744,Edwards,185000,Other,1674,Yes
+2745,NAmes,136000,1 Story,1080,No
+2746,Somerst,247000,1 Story,1460,Yes
+2747,StoneBr,545224,2 Story,3390,Yes
+2748,NAmes,161000,Other,1042,No
+2749,NWAmes,185000,2 Story,1876,Yes
+2750,NridgHt,282500,1 Story,1565,Yes
+2751,StoneBr,441929,1 Story,2234,Yes
+2752,BrkSide,123000,Other,1136,No
+2753,CollgCr,155000,1 Story,990,No
+2754,OldTown,85000,Other,1141,No
+2755,NAmes,175000,Other,1280,Yes
+2756,Edwards,110000,1 Story,894,No
+2757,StoneBr,538000,2 Story,3279,Yes
+2758,Sawyer,129500,1 Story,988,No
+2759,StoneBr,470000,1 Story,2000,Yes
+2760,CollgCr,127000,1 Story,864,No
+2761,CollgCr,150000,1 Story,1026,No
+2762,NoRidge,302000,2 Story,2810,Yes
+2763,CollgCr,178000,1 Story,1212,No
+2764,SawyerW,228500,2 Story,1982,Yes
+2765,SawyerW,239900,2 Story,1879,Yes
+2766,NAmes,124000,Other,1025,No
+2767,NAmes,144000,1 Story,1344,Yes
+2768,NPkVill,148500,2 Story,1456,Yes
+2769,Gilbert,189000,Other,1628,Yes
+2770,MeadowV,83500,2 Story,1092,No
+2771,OldTown,110000,Other,1382,Yes
+2772,Sawyer,163000,2 Story,1440,Yes
+2773,BrkSide,64000,Other,670,No
+2774,Timber,320000,1 Story,1960,Yes
+2775,Mitchel,139000,1 Story,816,No
+2776,Blmngtn,167240,1 Story,1248,No
+2777,NridgHt,252000,1 Story,1618,Yes
+2778,NAmes,153000,Other,1520,Yes
+2779,OldTown,178000,2 Story,1641,Yes
+2780,Gilbert,222500,2 Story,2035,Yes
+2781,Edwards,136900,Other,1855,No
+2782,OldTown,155000,2 Story,1826,Yes
+2783,NridgHt,390000,2 Story,2748,Yes
+2784,CollgCr,209700,2 Story,1809,No
+2785,NWAmes,207500,1 Story,1686,Yes
+2786,CollgCr,204000,1 Story,1501,No
+2787,BrkSide,162500,Other,1716,No
+2788,Gilbert,174000,2 Story,1481,Yes
+2789,CollgCr,424870,2 Story,2828,Yes
+2790,Edwards,196500,2 Story,1724,Yes
+2791,StoneBr,247900,1 Story,1682,Yes
+2792,OldTown,117000,Other,1214,No
+2793,NAmes,145000,1 Story,1728,No
+2794,SawyerW,225000,Other,1511,Yes
+2795,Sawyer,148000,Other,1075,No
+2796,Somerst,210400,1 Story,1335,No
+2797,NAmes,161000,1 Story,1433,Yes
+2798,OldTown,59000,1 Story,599,No
+2799,NridgHt,296000,1 Story,1782,Yes
+2800,NridgHt,255500,1 Story,1717,Yes
+2801,NridgHt,253293,1 Story,2042,Yes
+2802,Edwards,103600,2 Story,1369,No
+2803,BrkSide,110000,Other,1324,No
+2804,Somerst,197000,2 Story,1576,No
+2805,NAmes,135000,1 Story,1064,No
+2806,SawyerW,118964,1 Story,1535,No
+2807,Edwards,98000,1 Story,864,No
+2808,Mitchel,130000,1 Story,874,No
+2809,CollgCr,239900,1 Story,1468,Yes
+2810,StoneBr,260000,1 Story,1530,Yes
+2811,NAmes,102000,1 Story,1238,Yes
+2812,NAmes,119500,1 Story,950,No
+2813,CollgCr,224900,1 Story,1661,No
+2814,IDOTRR,116000,2 Story,1403,No
+2815,Greens,211500,1 Story,1226,Yes
+2816,NAmes,127000,Other,1145,No
+2817,CollgCr,274000,2 Story,1947,Yes
+2818,BrkSide,109000,1 Story,816,No
+2819,OldTown,108480,1 Story,1073,No
+2820,NWAmes,174000,Other,1324,Yes
+2821,NridgHt,610000,1 Story,2674,Yes
+2822,NoRidge,268000,2 Story,2295,Yes
+2823,Timber,287000,1 Story,2898,Yes
+2824,IDOTRR,91000,1 Story,1077,Yes
+2825,NAmes,163500,1 Story,1657,Yes
+2826,Timber,312500,1 Story,1800,Yes
+2827,Mitchel,188000,Other,1356,Yes
+2828,OldTown,129500,Other,2058,Yes
+2829,Crawfor,163500,1 Story,964,No
+2830,BrkSide,132000,Other,1322,No
+2831,CollgCr,145000,1 Story,848,No
+2832,CollgCr,217500,2 Story,1842,Yes
+2833,NridgHt,460000,2 Story,2790,Yes
+2834,OldTown,185000,Other,2454,Yes
+2835,NAmes,166000,Other,1385,No
+2836,OldTown,124500,2 Story,1960,No
+2837,Mitchel,173000,Other,1200,No
+2838,NWAmes,292500,2 Story,2840,Yes
+2839,IDOTRR,165500,Other,1955,No
+2840,CollgCr,235000,2 Story,1865,Yes
+2841,NWAmes,169000,Other,1102,Yes
+2842,NAmes,135000,1 Story,1866,No
+2843,Edwards,125000,Other,1125,Yes
+2844,NAmes,174850,1 Story,1721,Yes
+2845,Gilbert,171500,1 Story,1341,Yes
+2846,SawyerW,191750,2 Story,1820,No
+2847,OldTown,120000,1 Story,1027,Yes
+2848,NoRidge,260400,1 Story,1720,Yes
+2849,Gilbert,170000,Other,1374,Yes
+2850,NridgHt,274900,1 Story,1713,Yes
+2851,Crawfor,263400,Other,2161,Yes
+2852,CollgCr,270000,1 Story,1673,Yes
+2853,NoRidge,271000,2 Story,2127,Yes
+2854,IDOTRR,51689,1 Story,729,No
+2855,Edwards,67000,1 Story,864,No
+2856,Somerst,165000,2 Story,1382,No
+2857,BrkSide,132500,Other,1281,No
+2858,NridgHt,277500,1 Story,1561,Yes
+2859,NAmes,143000,1 Story,1568,No
+2860,CollgCr,210000,2 Story,1908,Yes
+2861,SawyerW,67500,1 Story,1012,No
+2862,Somerst,160000,2 Story,1252,No
+2863,OldTown,169000,2 Story,2014,No
+2864,NPkVill,146000,2 Story,1548,Yes
+2865,NAmes,127000,Other,1507,No
+2866,Blueste,185000,1 Story,1034,Yes
+2867,ClearCr,182000,1 Story,1522,Yes
+2868,Somerst,152000,2 Story,1236,No
+2869,NoRidge,403000,2 Story,2794,Yes
+2870,Veenker,150000,2 Story,2944,Yes
+2871,NAmes,122500,1 Story,972,No
+2872,BrkSide,149000,Other,1576,Yes
+2873,NAmes,132000,Other,1224,No
+2874,Somerst,240000,1 Story,1578,Yes
+2875,NAmes,119000,1 Story,988,No
+2876,Edwards,165000,Other,1033,No
+2877,NWAmes,175000,2 Story,1743,Yes
+2878,NoRidge,315000,2 Story,2630,Yes
+2879,CollgCr,195800,2 Story,1611,No
+2880,NoRidge,315000,2 Story,2799,Yes
+2881,IDOTRR,119500,Other,1376,Yes
+2882,NWAmes,213250,1 Story,1680,Yes
+2883,Edwards,80000,1 Story,943,No
+2884,NAmes,181900,1 Story,1429,Yes
+2885,NWAmes,154000,2 Story,1556,No
+2886,CollgCr,179600,1 Story,1422,No
+2887,Gilbert,225000,2 Story,1983,Yes
+2888,Mitchel,271000,1 Story,1689,Yes
+2889,OldTown,65000,1 Story,1588,No
+2890,Veenker,279700,1 Story,1494,Yes
+2891,Gilbert,189500,2 Story,1630,Yes
+2892,OldTown,132000,2 Story,1432,No
+2893,Crawfor,145000,2 Story,1316,Yes
+2894,OldTown,103200,Other,882,No
+2895,Mitchel,300000,1 Story,2032,No
+2896,CollgCr,279500,1 Story,1494,Yes
+2897,NAmes,138800,1 Story,1096,No
+2898,NAmes,163000,1 Story,1040,Yes
+2899,Edwards,130000,2 Story,1709,No
+2900,CollgCr,235000,1 Story,1525,No
+2901,Sawyer,129000,1 Story,894,Yes
+2902,NridgHt,462000,2 Story,2772,Yes
+2903,IDOTRR,89000,2 Story,1361,No
+2904,SWISU,161900,Other,1920,Yes
+2905,Sawyer,169000,1 Story,1494,Yes
+2906,IDOTRR,106500,1 Story,951,No
+2907,Mitchel,131250,Other,1091,No
+2908,NoRidge,285000,Other,2872,Yes
+2909,NAmes,139000,1 Story,1339,No
+2910,Mitchel,173000,2 Story,1632,Yes
+2911,ClearCr,279000,1 Story,1743,Yes
+2912,NAmes,125000,1 Story,948,No
+2913,OldTown,87000,2 Story,1774,No
+2914,MeadowV,85000,2 Story,1112,No
+2915,OldTown,125000,Other,1472,No
+2916,NAmes,159000,1 Story,1384,No
+2917,SawyerW,260000,2 Story,2814,Yes
+2918,NridgHt,437154,2 Story,2728,Yes
+2919,NAmes,130000,Other,1360,Yes
+2920,Sawyer,154500,1 Story,1068,No
+2921,Edwards,61500,1 Story,1152,No
+2922,Mitchel,153500,1 Story,1337,No
+2923,OldTown,37900,Other,968,No
