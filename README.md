@@ -11,7 +11,9 @@ If you would like to use Salmon, you can install it by first cloning the reposit
 
 From there, the package should be installed into your Python environment and can be accessed by importing the package name `salmon`.
 
-For the purpose of this documentation we will be using the Harris Bank dataset for our examples.
+# References
+
+To understand how to use salmon, please refer either to [our paper](https://arxiv.org/abs/1911.00648) or the documentation below.
 
 Using salmon can be defined in three stages:
 
