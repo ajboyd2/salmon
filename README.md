@@ -2,10 +2,15 @@
 
 Salmon is a package for symbolic algebra of linear regression and modeling. The goal for this package is to ease the process of model building for linear regression by separating the model (with all its interactions and variables) from the data being used to fit it. 
 
-If you would like to use Salmon, you can install it by first cloning the repository, navigating to the repository directory, and execute the following commands (inside a virtual environment if you prefer):
-
+The easiest way to install Salmon is to use `pip`. At a terminal, type:
 ```
-> python setup.py build
+> pip install salmon-lm
+```
+
+However, if you would like to install it from source, you can type (inside a virtual environment if you prefer):
+```
+> git clone git@github.com:ajboyd2/salmon.git
+> cd salmon
 > python setup.py install
 ```
 
