@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="salmon-lm",
-    version="1.0.2",
+    version="1.2",
 
     description="A symbolic algebra based linear regression tool.",
 
@@ -24,11 +24,11 @@ setup(
     
     keywords='modeling symbolic regression',
     install_requires=[
-        "pandas",
-        "numpy",
-        "matplotlib",
-        "scipy",
-        "ordered-set",
+        "pandas>=1.5.3",
+        "numpy>=1.25.0",
+        "matplotlib>=3.7.1",
+        "scipy>=1.10.1",
+        "ordered-set>=4.1.0",
     ],
     packages=find_packages(exclude=("test",)),
 )
